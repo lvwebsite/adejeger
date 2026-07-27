@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Levensbeschouwing · 3 HAVO: De route van dit jaar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE1C4;
+    --paper-edge:#E2CFA6;
+    --card:#F7EFD9;
+    --card-hi:#FCF6E6;
+    --ink:#43301C;
+    --ink-soft:#B79C72;
+    --muted:#8A7556;
+    --route:#C06A3F;
+
+    --p-verkenning:#C8932F;
+    --p-tradities:#B45B33;
+    --p-actualiteit:#A23C2B;
+    --p-maken:#9C5A64;
+    --p-spreken:#C2702C;
+    --p-presentatie:#A8743C;
+
+    --display:'Fraunces',Georgia,serif;
+    --body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    background:#EAD9AF;
+    min-height:100vh;
+  }
+  
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 26px;position:relative;z-index:1;}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:92px 0 26px;position:relative;}
+  .compass{position:absolute;right:4px;top:84px;width:118px;height:118px;color:var(--ink);opacity:.42;}
+  .eyebrow{font-family:var(--body);font-size:.74rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--route);margin:0 0 26px;}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(2.8rem,8.5vw,5rem);line-height:1.0;letter-spacing:-.02em;margin:0;color:var(--ink);}
+  h1 em{font-style:italic;color:var(--route);}
+  .lead{font-size:clamp(1.02rem,2.2vw,1.18rem);color:#5a4a35;max-width:48ch;margin:28px 0 0;}
+
+  /* map title */
+  .maptitle{display:flex;align-items:center;gap:18px;margin:54px 0 8px;}
+  .maptitle::before,.maptitle::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--ink-soft),transparent);}
+  .maptitle span{font-family:var(--display);font-style:italic;font-size:1.05rem;color:var(--muted);white-space:nowrap;}
+
+  /* ---------- map / trail ---------- */
+  .map{position:relative;padding:26px 0 30px;}
+  .trail{position:absolute;top:0;bottom:36px;left:23px;width:0;border-left:2px dashed var(--ink-soft);}
+
+  .stop{position:relative;padding-left:64px;margin-bottom:16px;}
+  .pin{
+    position:absolute;left:23px;top:16px;transform:translateX(-50%);
+    width:44px;height:44px;border-radius:50%;
+    background:var(--card);border:2px solid var(--phase);color:var(--phase);
+    display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:1rem;
+    box-shadow:0 0 0 6px var(--paper),0 5px 12px -5px rgba(67,48,28,.6);
+    z-index:3;
+  }
+  .pin svg{width:20px;height:20px;}
+
+  details{
+    background:var(--card);border:1px solid rgba(67,48,28,.16);border-radius:16px;
+    box-shadow:0 10px 26px -20px rgba(67,48,28,.7);overflow:hidden;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  details[open]{border-color:var(--phase);box-shadow:0 14px 34px -20px rgba(67,48,28,.7);}
+  summary{display:flex;gap:16px;align-items:flex-start;padding:18px 22px;cursor:pointer;list-style:none;}
+  summary::-webkit-details-marker{display:none;}
+  summary:focus-visible{outline:2px solid var(--route);outline-offset:-2px;border-radius:14px;}
+  .label{flex:1;}
+  .fase{font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--phase);}
+  .title{display:block;font-family:var(--display);font-weight:500;font-size:1.5rem;line-height:1.12;letter-spacing:-.01em;margin-top:4px;transition:color .18s;}
+  summary:hover .title{color:var(--phase);}
+  .one{display:block;color:var(--muted);font-size:.92rem;margin-top:7px;max-width:54ch;}
+  .chev{flex-shrink:0;color:var(--phase);margin-top:6px;transition:transform .25s;}
+  details[open] .chev{transform:rotate(180deg);}
+
+  .lessons{list-style:none;margin:0;padding:2px 16px 16px;}
+  details[open] .lessons{animation:drop .3s ease;}
+  @keyframes drop{from{opacity:0;transform:translateY(-7px);}to{opacity:1;transform:none;}}
+  .les{display:flex;gap:14px;align-items:baseline;padding:12px 14px;border-radius:11px;text-decoration:none;color:var(--ink);transition:background .15s;}
+  .les:hover{background:var(--card-hi);}
+  .les:focus-visible{outline:2px solid var(--route);outline-offset:1px;}
+  .les .ln{font-family:var(--display);font-weight:600;font-size:.82rem;color:var(--phase);min-width:2.4ch;flex-shrink:0;}
+  .les .lt{flex:1;font-weight:500;line-height:1.3;}
+  .les .ls{display:block;color:var(--muted);font-weight:400;font-size:.85rem;margin-top:1px;}
+  .les .lg{flex-shrink:0;color:var(--ink-soft);opacity:0;transform:translateX(-3px);transition:opacity .15s,transform .15s,color .15s;align-self:center;}
+  .les:hover .lg{opacity:1;transform:none;color:var(--phase);}
+
+  footer{text-align:center;padding:30px 0 80px;}
+  footer p{font-family:var(--display);font-style:italic;color:var(--muted);margin:0;}
+
+  /* reveal */
+  @media (prefers-reduced-motion:no-preference){
+    .stop{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease;}
+    .stop.in{opacity:1;transform:none;}
+  }
+
+  /* ---------- desktop: alternating trail ---------- */
+  @media (min-width:760px){
+    .trail{left:50%;}
+    .stop{padding-left:0;display:flex;margin-bottom:6px;}
+    .stop:nth-child(odd){justify-content:flex-start;}
+    .stop:nth-child(even){justify-content:flex-end;}
+    .stop > details{width:calc(50% - 48px);position:relative;}
+    .pin{left:50%;top:18px;}
+    .stop:nth-child(odd) > details::after,
+    .stop:nth-child(even) > details::after{content:"";position:absolute;top:38px;width:34px;height:2px;background:var(--phase);opacity:.45;}
+    .stop:nth-child(odd) > details::after{right:-46px;}
+    .stop:nth-child(even) > details::after{left:-46px;}
+  }
+
+  @media (max-width:480px){
+    header.hero{padding:60px 0 18px;}
+    .compass{display:none;}
+  }
+  .switch{display:inline-block;margin:28px 0 -8px;font-family:var(--body);font-size:.78rem;font-weight:600;letter-spacing:.04em;color:var(--muted);text-decoration:none;}
+  .switch:hover{color:var(--route);}
+
+  .beoordeling{margin:30px 0 0;padding:20px 24px;background:var(--card);border:1px solid rgba(67,48,28,.16);border-radius:16px;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+  .beoordeling .fase{display:block;font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--route);margin-bottom:10px;}
+  .beoordeling p{margin:0 0 12px;color:#5a4a35;font-size:.95rem;}
+  .beoordeling ol{margin:0;padding-left:1.3em;color:var(--ink);font-size:.92rem;}
+  .beoordeling ol li{margin-bottom:5px;}
+  .beoordeling ol li b{color:var(--route);}
+
+  /* ===== atmospheric stage (added) ===== */
+  :root{ --sun-core:#FDF0C6; --sun-mid:rgba(251,225,150,.55); --sun-y:17%; --veil:rgba(120,100,60,.10); }
+  .stage{position:fixed;inset:0;z-index:0;overflow:hidden;opacity:0;transition:opacity 1.2s ease;}
+  body.stage-in .stage{opacity:1;}
+  .stage .sky{position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease;will-change:opacity;}
+  .stage .sky-base{opacity:1;background:radial-gradient(135% 96% at 50% 84%,#FCEBC0 0%,#F5DEAC 30%,rgba(245,222,172,0) 62%),linear-gradient(180deg,#E6D4AD 0%,#EEDFBA 45%,#F2E1B4 70%,#EED9A6 100%);}
+  .stage .sky-brug{background:radial-gradient(135% 96% at 50% 84%,#FFEBAE 0%,#FBD98C 28%,rgba(251,217,140,0) 60%),linear-gradient(180deg,#E9D7A6 0%,#F1E0AC 45%,#F6E1A2 70%,#F0D492 100%);}
+  .stage .sky-havo{background:radial-gradient(135% 96% at 50% 84%,#FBDDA6 0%,#F0BE86 30%,rgba(240,190,134,0) 62%),linear-gradient(180deg,#E3CBA0 0%,#EAD2A2 45%,#EDCB98 70%,#E4B187 100%);}
+  .stage .sky-vwo{background:radial-gradient(135% 96% at 50% 84%,#F6D9C0 0%,#E7B9AE 30%,rgba(231,185,174,0) 62%),linear-gradient(180deg,#D9CDBE 0%,#E2CDBB 45%,#E6C6B4 70%,#DDB2A6 100%);}
+  body[data-mood="brug"] .sky-brug,body[data-mood="havo"] .sky-havo,body[data-mood="vwo"] .sky-vwo{opacity:1;}
+  body[data-mood="brug"]{--sun-core:#FFF0BE;--sun-mid:rgba(255,214,120,.6);--veil:rgba(200,150,50,.14);}
+  body[data-mood="havo"]{--sun-core:#FBE4B4;--sun-mid:rgba(244,190,130,.55);--veil:rgba(170,85,45,.16);}
+  body[data-mood="vwo"]{--sun-core:#F4DAC6;--sun-mid:rgba(232,180,168,.5);--veil:rgba(150,88,98,.18);}
+  .stage .sun{position:absolute;left:50%;bottom:var(--sun-y);width:min(48vw,420px);aspect-ratio:1;transform:translate(-50%,0);border-radius:50%;background:radial-gradient(circle at 50% 50%,var(--sun-core) 0%,var(--sun-mid) 24%,rgba(0,0,0,0) 62%);filter:blur(1px);opacity:.86;transition:background 1.1s ease,bottom .35s ease;animation:breathe 9s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{opacity:.82;transform:translate(-50%,0) scale(1);}50%{opacity:.95;transform:translate(-50%,0) scale(1.03);}}
+  .stage .horizon{position:absolute;left:0;right:0;bottom:0;height:32vh;min-height:190px;}
+  .stage .horizon svg{position:absolute;inset:0;width:100%;height:100%;}
+  .stage .horizon g[data-depth]{will-change:transform;}
+  .stage .veil{position:absolute;left:0;right:0;bottom:0;height:36vh;pointer-events:none;mix-blend-mode:multiply;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,var(--veil) 100%);transition:background 1.1s ease;}
+  .stage .grain{position:absolute;inset:0;pointer-events:none;opacity:.4;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");}
+  footer p{text-shadow:0 1px 0 rgba(247,239,217,.5);}
+  @media (prefers-reduced-motion:reduce){ .stage{opacity:1;transition:none;} .stage .sun{animation:none;} .stage .sky{transition:none;} }
+</style>
+</head>
+<body data-mood="havo">
+
+<div class="stage" aria-hidden="true">
+  <div class="sky sky-base"></div>
+  <div class="sky sky-brug"></div>
+  <div class="sky sky-havo"></div>
+  <div class="sky sky-vwo"></div>
+  <div class="sun"></div>
+  <div class="horizon">
+    <svg viewBox="0 0 1440 340" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Een verre horizon met de silhouetten van verschillende wereldbeelden.">
+      <g data-depth="8">
+        <path fill="#CBB78B" fill-opacity=".8" d="M0,150 L150,120 L250,150 L360,108 L470,150 L600,118 L720,152 L840,116 L980,150 L1120,120 L1260,150 L1440,120 L1440,340 L0,340 Z"/>
+        <g fill="#6B5836" fill-opacity=".42">
+          <g transform="translate(250,152)"><rect x="-2" y="-13" width="4" height="14"/><circle cx="0" cy="-20" r="11"/><circle cx="-7" cy="-16" r="6.5"/><circle cx="7" cy="-16" r="6.5"/></g>
+          <g transform="translate(468,152)"><path d="M-16,0 L16,0 L16,-2.5 L-16,-2.5 Z"/><rect x="-13" y="-19" width="3.2" height="16.5"/><rect x="-5.5" y="-19" width="3.2" height="16.5"/><rect x="2.3" y="-19" width="3.2" height="16.5"/><rect x="9.8" y="-19" width="3.2" height="16.5"/><path d="M-16,-19 L16,-19 L16,-22 L-16,-22 Z"/><path d="M-17.5,-22 L0,-32 L17.5,-22 Z"/></g>
+          <g transform="translate(700,150)"><rect x="-15" y="-15" width="16" height="16"/><rect x="3" y="-26" width="9" height="26"/><path d="M3,-26 L7.5,-35 L12,-26 Z"/><rect x="6.7" y="-44" width="1.6" height="8"/><rect x="4.9" y="-41" width="5.2" height="1.6"/></g>
+          <g transform="translate(980,152)"><rect x="-16" y="-14" width="26" height="14"/><path d="M-13,-14 A10,11 0 0 1 8,-14 Z"/><rect x="-3.3" y="-27" width="1.5" height="5"/><circle cx="-2.55" cy="-29.5" r="1.7"/><rect x="11" y="-30" width="4" height="30"/><path d="M11,-30 A2.2,3 0 0 1 15,-30 Z"/></g>
+          <g transform="translate(1200,152)"><rect x="-13" y="-22" width="3.2" height="22"/><rect x="10" y="-22" width="3.2" height="22"/><path d="M-20,-26 Q0,-31 20,-26 L20,-22 Q0,-26 -20,-22 Z"/><rect x="-16" y="-17" width="32" height="3"/></g>
+        </g>
+      </g>
+      <g data-depth="16"><path fill="#B09865" d="M0,212 C240,172 460,206 720,194 C980,180 1160,216 1440,192 L1440,340 L0,340 Z"/></g>
+      <g data-depth="26"><path fill="#8C7850" d="M0,274 C300,242 520,272 760,260 C1010,246 1240,278 1440,260 L1440,340 L0,340 Z"/></g>
+    </svg>
+  </div>
+  <div class="veil"></div>
+  <div class="grain"></div>
+</div>
+
+
+<div class="wrap">
+  <a class="switch" href="index.html">&larr; Andere klas kiezen</a>
+  <header class="hero">
+    <svg class="compass" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1"/>
+      <circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width=".5" opacity=".6"/>
+      <polygon points="50,6 56,50 50,44 44,50" fill="currentColor"/>
+      <polygon points="50,94 44,50 50,56 56,50" fill="currentColor" opacity=".4"/>
+      <polygon points="6,50 50,44 44,50 50,56" fill="currentColor" opacity=".4"/>
+      <polygon points="94,50 50,56 56,50 50,44" fill="currentColor" opacity=".4"/>
+      <text x="50" y="3" text-anchor="middle" font-size="9" font-family="Fraunces,serif" fill="currentColor">N</text>
+    </svg>
+    <p class="eyebrow">Levensbeschouwing · 3 HAVO</p>
+    <h1>Eerst begrijpen,<br><em>dan</em> oordelen.</h1>
+    <p class="lead">Dit jaar reis je langs de wereldbeelden die mensen houvast, hoop en richting geven. Je leert ze eerst van binnenuit kennen, pas daarna bepaal je wat jíj ervan vindt.</p>
+    <div class="beoordeling">
+      <span class="fase">Beoordeling</span>
+      <p>Je eindcijfer dit jaar bestaat uit vier onderdelen:</p>
+      <ol>
+        <li><b>Presentatie</b> — 3 minuten presenteren zonder aantekeningen over een toegewezen onderwerp en standpunt</li>
+        <li><b>Toets</b> — kennistoets wereldreligies</li>
+        <li><b>PO Abrahamitische religies</b> — praktische opdracht: een stripboekversie van een bijbels verhaal</li>
+        <li><b>Debat</b> — actieve deelname aan het afsluitende debat</li>
+      </ol>
+    </div>
+  </header>
+</div>
+
+<div class="wrap">
+  <div class="maptitle"><span>De route van dit jaar</span></div>
+  <div class="map">
+    <div class="trail" aria-hidden="true"></div>
+    <!-- stops injected by JS -->
+  </div>
+  <footer><p>Klik een halte open en begin de reis.</p></footer>
+</div>
+
+<script>
+  const phases = {
+    verkenning :{label:"Verkenning",         hue:"var(--p-verkenning)"},
+    tradities  :{label:"De drie tradities",   hue:"var(--p-tradities)"},
+    actualiteit:{label:"Actualiteit",         hue:"var(--p-actualiteit)"},
+    maken      :{label:"Zelf maken",          hue:"var(--p-maken)"},
+    spreken    :{label:"Spreken & afsluiten", hue:"var(--p-spreken)"},
+    presentatie:{label:"Doorlopend",          hue:"var(--p-presentatie)"},
+  };
+
+  const haltes = [
+    {phase:"verkenning",title:"Introductie",
+     intro:"Waar gaat dit vak over, en waarom zou je je verdiepen in hoe ánderen de wereld zien?",
+     lessons:[{n:1,t:"Welkom bij Levensbeschouwing",href:"lessen/introductie/01_welkom.html"}]},
+    {phase:"presentatie",title:"Presentatie",pinGlyph:"star",
+     intro:"Je presentatieopdracht voor dit jaar: een van de vier cijfers. Aan het begin van een les geef je volgens het rooster een korte presentatie over een toegewezen stelling.",
+     lessons:[
+       {t:"De opdracht",s:"Wat je gaat doen en hoe het beoordeeld wordt",href:"lessen/presentatie/opdracht_havo.html"},
+       {t:"De stellingen & het rooster",s:"H3A, H3B & H3C: zoek jouw nummer op",href:"lessen/presentatie/stellingen_havo.html"}]},
+    {phase:"verkenning",title:"Wereldreligies",
+     intro:"Zes manieren waarop mensen wereldwijd betekenis, gemeenschap en het heilige beleven.",
+     lessons:[
+       {n:2,t:"Wat is religie?",href:"lessen/wereldreligies/02_wat_is_religie.html"},
+       {n:3,t:"Ubuntu",s:"Ik ben omdat wij zijn",href:"lessen/wereldreligies/03_ubuntu.html"},
+       {n:4,t:"Chinese filosofie",s:"Confucianisme & taoïsme",href:"lessen/wereldreligies/04_chinese_filosofie.html"},
+       {n:5,t:"Boeddhisme",href:"lessen/wereldreligies/05_boeddhisme.html"},
+       {n:6,t:"Hindoeïsme",href:"lessen/wereldreligies/06_hindoeisme.html"},
+       {n:7,t:"Winti",href:"lessen/wereldreligies/07_winti.html"}]},
+    {phase:"verkenning",title:"Toetsmoment",
+     intro:"Laat zien wat je onthouden hebt, en kijk samen terug op wat nog beter kan.",
+     lessons:[
+       {n:8,t:"Toets: wereldreligies",href:"lessen/toets/08_toets_wereldreligies.html"},
+       {n:9,t:"Toets nabespreken",href:"lessen/toets/09_toets_nabespreken.html"}]},
+    {phase:"tradities",title:"Jodendom",
+     intro:"De oudste van de drie verwante tradities: het verbond, de wet, en het leven van alledag.",
+     lessons:[
+       {n:10,t:"De geloofskern",s:"Verbond, wet en het uitverkoren volk",href:"lessen/jodendom/10_geloofskern.html"},
+       {n:11,t:"De geloofspraktijk",s:"Sjabbat, feesten en kosjer",href:"lessen/jodendom/11_geloofspraktijk.html"}]},
+    {phase:"tradities",title:"Christendom",
+     intro:"Van het leven van Jezus tot de splitsing in katholiek en protestant.",
+     lessons:[
+       {n:13,t:"Het leven van Jezus",s:"En het idee van de incarnatie",href:"lessen/christendom/13_leven_van_jezus.html"},
+       {n:14,t:"De vroege kerk",s:"Tot keizer Constantijn",href:"lessen/christendom/14_vroege_kerk.html"},
+       {n:15,t:"Katholiek & protestant",href:"lessen/christendom/15_katholiek_protestant.html"}]},
+    {phase:"tradities",title:"Islam",
+     intro:"De jongste van de drie: één God, een laatste profeet, en een praktijk van vijf zuilen.",
+     lessons:[
+       {n:16,t:"De geloofskern & geloofspraktijk",s:"Tawhid en de vijf zuilen",href:"lessen/islam/16_geloofskern_en_praktijk.html"},
+       {n:18,t:"Islam in Nederland",s:"Soennitisch, sjiitisch en alledaags",href:"lessen/islam/18_islam_in_nederland.html"}]},
+    {phase:"actualiteit",title:"Israël & Palestina",
+     intro:"Eén plek, meerdere verhalen. Je verplaatst je eerst in elk perspectief, voordat je iets vindt.",
+     lessons:[
+       {n:19,t:"Achtergrond & perspectieven",href:"lessen/israel-palestina/19_achtergrond_perspectieven.html"}]},
+    {phase:"actualiteit",title:"De drie naast elkaar",
+     intro:"Wat delen jodendom, christendom en islam, en waar lopen hun wegen uiteen?",
+     lessons:[{n:21,t:"De drie religies vergeleken",href:"lessen/vergelijking/21_drie_religies_vergeleken.html"}]},
+    {phase:"maken",title:"Maak je eigen verhaal",
+     intro:"Verbeeld een verhaal uit de Bijbel als je eigen stripversie.",
+     lessons:[
+       {n:22,t:"Opzet & verhaalkeuze",href:"lessen/stripboek/22_opzet_verhaalkeuze.html"},
+       {n:23,t:"Tekenen & uitwerken",href:"lessen/stripboek/23_tekenen_uitwerken.html"},
+       {n:24,t:"Afronden & inleveren",href:"lessen/stripboek/24_afronden_inleveren.html"}]},
+    {phase:"spreken",title:"Het debat",
+     intro:"Leer een standpunt scherp verdedigen, ook eentje dat niet je eigen is.",
+     lessons:[
+       {n:25,t:"Hoe debatteer je goed?",href:"lessen/debat/25_hoe_debatteer_je_goed.html"},
+       {n:26,t:"Argumenten voorbereiden",href:"lessen/debat/26_argumenten_voorbereiden.html"},
+       {n:27,t:"De andere kant verdedigen",s:"Wissel van standpunt",href:"lessen/debat/27_andere_kant_verdedigen.html"},
+       {n:28,t:"Het debat: ronde 1",href:"lessen/debat/28_debat_ronde_1.html"},
+       {n:29,t:"Het debat: ronde 2",href:"lessen/debat/29_debat_ronde_2.html"}]},
+    {phase:"spreken",title:"Afsluiting",
+     intro:"Terugblik op de reis van dit jaar.",
+     lessons:[{n:30,t:"Laatste les",href:"lessen/afsluiting/30_laatste_les.html"}]},
+  ];
+
+  const flag = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>';
+  const star = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.6 6.6L21 9.2l-5 4.3 1.6 6.8L12 16.9 6.4 20.3 8 13.5l-5-4.3 6.4-.6z"/></svg>';
+  const glyphs = {flag, star};
+  const map = document.querySelector(".map");
+  haltes.forEach((h,i)=>{
+    const ph = phases[h.phase];
+    const last = i===haltes.length-1;
+    const pinContent = h.pinGlyph ? glyphs[h.pinGlyph] : (last?flag:(i+1));
+    const sec = document.createElement("section");
+    sec.className="stop";
+    sec.style.setProperty("--phase",ph.hue);
+    sec.innerHTML = `
+      <span class="pin" aria-hidden="true">${pinContent}</span>
+      <details${i===0?" open":""}>
+        <summary>
+          <span class="label">
+            <span class="fase">${ph.label}</span>
+            <span class="title">${h.title}</span>
+            <span class="one">${h.intro}</span>
+          </span>
+          <span class="chev" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </summary>
+        <ul class="lessons">
+          ${h.lessons.map(l=>`
+            <li><a class="les" href="${l.href}">
+              <span class="ln">${l.n!=null?String(l.n).padStart(2,"0"):"&middot;"}</span>
+              <span class="lt">${l.t}${l.s?`<span class="ls">${l.s}</span>`:""}</span>
+              <span class="lg" aria-hidden="true">→</span>
+            </a></li>`).join("")}
+        </ul>
+      </details>`;
+    map.appendChild(sec);
+  });
+
+  if(matchMedia("(prefers-reduced-motion:no-preference)").matches){
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.1});
+    document.querySelectorAll(".stop").forEach(s=>io.observe(s));
+  }else{document.querySelectorAll(".stop").forEach(s=>s.classList.add("in"));}
+</script>
+
+<script>
+(function(){
+  var body=document.body, docEl=document.documentElement;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  requestAnimationFrame(function(){body.classList.add('stage-in');});
+  setTimeout(function(){body.classList.add('stage-in');},500);
+  if(reduce) return;
+  // the sun sinks a little as you travel down the route
+  function onScroll(){
+    var max=(docEl.scrollHeight-innerHeight)||1;
+    var p=Math.min(1,Math.max(0,(window.scrollY||docEl.scrollTop)/max));
+    docEl.style.setProperty('--sun-y',(17-11*p).toFixed(2)+'%');
+  }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  // gentle mouse parallax on the distant horizon
+  if(matchMedia('(pointer:fine)').matches){
+    var layers=[].slice.call(document.querySelectorAll('.horizon g[data-depth]'));
+    var tx=0,ty=0,cx=0,cy=0;
+    addEventListener('pointermove',function(e){tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);});
+    (function loop(){cx+=(tx-cx)*0.06;cy+=(ty-cy)*0.06;
+      for(var i=0;i<layers.length;i++){var d=+layers[i].getAttribute('data-depth');
+        layers[i].style.transform='translate('+(-cx*d).toFixed(2)+'px,'+(-cy*d*0.4).toFixed(2)+'px)';}
+      requestAnimationFrame(loop);})();
+  }
+})();
+</script>
+</body>
+</html>

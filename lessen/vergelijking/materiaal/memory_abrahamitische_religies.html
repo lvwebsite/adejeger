@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory · Abrahamitische Religies · Klas 1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-1:      #ece3cf;
+  --bg-2:      #e2d6ba;
+  --surface:   #fbf8f0;
+  --border:    #cdb98c;
+  --text:      #21180e;
+  --muted:     #806542;
+  --accent:    #9a7a32;
+  --gold:      #c9a24a;
+  --gold-soft: #e3c878;
+
+  /* Jodendom: diepblauw */
+  --j:        #1b3d82;  --j-bg: #dde6f6;  --j-border: #9fb6dd;
+  /* Christendom: bordeaux */
+  --c:        #7d1c28;  --c-bg: #f6dee1;  --c-border: #ddaab1;
+  /* Islam: bosgroen */
+  --i:        #15662f;  --i-bg: #d6efdf;  --i-border: #9ed3b3;
+
+  --ink:      #271a0c;
+  --ink-2:    #34230f;
+  --radius:   11px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background:
+    radial-gradient(ellipse at 50% -10%, #f1e9d6 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  padding: 38px 16px 64px;
+}
+
+.wrap { max-width: 940px; margin: 0 auto; }
+
+/* ——— Header ——— */
+header { text-align: center; margin-bottom: 26px; }
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.title-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.title-rule::before,
+.title-rule::after {
+  content: "";
+  height: 1px;
+  width: clamp(28px, 12vw, 90px);
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.title-rule::after { background: linear-gradient(90deg, var(--gold), transparent); }
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.012em;
+}
+.subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ——— Legenda ——— */
+.legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0 18px;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 6px 14px 6px 11px;
+}
+.leg-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ——— Statusbalk ——— */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.stat {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.stat b {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  color: var(--text);
+  font-weight: 600;
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 7px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .14s, color .14s;
+}
+.btn-ghost:hover { background: #f1e7d2; color: var(--text); }
+
+/* ——— Snelheidsslider ——— */
+.speed-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: default;
+}
+#speedSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 110px;
+  height: 5px;
+  border-radius: 3px;
+  background: #d6c9ac;
+  outline: none;
+  cursor: pointer;
+}
+#speedSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+  cursor: pointer;
+}
+#speedSlider::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+}
+#speedVal {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  color: var(--text);
+  min-width: 42px;
+}
+
+/* ——— Voortgang ——— */
+.progress-wrap {
+  max-width: 520px;
+  margin: 0 auto 30px;
+  background: #d6c9ac;
+  border-radius: 20px;
+  height: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+  width: 0%;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ——— Hulplinks: korte samenvatting per religie ——— */
+.help-row {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 auto 26px;
+  line-height: 1.7;
+}
+.help-link {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(128,101,66,.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color .15s;
+}
+.help-link[data-rel="jodendom"]   { color: var(--j); }
+.help-link[data-rel="christendom"] { color: var(--c); }
+.help-link[data-rel="islam"]       { color: var(--i); }
+.help-link:hover { text-decoration-color: currentColor; }
+.help-sep { color: #c2ac82; padding: 0 4px; }
+
+/* ——— Samenvattingsmodal ——— */
+.summary-modal {
+  position: fixed; inset: 0;
+  background: rgba(28, 17, 6, .72);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; opacity: 0; pointer-events: none;
+  transition: opacity .35s ease; z-index: 110;
+}
+.summary-modal.show { opacity: 1; pointer-events: auto; }
+.summary-box {
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--gold);
+  padding: 30px 32px 28px;
+  max-width: 480px; width: 100%;
+  text-align: left;
+  box-shadow: 0 30px 64px -24px rgba(0,0,0,.6);
+  transform: translateY(16px) scale(.98);
+  transition: transform .4s cubic-bezier(.16,.8,.3,1);
+}
+.summary-modal.show .summary-box { transform: translateY(0) scale(1); }
+.summary-eyebrow {
+  font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  font-weight: 700; margin: 0 0 4px;
+}
+.summary-title {
+  font-family: 'Fraunces', serif;
+  font-size: 25px; font-weight: 600; margin: 0 0 14px;
+  color: var(--text);
+}
+.summary-text { font-size: 14px; line-height: 1.72; color: #3a2c1b; margin: 0; }
+.summary-close {
+  margin-top: 22px;
+  background: var(--ink); color: var(--gold-soft);
+  border: none; border-radius: 8px;
+  padding: 9px 22px; font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: filter .15s;
+}
+.summary-close:hover { filter: brightness(1.25); }
+
+/* ——— Grid ——— */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 11px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+@media (max-width: 660px) {
+  .grid { grid-template-columns: repeat(4, 1fr); gap: 7px; }
+}
+
+/* ——— Kaart (3D flip) ——— */
+.card {
+  aspect-ratio: 5 / 4;
+  perspective: 1000px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+}
+.card.dealt { opacity: 1; }
+.card.matched, .card.locked { cursor: default; }
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .46s cubic-bezier(.4, 0, .2, 1);
+}
+.card.flipped .card-inner,
+.card.matched .card-inner { transform: rotateY(180deg); }
+
+/* zachte lift bij hover op een gesloten kaart */
+.card:not(.flipped):not(.matched):hover .card-inner {
+  transform: translateY(-4px);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 8px 7px;
+  overflow: hidden;
+}
+
+/* Achterkant — verlicht manuscript */
+.card-back {
+  background:
+    radial-gradient(ellipse at 50% 38%, #3a2812 0%, var(--ink) 70%, var(--ink-2) 100%);
+  border: 1.5px solid #5a3c18;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.22),
+    inset 0 0 0 1px rgba(201,162,74,.16),
+    inset 0 0 22px rgba(0,0,0,.4);
+}
+.card-back svg { width: 46%; height: auto; opacity: .92; }
+.back-label {
+  position: absolute;
+  bottom: 7px;
+  font-size: 6.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a6a30;
+  font-weight: 700;
+}
+
+/* Voorkant */
+.card-front {
+  transform: rotateY(180deg);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.card-type {
+  font-size: 7.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--muted);
+  opacity: .7;
+}
+.card-text {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+  text-align: center;
+}
+.card[data-type="term"] .card-text {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+/* Gevonden: kleur op religie */
+.card.matched .card-front {
+  border-width: 1.5px;
+  border-top-width: 3px;
+  transition: background .35s ease, border-color .35s ease;
+}
+.card[data-rel="jodendom"].matched .card-front   { background: var(--j-bg); border-color: var(--j-border); border-top-color: var(--j); }
+.card[data-rel="christendom"].matched .card-front { background: var(--c-bg); border-color: var(--c-border); border-top-color: var(--c); }
+.card[data-rel="islam"].matched .card-front       { background: var(--i-bg); border-color: var(--i-border); border-top-color: var(--i); }
+
+/* glow-ring op het moment van match */
+.card.just-matched .card-front { animation: matchGlow .7s ease; }
+@keyframes matchGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(201,162,74,0); }
+  35%  { box-shadow: 0 0 16px 4px rgba(201,162,74,.55); }
+  100% { box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+}
+
+/* Paar-badge */
+.pair-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(.4);
+  transition: opacity .3s ease .12s, transform .3s cubic-bezier(.34,1.56,.64,1) .12s;
+}
+.card.matched .pair-badge { opacity: 1; transform: scale(1); }
+.card[data-rel="jodendom"] .pair-badge   { background: var(--j); }
+.card[data-rel="christendom"] .pair-badge { background: var(--c); }
+.card[data-rel="islam"] .pair-badge       { background: var(--i); }
+
+/* Fout */
+@keyframes wrongPulse {
+  0%   { background: var(--surface); }
+  35%  { background: #f6dde0; }
+  100% { background: var(--surface); }
+}
+@keyframes wrongShake {
+  20%,60% { transform: rotateY(180deg) translateX(-4px); }
+  40%,80% { transform: rotateY(180deg) translateX(4px); }
+}
+.card.wrong .card-front { animation: wrongPulse .75s ease; }
+.card.wrong .card-inner { animation: wrongShake .4s ease; }
+
+/* ——— Voltooiingsoverlay ——— */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(28, 17, 6, .8);
+  backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px; opacity: 0; pointer-events: none;
+  transition: opacity .45s ease; z-index: 100;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+.overlay-box {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 46px 38px;
+  max-width: 430px; width: 100%;
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 34px 70px -26px rgba(0,0,0,.65);
+  transform: translateY(20px);
+  transition: transform .5s cubic-bezier(.16,.8,.3,1);
+}
+.overlay.show .overlay-box { transform: translateY(0); }
+.overlay-icon { font-size: 44px; margin-bottom: 14px; line-height: 1; }
+.overlay-title {
+  font-family: 'Fraunces', serif;
+  font-size: 30px; font-weight: 600; margin: 0 0 10px;
+}
+.overlay-sub { font-size: 14px; color: var(--muted); margin: 0 0 28px; line-height: 1.65; }
+.btn-replay {
+  background: var(--ink); color: var(--gold-soft);
+  border: none; border-radius: 9px;
+  padding: 13px 32px; font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  transition: filter .15s;
+}
+.btn-replay:hover { filter: brightness(1.25); }
+
+footer.note {
+  text-align: center;
+  font-size: 11.5px;
+  color: #9c8156;
+  margin-top: 34px;
+  line-height: 1.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .card { opacity: 1 !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Afsluitles · Klas 1</p>
+    <div class="title-rule"><h1>Memory: Abrahamitische Religies</h1></div>
+    <p class="subtitle">Klik op een kaart om hem om te draaien. Zoek de term bij de juiste uitleg. Goed? De kaarten blijven open en krijgen een nummer. Fout? Ze draaien terug.</p>
+  </header>
+
+  <div class="legend">
+    <span class="leg"><span class="leg-dot" style="background:var(--j)"></span>Jodendom</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--c)"></span>Christendom</span>
+    <span class="leg"><span class="leg-dot" style="background:var(--i)"></span>Islam</span>
+  </div>
+
+  <p class="help-row">
+    Vastgelopen? Klik voor een korte samenvatting:
+    <button class="help-link" data-rel="jodendom" onclick="openSummary('jodendom')">Jodendom</button>
+    <span class="help-sep">·</span>
+    <button class="help-link" data-rel="christendom" onclick="openSummary('christendom')">Christendom</button>
+    <span class="help-sep">·</span>
+    <button class="help-link" data-rel="islam" onclick="openSummary('islam')">Islam</button>
+  </p>
+
+  <div class="statusbar">
+    <span class="stat">Paren: <b id="pairsStat">0/18</b></span>
+    <span class="stat">Zetten: <b id="movesStat">0</b></span>
+    <button class="btn-ghost" id="resetBtn">↺ Opnieuw schudden</button>
+    <label class="speed-label">
+      Leestijd: <input type="range" id="speedSlider" min="800" max="4000" step="200" value="2200">
+      <span id="speedVal">2,2 sec</span>
+    </label>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer class="note">
+    Klas 1 · Levensbeschouwing &nbsp;·&nbsp; Een juiste match kleurt mee: blauw = Jodendom, rood = Christendom, groen = Islam.
+  </footer>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <div class="overlay-icon">🏆</div>
+    <h2 class="overlay-title">Alle paren gevonden</h2>
+    <p class="overlay-sub" id="overlaySub"></p>
+    <button class="btn-replay" onclick="initGame()">↺ Nog een keer</button>
+  </div>
+</div>
+
+<div class="summary-modal" id="summaryModal">
+  <div class="summary-box">
+    <p class="summary-eyebrow" id="summaryEyebrow"></p>
+    <h2 class="summary-title" id="summaryTitle"></h2>
+    <p class="summary-text" id="summaryText"></p>
+    <button class="summary-close" onclick="closeSummary()">Sluiten</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — 18 paren (6 per religie).
+   Verwoording afgestemd op het eigen lesmateriaal:
+   - Jodendom: PowerPoint "Het Jodendom" (leerdoelen: verbond, Torah,
+     monotheïsme) + feestdagentekst (Sjabbat, Pesach, Chanoeka).
+   - Christendom: begrippen uit "Het Kerkslot" (Bijbel, evangelie, Messias,
+     Kerstmis/geboorte, Pasen, Pinksteren).
+   - Islam: Koran + de vijf zuilen.
+   Wil je een begrip wisselen? Pas alleen deze lijst aan.
+   ========================================================================= */
+const PAIRS = [
+  /* Jodendom */
+  { id:1,  term:'Verbond',      expl:'De belofte tussen God en het volk van Abraham; de basis van het Jodendom', rel:'jodendom'    },
+  { id:2,  term:'Torah',        expl:'Het belangrijkste boek, met de wetten die God aan de Joden gaf',            rel:'jodendom'    },
+  { id:3,  term:'Monotheïsme',  expl:'Het geloof in één God: geen beelden, geen andere goden',                   rel:'jodendom'    },
+  { id:4,  term:'Sjabbat',      expl:'De wekelijkse rustdag, van vrijdagavond tot zaterdagavond',                rel:'jodendom'    },
+  { id:5,  term:'Pesach',       expl:'Bevrijdingsfeest; herdenking van de uittocht uit Egypte',                  rel:'jodendom'    },
+  { id:6,  term:'Chanoeka',     expl:'Lichtjesfeest; herdenking van het wonder van de olie',                     rel:'jodendom'    },
+  /* Christendom */
+  { id:7,  term:'Bijbel',       expl:'Het heilige boek: het Oude Testament (vóór Jezus) en het Nieuwe Testament (over Jezus)', rel:'christendom' },
+  { id:8,  term:'Evangelie',    expl:'De blijde boodschap: het geloof dat Jezus de dood overwon',                rel:'christendom' },
+  { id:9,  term:'Messias',      expl:'De beloofde redder; in het Grieks "Christus", de Gezalfde',                rel:'christendom' },
+  { id:10, term:'Kerstmis',     expl:'Feest van de geboorte van Jezus in Bethlehem',                             rel:'christendom' },
+  { id:11, term:'Pasen',        expl:'Het belangrijkste feest: Jezus stond op uit de dood',                      rel:'christendom' },
+  { id:12, term:'Pinksteren',   expl:'Vijftig dagen na Pasen: de Heilige Geest komt; het begin van de kerk',     rel:'christendom' },
+  /* Islam */
+  { id:13, term:'Koran',        expl:'Het heilige boek van de Islam',                                            rel:'islam'       },
+  { id:14, term:'Sjahada',      expl:'Eerste zuil: de geloofsbelijdenis (één God, en Mohammed is zijn profeet)', rel:'islam'       },
+  { id:15, term:'Salat',        expl:'Tweede zuil: vijf keer per dag bidden',                                    rel:'islam'       },
+  { id:16, term:'Zakat',        expl:'Derde zuil: geven aan de armen',                                           rel:'islam'       },
+  { id:17, term:'Ramadan',      expl:'Vierde zuil: de vastenmaand',                                              rel:'islam'       },
+  { id:18, term:'Hadj',         expl:'Vijfde zuil: de bedevaart naar Mekka',                                     rel:'islam'       },
+];
+
+/* Neutraal gouden ornament op de achterkant (geen religieus symbool) */
+const BACK_ORNAMENT = `
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" fill="none"
+     stroke="#c9a24a" stroke-width="1.4" stroke-linecap="round">
+  <circle cx="30" cy="30" r="20" stroke-opacity=".5"/>
+  <circle cx="30" cy="30" r="12" stroke-opacity=".8"/>
+  <circle cx="30" cy="30" r="3.4" fill="#c9a24a" stroke="none"/>
+  <g stroke-opacity=".85">
+    <path d="M30 4 L33 14 L30 11 L27 14 Z" fill="#c9a24a" stroke="none"/>
+    <path d="M30 56 L33 46 L30 49 L27 46 Z" fill="#c9a24a" stroke="none"/>
+    <path d="M4 30 L14 33 L11 30 L14 27 Z" fill="#c9a24a" stroke="none"/>
+    <path d="M56 30 L46 33 L49 30 L46 27 Z" fill="#c9a24a" stroke="none"/>
+  </g>
+  <g stroke-opacity=".4">
+    <line x1="30" y1="18" x2="30" y2="42"/>
+    <line x1="18" y1="30" x2="42" y2="30"/>
+  </g>
+</svg>`;
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let deck = [], flipped = [], matched = new Set(), locked = false, moves = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initGame() {
+  document.getElementById('overlay').classList.remove('show');
+  flipped = []; matched = new Set(); locked = false; moves = 0;
+
+  const raw = [];
+  PAIRS.forEach(p => {
+    raw.push({ pairId: p.id, type: 'term', content: p.term, rel: p.rel });
+    raw.push({ pairId: p.id, type: 'expl', content: p.expl, rel: p.rel });
+  });
+  deck = shuffle(raw);
+  renderGrid();
+  updateStats();
+}
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  deck.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.idx = i;
+    el.dataset.rel = c.rel;
+    el.dataset.type = c.type;
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back" aria-hidden="true">
+          ${BACK_ORNAMENT}
+          <span class="back-label">L.V.</span>
+        </div>
+        <div class="card-face card-front">
+          <span class="pair-badge" id="badge-${i}"></span>
+          <span class="card-type">${c.type === 'term' ? 'Term' : 'Uitleg'}</span>
+          <span class="card-text">${c.content}</span>
+        </div>
+      </div>
+    `;
+    el.addEventListener('click', () => handleClick(i));
+    grid.appendChild(el);
+    /* deal-in: gespreid laten verschijnen */
+    const delay = 40 + i * 22;
+    setTimeout(() => el.classList.add('dealt'), delay);
+  });
+}
+
+const cardEl = idx => document.querySelector(`.card[data-idx="${idx}"]`);
+
+/* =========================================================================
+   SPELLOGICA
+   ========================================================================= */
+function handleClick(idx) {
+  if (locked || matched.has(idx) || flipped.includes(idx) || flipped.length >= 2) return;
+  cardEl(idx).classList.add('flipped');
+  flipped.push(idx);
+  if (flipped.length === 2) {
+    locked = true;
+    moves++; updateStats();
+    checkMatch();
+  }
+}
+
+function checkMatch() {
+  const [a, b] = flipped;
+  if (deck[a].pairId === deck[b].pairId) {
+    setTimeout(() => {
+      [a, b].forEach(idx => {
+        const el = cardEl(idx);
+        el.classList.remove('flipped');
+        el.classList.add('matched', 'locked', 'just-matched');
+        document.getElementById('badge-' + idx).textContent = deck[idx].pairId;
+        matched.add(idx);
+        setTimeout(() => el.classList.remove('just-matched'), 750);
+      });
+      flipped = []; locked = false;
+      updateStats();
+      if (matched.size === deck.length) setTimeout(showFinale, 650);
+    }, 380);
+  } else {
+    [a, b].forEach(idx => cardEl(idx).classList.add('wrong'));
+    setTimeout(() => {
+      [a, b].forEach(idx => {
+        const el = cardEl(idx);
+        el.classList.remove('flipped', 'wrong');
+      });
+      flipped = []; locked = false;
+    }, flipDelay);
+  }
+}
+
+function updateStats() {
+  const found = matched.size / 2, total = PAIRS.length;
+  document.getElementById('progressBar').style.width = (found / total * 100) + '%';
+  document.getElementById('pairsStat').textContent = `${found}/${total}`;
+  document.getElementById('movesStat').textContent = moves;
+}
+
+function showFinale() {
+  let verdict;
+  if      (moves <= 22) verdict = 'Uitstekend gespeeld, bijna foutloos.';
+  else if (moves <= 30) verdict = 'Goed gedaan.';
+  else if (moves <= 42) verdict = 'Netjes, met ruimte om te groeien.';
+  else                  verdict = 'Blijf herhalen: kennis groeit met elke poging.';
+  document.getElementById('overlaySub').textContent =
+    `Alle 18 paren gevonden in ${moves} zetten. ${verdict}`;
+  document.getElementById('overlay').classList.add('show');
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Opnieuw schudden en beginnen?')) initGame();
+});
+
+/* =========================================================================
+   SAMENVATTINGEN — begrippen zitten er natuurlijk in verweven (niet uitgelicht),
+   zodat leerlingen die vastlopen even kunnen terugkijken.
+   ========================================================================= */
+const SUMMARIES = {
+  jodendom: {
+    color: 'var(--j)',
+    title: 'Het Jodendom',
+    text: 'Het Jodendom begint bij Abraham, met wie God een belofte sluit: dit verbond vormt de basis van het geloof. Joden geloven in één God, zonder beelden en zonder andere goden, en die gedachte van monotheïsme delen ze later met het christendom en de Islam. De wetten die God gaf staan opgeschreven in de Torah, het belangrijkste boek. In het dagelijks leven keert het geloof terug in vaste momenten: elke week is er de rustdag sjabbat, van vrijdagavond tot zaterdagavond. In het voorjaar wordt met Pesach de bevrijding uit de slavernij in Egypte herdacht, en in de winter herinnert het lichtjesfeest chanoeka aan het wonder van de olie.'
+  },
+  christendom: {
+    color: 'var(--c)',
+    title: 'Het Christendom',
+    text: 'Christenen geloven dat Jezus de beloofde redder is, de messias, wat in het Grieks "Christus" betekent, de Gezalfde. Zijn verhaal staat in de Bijbel, met het Oude Testament van de tijd vóór Jezus en het Nieuwe Testament daarna. De kern van het geloof heet het evangelie, de blijde boodschap dat Jezus de dood overwon. Door het jaar heen vieren christenen die boodschap: met Kerstmis de geboorte van Jezus in Bethlehem, met Pasen zijn opstanding uit de dood, en vijftig dagen later met Pinksteren de komst van de Heilige Geest, het begin van de kerk.'
+  },
+  islam: {
+    color: 'var(--i)',
+    title: 'De Islam',
+    text: 'De Islam deelt veel met het Jodendom en het christendom en gelooft eveneens in één God. De heilige teksten staan in de Koran. Het geloof rust op vijf zuilen. Het begint met de geloofsbelijdenis, de sjahada: er is één God en Mohammed is zijn profeet. Daarna volgen het gebed, vijf keer per dag, de salat, en het geven aan de armen, de zakat. In de maand ramadan wordt overdag gevast, en ten slotte is er de hadj, de bedevaart naar Mekka die elke moslim minstens één keer in zijn leven probeert te maken.'
+  }
+};
+
+function openSummary(rel) {
+  const s = SUMMARIES[rel];
+  if (!s) return;
+  const box = document.querySelector('#summaryModal .summary-box');
+  box.style.borderTopColor = s.color;
+  const eyebrow = document.getElementById('summaryEyebrow');
+  eyebrow.textContent = 'Korte samenvatting';
+  eyebrow.style.color = s.color;
+  const title = document.getElementById('summaryTitle');
+  title.textContent = s.title;
+  title.style.color = s.color;
+  document.getElementById('summaryText').textContent = s.text;
+  document.getElementById('summaryModal').classList.add('show');
+}
+function closeSummary() {
+  document.getElementById('summaryModal').classList.remove('show');
+}
+/* sluiten via klik buiten de kaart of met Escape */
+document.getElementById('summaryModal').addEventListener('click', e => {
+  if (e.target.id === 'summaryModal') closeSummary();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSummary();
+});
+
+let flipDelay = 2200;
+
+document.getElementById('speedSlider').addEventListener('input', function() {
+  flipDelay = parseInt(this.value);
+  const sec = (flipDelay / 1000).toFixed(1).replace('.', ',');
+  document.getElementById('speedVal').textContent = sec + ' sec';
+});
+
+initGame();
+</script>
+</body>
+</html>

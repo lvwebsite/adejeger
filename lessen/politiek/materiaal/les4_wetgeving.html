@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waarom duurt alles zo lang? · Les 4</title>
+<style>
+:root {
+  --navy:   #0F172A;
+  --ink:    #1E293B;
+  --slate:  #475569;
+  --muted:  #94A3B8;
+  --cream:  #F8F5EF;
+  --paper:  #FFFFFF;
+  --border: #E2E8F0;
+  --blue:   #2563EB;
+  --blue-l: #DBEAFE;
+  --green:  #16A34A;
+  --green-l:#DCFCE7;
+  --amber:  #D97706;
+  --amber-l:#FEF3C7;
+  --red:    #DC2626;
+  --red-l:  #FEE2E2;
+  --purple: #7C3AED;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── TOP BAR ── */
+#topbar {
+  display: none;
+  position: sticky; top: 0; z-index: 50;
+  background: var(--navy);
+  padding: 10px 24px;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#topbar.visible { display: flex; }
+.char-badge { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.char-dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: white; flex-shrink: 0;
+}
+.char-name { font-weight: 700; font-size: 14px; color: white; }
+.char-sub  { font-size: 12px; color: var(--muted); }
+
+.progress-stages { display: flex; gap: 4px; flex: 1; justify-content: center; flex-wrap: wrap; }
+.stage-pip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.stage-pip .pip {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #1E293B; border: 2px solid #334155;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--muted);
+}
+.stage-pip.done  .pip { background: var(--green); border-color: var(--green); color: white; }
+.stage-pip.active .pip { background: var(--amber); border-color: var(--amber); color: white; }
+.stage-pip .pip-line { width: 20px; height: 2px; background: #334155; }
+.stage-pip.done .pip-line { background: var(--green); }
+
+.meters { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
+.meter { display: flex; align-items: center; gap: 7px; }
+.meter-label { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.meter-bar { width: 80px; height: 8px; background: #1E293B; border-radius: 4px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
+.meter-fill.speed { background: var(--amber); }
+.meter-fill.integ { background: var(--green); }
+.meter-val { font-size: 12px; font-weight: 700; color: white; min-width: 32px; }
+
+/* ── WELCOME ── */
+#welcome { max-width: 900px; margin: 0 auto; padding: 56px 24px 80px; }
+.welcome-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 12px;
+}
+.welcome-h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.1;
+  color: var(--navy); margin-bottom: 16px;
+}
+.welcome-lead { font-size: 17px; color: var(--slate); line-height: 1.6; max-width: 600px; margin-bottom: 40px; }
+
+.char-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 12px; }
+.char-card {
+  background: var(--paper); border-radius: 16px;
+  border: 2.5px solid var(--border);
+  padding: 24px; cursor: pointer;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  position: relative; overflow: hidden;
+}
+.char-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,23,42,.1); }
+.char-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: var(--char-color, #ccc);
+}
+.char-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--char-color, #ccc);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 14px;
+}
+.char-card h3 { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.char-card .char-info { font-size: 13px; color: var(--slate); margin-bottom: 14px; }
+.char-card .voorstel-box {
+  background: var(--cream); border-radius: 10px; padding: 12px 14px;
+  font-size: 13px; color: var(--ink); line-height: 1.5;
+}
+.char-card .voorstel-box strong {
+  display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--slate); margin-bottom: 4px;
+}
+.char-card .moeilijkheid { display: flex; gap: 3px; margin-top: 12px; align-items: center; }
+.char-card .moeilijkheid span { width: 8px; height: 8px; border-radius: 2px; background: var(--border); }
+.char-card .moeilijkheid span.on { background: var(--char-color, #ccc); }
+.char-card .moeilijkheid-label { font-size: 11px; color: var(--muted); margin-left: 6px; }
+.start-hint { font-size: 14px; color: var(--muted); text-align: center; margin-top: 8px; }
+
+/* ── READ TIMER ── */
+.read-timer-wrap {
+  background: #1E293B; border-radius: 8px; padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.read-timer-wrap .rtl { font-size: 13px; color: var(--muted); flex: 1; }
+.read-timer-track { flex: 1; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; max-width: 140px; }
+.read-timer-fill  { height: 100%; background: var(--amber); border-radius: 3px; transition: width .1s linear; }
+.read-timer-wrap .rtc { font-size: 13px; font-weight: 700; color: var(--amber); min-width: 28px; text-align: right; }
+
+/* ── STAGE ── */
+#stage-screen { max-width: 860px; margin: 0 auto; padding: 36px 24px 80px; }
+.stage-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+.stage-title { font-size: 1.9rem; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+.stage-context {
+  background: var(--paper); border-radius: 12px; padding: 18px 20px;
+  border-left: 4px solid var(--amber);
+  font-size: 15px; color: var(--ink); line-height: 1.65; margin-bottom: 12px;
+}
+.stage-context strong { color: var(--navy); }
+
+.choices { display: flex; flex-direction: column; gap: 14px; }
+.choice-card {
+  background: var(--paper); border: 2px solid var(--border);
+  border-radius: 14px; padding: 20px 22px; cursor: pointer;
+  display: flex; align-items: flex-start; gap: 18px;
+  transition: border-color .2s, box-shadow .15s, transform .1s, opacity .3s;
+}
+.choice-card:hover { border-color: var(--blue); box-shadow: 0 4px 16px rgba(37,99,235,.1); transform: translateY(-1px); }
+.choice-card.locked {
+  opacity: .45; cursor: not-allowed; pointer-events: none;
+  filter: grayscale(.4);
+}
+.choice-letter {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--cream); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; color: var(--slate);
+}
+.choice-body { flex: 1; }
+.choice-label { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.choice-desc { font-size: 14px; color: var(--slate); line-height: 1.5; margin-bottom: 12px; }
+.choice-costs { display: flex; gap: 10px; flex-wrap: wrap; }
+.cost-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.cost-chip.time  { background: var(--amber-l); color: var(--amber); }
+.cost-chip.good  { background: var(--green-l); color: var(--green); }
+.cost-chip.bad   { background: var(--red-l);   color: var(--red);   }
+.cost-chip.risk  { background: #EDE9FE;         color: var(--purple);}
+
+/* ── NARRATIVE ── */
+#narrative-screen { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px; display: flex; flex-direction: column; gap: 24px; }
+.news-card { background: var(--paper); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(15,23,42,.08); }
+.news-header { padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: white; }
+.news-body { padding: 18px 20px; }
+.news-headline { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.news-text { font-size: 14px; color: var(--slate); line-height: 1.6; }
+.consequence-box { background: var(--cream); border-radius: 10px; padding: 14px 16px; border: 1.5px solid var(--border); margin-top: 10px; }
+.consequence-box .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; }
+.consequence-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.delta { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; }
+.delta.neg-time { color: var(--amber); }
+.delta.neg-integ { color: var(--red); }
+.delta.pos  { color: var(--green); }
+.delta.warn { color: var(--purple); }
+
+.complication-box {
+  background: #FEF3C7; border: 2px solid var(--amber); border-radius: 12px; padding: 16px 18px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.complication-icon { font-size: 24px; flex-shrink: 0; }
+.complication-text { font-size: 14px; color: var(--ink); line-height: 1.5; }
+.complication-text strong { color: var(--amber); display: block; margin-bottom: 4px; }
+
+.reflect-input-box {
+  background: var(--paper); border-radius: 14px; padding: 18px 20px;
+  border: 2px solid var(--blue); box-shadow: 0 0 0 4px var(--blue-l);
+}
+.reflect-input-box .rib-label {
+  font-size: 13px; font-weight: 700; color: var(--blue);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.reflect-input-box .rib-q {
+  font-size: 15px; color: var(--navy); font-weight: 600; margin-bottom: 10px;
+}
+.reflect-input-box textarea {
+  width: 100%; min-height: 70px; border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; font-size: 14px;
+  font-family: inherit; color: var(--ink); resize: vertical; line-height: 1.5;
+  background: var(--cream);
+  transition: border-color .15s;
+}
+.reflect-input-box textarea:focus { outline: none; border-color: var(--blue); }
+.reflect-input-box .rib-hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.narrative-btn {
+  align-self: flex-end; background: var(--navy); color: white;
+  border: none; border-radius: 10px; padding: 14px 26px;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background .15s, opacity .3s;
+}
+.narrative-btn:hover:not(:disabled) { background: #1e3a6e; }
+.narrative-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── RESULT ── */
+#result-screen { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+.result-title { font-size: 2rem; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.result-sub { font-size: 16px; color: var(--slate); margin-bottom: 32px; }
+.diploma-box { background: linear-gradient(135deg, var(--navy) 0%, #1e3a6e 100%); border-radius: 16px; padding: 28px 30px; color: white; text-align: center; margin-bottom: 20px; }
+.diploma-emoji { font-size: 48px; margin-bottom: 10px; }
+.diploma-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.diploma-desc { font-size: 15px; color: #93C5FD; line-height: 1.5; }
+.score-card { background: var(--paper); border-radius: 16px; padding: 28px 30px; box-shadow: 0 2px 12px rgba(15,23,42,.08); margin-bottom: 20px; }
+.score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.score-label { font-size: 14px; color: var(--slate); font-weight: 600; }
+.score-bar-wrap { flex: 1; height: 12px; background: var(--border); border-radius: 6px; margin: 0 16px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+.score-num { font-size: 16px; font-weight: 800; min-width: 42px; text-align: right; }
+.total-score-box { display: flex; align-items: center; justify-content: space-between; border-top: 2px solid var(--border); padding-top: 18px; margin-top: 6px; }
+.total-label { font-size: 15px; font-weight: 700; }
+.total-num { font-size: 36px; font-weight: 800; color: var(--navy); }
+.total-num span { font-size: 18px; color: var(--muted); font-weight: 600; }
+.history-card { background: var(--paper); border-radius: 12px; padding: 20px 22px; box-shadow: 0 2px 8px rgba(15,23,42,.06); margin-bottom: 16px; }
+.history-card h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
+.history-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.history-item:last-child { border-bottom: none; }
+.history-stage { flex-shrink: 0; font-weight: 700; font-size: 12px; color: var(--muted); min-width: 80px; }
+.history-choice { font-size: 13px; color: var(--ink); line-height: 1.4; flex: 1; }
+.history-deltas { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+.reflect-q { background: var(--paper); border-radius: 12px; padding: 18px 20px; border-left: 4px solid var(--blue); font-size: 15px; color: var(--ink); line-height: 1.6; margin-top: 20px; }
+.reflect-q h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 10px; }
+.reflect-q p { margin-bottom: 8px; }
+.reflect-q p:last-child { margin-bottom: 0; }
+.politiek-box { background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 12px; padding: 18px 20px; margin-top: 20px; font-size: 14px; color: var(--ink); line-height: 1.65; }
+.politiek-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 10px; }
+.politiek-box .prow { display: flex; gap: 10px; margin-bottom: 6px; align-items: baseline; }
+.politiek-box .prow:last-child { margin-bottom: 0; }
+.politiek-box .pschool { font-weight: 700; min-width: 160px; color: var(--navy); }
+.politiek-box .pecht  { color: var(--slate); }
+.replay-btn { background: var(--navy); color: white; border: none; border-radius: 10px; padding: 14px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 8px; }
+.replay-btn:hover { background: #1e3a6e; }
+
+/* ── TEACHER BUTTON ── */
+#teacher-btn {
+  position: fixed; top: 12px; right: 16px; z-index: 200;
+  background: #1E293B; color: #94A3B8;
+  border: 1px solid #334155; border-radius: 8px;
+  padding: 7px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 6px;
+  transition: background .15s, color .15s;
+}
+#teacher-btn:hover { background: #334155; color: white; }
+
+/* ── TEACHER MODAL ── */
+#teacher-modal {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(15,23,42,.75); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#teacher-modal.open { display: flex; }
+.tm-box {
+  background: var(--paper); border-radius: 18px; max-width: 640px; width: 100%;
+  max-height: 85vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(15,23,42,.35);
+}
+.tm-header {
+  background: var(--navy); color: white; border-radius: 18px 18px 0 0;
+  padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;
+}
+.tm-header h2 { font-size: 16px; font-weight: 700; }
+.tm-close { background: none; border: none; color: #94A3B8; font-size: 22px; cursor: pointer; line-height: 1; padding: 0 2px; }
+.tm-close:hover { color: white; }
+.tm-body { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.tm-empty { color: var(--muted); font-size: 15px; text-align: center; padding: 24px 0; }
+.tm-status {
+  background: var(--cream); border-radius: 10px; padding: 12px 16px;
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.tm-status .ts { font-size: 13px; }
+.tm-status .ts strong { display: block; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; }
+.tm-reflect { background: var(--cream); border-radius: 12px; overflow: hidden; }
+.tm-reflect .tr-head {
+  background: #1E293B; color: white; padding: 10px 14px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+}
+.tm-reflect .tr-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.tm-reflect .tr-row { font-size: 14px; color: var(--ink); }
+.tm-reflect .tr-row .tr-q { color: var(--slate); font-size: 12px; margin-bottom: 3px; }
+.tm-reflect .tr-row .tr-choice { font-weight: 700; color: var(--navy); margin-bottom: 4px; font-size: 13px; }
+.tm-reflect .tr-row .tr-a {
+  background: white; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 14px; color: var(--ink); line-height: 1.5;
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+
+<!-- TEACHER BUTTON (always visible, subtle) -->
+<button id="teacher-btn" onclick="showTeacherView()" title="Docentenweergave">
+  👩‍🏫 Docent
+</button>
+
+<!-- TEACHER MODAL -->
+<div id="teacher-modal" role="dialog" aria-modal="true">
+  <div class="tm-box">
+    <div class="tm-header">
+      <h2>Docentenweergave: antwoorden van deze leerling</h2>
+      <button class="tm-close" onclick="closeTeacherView()" aria-label="Sluit">✕</button>
+    </div>
+    <div class="tm-body" id="tm-body"></div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="char-badge">
+    <div class="char-dot" id="tb-dot"></div>
+    <div>
+      <div class="char-name" id="tb-name"></div>
+      <div class="char-sub"  id="tb-sub"></div>
+    </div>
+  </div>
+  <div class="progress-stages" id="stage-pips"></div>
+  <div class="meters">
+    <div class="meter">
+      <div class="meter-label">⏱ Weken</div>
+      <div class="meter-bar"><div class="meter-fill speed" id="speed-bar" style="width:100%"></div></div>
+      <div class="meter-val" id="speed-val">0w</div>
+    </div>
+    <div class="meter">
+      <div class="meter-label">💡 Voorstel</div>
+      <div class="meter-bar"><div class="meter-fill integ" id="integ-bar" style="width:100%"></div></div>
+      <div class="meter-val" id="integ-val">100%</div>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME -->
+<div id="welcome" class="screen active">
+  <div class="welcome-eyebrow">Politiek · Brugklas · Les 4</div>
+  <h1 class="welcome-h1">Waarom duurt<br>alles zo lang?</h1>
+  <p class="welcome-lead">Je hebt een goed idee voor de school. Maar voordat een idee een echte schoolregel wordt, moet het langs je klasgenoten, de leerlingenraad én de directeur. Bij elke stap moet je iets opgeven: tijd of een deel van je plan. Hoeveel hou je over?</p>
+
+  <div class="char-grid" id="char-grid"></div>
+  <p class="start-hint">Kies een personage om te beginnen.</p>
+</div>
+
+<!-- STAGE -->
+<div id="stage-screen" class="screen">
+  <div style="max-width:860px;margin:0 auto;padding:36px 24px 80px;">
+    <div class="stage-eyebrow" id="st-eyebrow"></div>
+    <div class="stage-title"   id="st-title"></div>
+    <div class="stage-context" id="st-context"></div>
+    <div id="stage-timer-wrap" class="read-timer-wrap" style="display:none">
+      <span class="rtl">Lees de situatie goed voordat je kiest</span>
+      <div class="read-timer-track"><div class="read-timer-fill" id="stage-timer-fill" style="width:0%"></div></div>
+      <span class="rtc" id="stage-timer-count"></span>
+    </div>
+    <div class="choices" id="choices-container"></div>
+  </div>
+</div>
+
+<!-- NARRATIVE -->
+<div id="narrative-screen" class="screen"></div>
+
+<!-- RESULT -->
+<div id="result-screen" class="screen"></div>
+
+<script>
+// ══ TIMER HELPERS ════════════════════════════════════════════
+
+let _timerInterval = null;
+let _timeoutIds    = [];   // tracked so we can cancel on game reset
+
+function clearAllTimers() {
+  clearInterval(_timerInterval);
+  _timerInterval = null;
+  _timeoutIds.forEach(id => clearTimeout(id));
+  _timeoutIds = [];
+}
+
+function safeTimeout(fn, delay) {
+  const id = setTimeout(fn, delay);
+  _timeoutIds.push(id);
+  return id;
+}
+
+/**
+ * startReadTimer(seconds, onUnlock)
+ * Shows a countdown on #stage-timer-wrap and locks choices.
+ * Calls onUnlock() when done.
+ */
+function startReadTimer(seconds, onUnlock) {
+  clearInterval(_timerInterval);
+  const wrap  = document.getElementById('stage-timer-wrap');
+  const fill  = document.getElementById('stage-timer-fill');
+  const count = document.getElementById('stage-timer-count');
+  if (!wrap) { onUnlock(); return; }
+
+  wrap.style.display = 'flex';
+  fill.style.width = '0%';
+  count.textContent = seconds + 's';
+
+  let elapsed = 0;
+  const step = 100; // ms
+  _timerInterval = setInterval(() => {
+    elapsed += step;
+    const pct = Math.min(100, (elapsed / (seconds * 1000)) * 100);
+    fill.style.width = pct + '%';
+    const remaining = Math.max(0, Math.ceil((seconds * 1000 - elapsed) / 1000));
+    count.textContent = remaining + 's';
+    if (elapsed >= seconds * 1000) {
+      clearInterval(_timerInterval);
+      wrap.style.display = 'none';
+      onUnlock();
+    }
+  }, step);
+}
+
+/**
+ * startNarrativeTimer(seconds, btnId)
+ * Shows a visual countdown above the button but does NOT auto-enable it.
+ * The caller controls enablement (separate text-check logic).
+ */
+function startNarrativeTimer(seconds, btnId) {
+  clearInterval(_timerInterval);
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+
+  // build inline timer
+  const timerDiv = document.createElement('div');
+  timerDiv.className = 'read-timer-wrap';
+  timerDiv.id = 'narr-timer';
+  timerDiv.style.alignSelf = 'stretch';
+  timerDiv.innerHTML = `
+    <span class="rtl">Lees de uitkomst door voordat je verder gaat</span>
+    <div class="read-timer-track"><div class="read-timer-fill" id="narr-fill" style="width:0%"></div></div>
+    <span class="rtc" id="narr-count">${seconds}s</span>`;
+  btn.parentNode.insertBefore(timerDiv, btn);
+
+  let elapsed = 0;
+  const step = 100;
+  _timerInterval = setInterval(() => {
+    elapsed += step;
+    const pct = Math.min(100, (elapsed / (seconds * 1000)) * 100);
+    const fillEl  = document.getElementById('narr-fill');
+    const countEl = document.getElementById('narr-count');
+    if (fillEl)  fillEl.style.width = pct + '%';
+    if (countEl) countEl.textContent = Math.max(0, Math.ceil((seconds * 1000 - elapsed) / 1000)) + 's';
+    if (elapsed >= seconds * 1000) {
+      clearInterval(_timerInterval);
+      const t = document.getElementById('narr-timer');
+      if (t) t.remove();
+      // Don't enable the button here: unlock logic in renderNarrative handles it
+    }
+  }, step);
+}
+
+// ══ DATA ══════════════════════════════════════════════════════
+
+// Character-specific classroom objectors for each of the 3 sub-rounds
+const KLAS_GROUPS = {
+  nora: [
+    { naam:'Sander en zijn vrienden', bezwaar:'"Waarom mogen we geen vlees eten?! Dat is totaal oneerlijk!"', type:'Luide tegenstanders' },
+    { naam:'Demi',                    bezwaar:'"De kantine heeft vaste leveranciers. Ze kunnen dit niet zomaar aanpassen."', type:'Praktisch bezwaar' },
+    { naam:'Eva en anderen',          bezwaar:'"Ik eet soms vegetarisch, maar verplicht? Dat voelt raar."', type:'Twijfelaars' },
+  ],
+  jamie: [
+    { naam:'Bo en haar vriendinnen', bezwaar:'"Honden op school?! Mijn zusje is allergisch. Dit is gevaarlijk."', type:'Luide tegenstanders' },
+    { naam:'Tom',                    bezwaar:'"Wie ruimt het op als een hond iets doet? De conciërge heeft al genoeg werk."', type:'Praktisch bezwaar' },
+    { naam:'Roos',                   bezwaar:'"Mag dan iedereen zijn hond meenemen, of alleen jij? Dat moet duidelijker."', type:'Twijfelaars' },
+  ],
+  tim: [
+    { naam:'Finn',  bezwaar:'"Dit is mijn telefoon. Niemand vertelt mij wat ik ermee doe."', type:'Luide tegenstanders' },
+    { naam:'Sofie', bezwaar:'"Wat als mijn ouders bellen? Of als ik iets dringends moet sturen?"', type:'Praktisch bezwaar' },
+    { naam:'Luca',  bezwaar:'"Ik snap het wel, maar het voelt overdreven. Kunnen we het niet vrijwillig doen?"', type:'Twijfelaars' },
+  ],
+};
+
+function buildKlasStage(idx) {
+  const titles = ['De luide tegenstanders', 'Praktisch bezwaar', 'De twijfelaars'];
+  return {
+    id: `klas_${idx}`,
+    eyebrow: `Stap ${idx + 1} van 5: Je klas`,
+    titleFn: () => titles[idx],
+    contextFn: (ch) => {
+      const groups = KLAS_GROUPS[ch.id] || KLAS_GROUPS.nora;
+      const g = groups[idx];
+      return `<strong>${g.naam}</strong> (${g.type}) heeft bezwaren:<br><br>
+              <em style="font-size:15px">${g.bezwaar}</em><br><br>
+              Hoe reageer je?`;
+    },
+    choices: [
+      {
+        id: 'eisen',
+        label: 'Doordrukken: "Jullie stemmen er gewoon mee in"',
+        desc: 'Je negeert hun bezwaar volledig. Snel, maar je plan verliest direct geloofwaardigheid én deze groep is woedend.',
+        weeksCost: 1, integLoss: 5,
+        riskFlag: `klas_${idx}_gehaast`,
+        chips: [{ type:'time', text:'+1 week'}, { type:'bad', text:'−5% plan beschadigd'}, { type:'risk', text:'⚠ Groep is woedend: dit pakt je later duur' }],
+        narrative: {
+          headerColor: '#DC2626', header: 'Wat er gebeurde',
+          headline: () => 'Doorgezet, maar ten koste van vertrouwen',
+          text: (ch) => {
+            const g = (KLAS_GROUPS[ch.id] || KLAS_GROUPS.nora)[idx];
+            return `Je hebt doorgezet. ${g.naam} stemt in, maar zijn/haar gezicht staat op onweer. "Dit is niet het laatste wat je van ons hoort." Je plan heeft ook een deuk opgelopen: wie je zo behandelt, zal later zeggen dat jouw voorstel niet goed doordacht was.`;
+          },
+          consequences: [
+            { type:'neg-time', text:'+1 week' },
+            { type:'neg-integ', text:'−5% plan beschadigd' },
+            { type:'warn',     text:'Groep is woedend: ze zorgen later voor problemen' },
+          ],
+        },
+      },
+      {
+        id: 'deels',
+        label: 'Deels luisteren: "Jullie hebben een punt, ik pas één ding aan"',
+        desc: 'Je neemt de tijd om echt te luisteren en past een klein onderdeel aan. Kost meer tijd, maar de groep accepteert het.',
+        weeksCost: 3, integLoss: 3,
+        chips: [{ type:'time', text:'+3 weken'}, { type:'bad', text:'−3% kleine aanpassing'}, { type:'good', text:'✓ Groep redelijk tevreden' }],
+        narrative: {
+          headerColor: '#2563EB', header: 'Wat er gebeurde',
+          headline: () => 'Goed luisteren: plan nauwelijks veranderd',
+          text: (ch) => {
+            const g = (KLAS_GROUPS[ch.id] || KLAS_GROUPS.nora)[idx];
+            return `Je hebt de tijd genomen om ${g.naam} echt te horen. Je past één ding aan. Niet ideaal: het kost weken, maar de groep accepteert het. Je plan staat er nog goed bij.`;
+          },
+          consequences: [
+            { type:'neg-time',  text:'+3 weken' },
+            { type:'neg-integ', text:'−3% kleine aanpassing' },
+            { type:'pos',       text:'Groep tevreden, geen risico later' },
+          ],
+        },
+      },
+      {
+        id: 'volledig',
+        label: 'Alles weggeven: "Jullie hebben helemaal gelijk, ik pas alles aan"',
+        desc: 'Je stemt in met álle eisen. Ze zijn blij, maar jouw plan is onherkenbaar geworden.',
+        weeksCost: 1, integLoss: 18,
+        chips: [{ type:'time', text:'+1 week'}, { type:'bad', text:'−18% plan sterk beschadigd'}, { type:'good', text:'✓ Groep blij' }],
+        narrative: {
+          headerColor: '#D97706', header: 'Wat er gebeurde',
+          headline: () => 'Alles weggegeven: plan sterk beschadigd',
+          text: (ch) => {
+            const g = (KLAS_GROUPS[ch.id] || KLAS_GROUPS.nora)[idx];
+            return `${g.naam} is blij. Maar er is zo veel afgeknapt van jouw plan dat een klasgenoot vraagt: "Maar… is dit nog wel jouw idee?" Een goed punt.`;
+          },
+          consequences: [
+            { type:'neg-time',  text:'+1 week' },
+            { type:'neg-integ', text:'−18% plan sterk beschadigd' },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+const CHARS = [
+  {
+    id: 'nora',
+    name: 'Nora',
+    emoji: '🥦',
+    info: '13 jaar · bezorgd om dieren en het klimaat',
+    color: '#16A34A',
+    voorstel: 'Elke donderdag een vegamaaltijd in de kantine: geen vlees of vis.',
+    voorstelKort: 'Vegadag op donderdag',
+    tegenstanders: 'Veel leerlingen houden van vlees. De kantine heeft al vaste leveranciers.',
+    moeilijkheid: 2,
+  },
+  {
+    id: 'jamie',
+    name: 'Jamie',
+    emoji: '🐕',
+    info: '12 jaar · sportief, houdt van buiten zijn',
+    color: '#EA580C',
+    voorstel: 'Leerlingen mogen hun hond meenemen naar school en loslopenop het schoolplein tijdens de grote pauze.',
+    voorstelKort: 'Honden welkom op het schoolplein',
+    tegenstanders: 'Sommige leerlingen zijn allergisch of bang voor honden. De conciërge moet dan ook poetsen.',
+    moeilijkheid: 3,
+  },
+  {
+    id: 'tim',
+    name: 'Tim',
+    emoji: '📵',
+    info: '13 jaar · rustig, houdt van duidelijke regels',
+    color: '#7C3AED',
+    voorstel: 'In de kantine zijn telefoons verboden. Je legt hem in een bakje bij de ingang.',
+    voorstelKort: 'Telefoonvrije kantine',
+    moeilijkheid: 1,
+    tegenstanders: 'Veel leerlingen vinden dit oneerlijk. "Waarom mogen we onze eigen spullen niet gebruiken?"',
+  },
+];
+
+const STAGES = [
+  buildKlasStage(0),
+  buildKlasStage(1),
+  buildKlasStage(2),
+
+  {
+    id: 'leerlingenraad',
+    eyebrow: 'Stap 4 van 5: De leerlingenraad',
+    titleFn: () => 'De leerlingenraad beslist mee',
+    contextFn: (ch) =>
+      `De leerlingenraad vertegenwoordigt alle klassen van de school. Ze hebben jouw voorstel gelezen.<br><br>
+       <em>"Wij vinden het interessant, maar we willen dat er een maandelijkse evaluatie komt, zodat leerlingen kunnen bijsturen als het niet werkt."</em><br><br>
+       Wat doe je?`,
+    choices: [
+      {
+        id: 'weigeren',
+        label: 'Weigeren: "Geen evaluaties, het plan staat"',
+        desc: 'Je wil geen extra evaluatiemomenten. De leerlingenraad laat het gaan, maar stuurt wél een officieel bezwaar naar de directeur.',
+        weeksCost: 1, integLoss: 0,
+        riskFlag: 'lr_geblokkeerd',
+        chips: [ { type:'time', text:'+1 week' }, { type:'risk', text:'⚠ Officieel bezwaar gestuurd: dit kost je later tijd en plan' } ],
+        narrative: {
+          headerColor: '#7C3AED', header: 'Wat er gebeurde',
+          headline: () => 'Geweigerd: bezwaar onderweg naar de directeur',
+          text: () => `Je plan gaat door, maar de leerlingenraad is niet blij. Ze sturen een officieel bezwaarschrift naar de directeur. Dat kost je daarna veel extra tijd én een deel van je plan.`,
+          consequences: [
+            { type:'neg-time', text:'+1 week' },
+            { type:'warn',    text:'Bezwaarschrift verstuurd: de directeur gaat dit eerst behandelen' },
+          ],
+        },
+      },
+      {
+        id: 'aanpassen',
+        label: 'Evaluatie accepteren: "Goed idee, dat bouwen we in"',
+        desc: 'Je stemt in met een maandelijkse evaluatie. Je plan verandert een beetje, maar de leerlingenraad staat volledig achter je.',
+        weeksCost: 3, integLoss: 8,
+        chips: [ { type:'time', text:'+3 weken' }, { type:'bad', text:'−8% evaluatie toegevoegd' }, { type:'good', text:'✓ Leerlingenraad steunt je volledig' } ],
+        narrative: {
+          headerColor: '#2563EB', header: 'Wat er gebeurde',
+          headline: () => 'Compromis: leerlingenraad is aan boord',
+          text: () => `Er komt een evaluatiemoment. Niet wat je wilde, maar de leerlingenraad staat nu volledig achter je. Dat is goud waard bij de directeur.`,
+          consequences: [
+            { type:'neg-time',  text:'+3 weken' },
+            { type:'neg-integ', text:'−8% evaluatie ingebouwd' },
+            { type:'pos',       text:'Sterke steun van de leerlingenraad' },
+          ],
+        },
+      },
+      {
+        id: 'groot',
+        label: 'Alles accepteren: "Jullie mogen ook meebeslissen over de details"',
+        desc: 'Je geeft de leerlingenraad veel inspraak. Ze zijn blij, maar jouw plan is nu flink minder van jou.',
+        weeksCost: 1, integLoss: 30,
+        chips: [ { type:'time', text:'+1 week' }, { type:'bad', text:'−30% plan sterk veranderd' } ],
+        narrative: {
+          headerColor: '#D97706', header: 'Wat er gebeurde',
+          headline: () => 'Grote concessie: plan sterk veranderd',
+          text: () => `De leerlingenraad is blij. Maar je plan is nu zo veranderd dat iemand vraagt: "Is dit nog wel jouw voorstel?" Misschien niet meer.`,
+          consequences: [
+            { type:'neg-time',  text:'+1 week' },
+            { type:'neg-integ', text:'−30% plan sterk veranderd' },
+          ],
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'directeur',
+    eyebrow: 'Stap 5 van 5: De directeur',
+    titleFn: () => 'De directeur geeft toestemming',
+    contextFn: (ch) => {
+      const integPct = Math.max(0, 100 - state.integrityLost);
+      const warning = integPct < 70
+        ? `<br><br><span style="color:#DC2626;font-weight:700">⚠ Let op: meer dan 30% van je plan is veranderd. De directeur is kritisch: bij een te zwak plan weigert ze te tekenen.</span>`
+        : '';
+      return `De directeur heeft jouw plan op haar bureau. Ze zegt: <em>"Interessant voorstel. Maar ik wil eerst weten: is dit plan écht doordacht, of is er teveel van afgeknapt onderweg?"</em>${warning}<br><br>Wat doe je?`;
+    },
+    choices: [
+      {
+        id: 'direct',
+        label: 'Direct vragen om een beslissing: "Teken gewoon"',
+        desc: 'Je vraagt de directeur om meteen te beslissen. Als je plan sterk genoeg is (≥70% intact), doet ze het snel. Zo niet: ze weigert en jij moet alles herschrijven.',
+        weeksCost: 1, integLoss: 0,
+        chips: [ { type:'time', text:'+1 week'}, { type:'risk', text:'⚠ Plan <70% intact → directeur wil niet tekenen' } ],
+        narrative: {
+          headerColor: '#DC2626', header: 'Wat er gebeurde',
+          headline: () => (Math.max(0,100-state.integrityLost) >= 70)
+            ? 'Directeur tekent: plan is sterk genoeg'
+            : 'Afgewezen: plan te veel veranderd',
+          text: () => {
+            const ip = Math.max(0, 100 - state.integrityLost);
+            return ip >= 70
+              ? `De directeur kijkt het plan door. "Goed: dit staat nog stevig genoeg." Ze tekent. Jij bent klaar.`
+              : `De directeur fronst. "Dit plan is zo veranderd dat ik hier niet achter kan staan. Terug naar de tekentafel." Ze geeft het terug. Maanden later, na herschrijven, mag je alsnog door, maar er is weinig meer over.`;
+          },
+          consequences: [{ type:'neg-time', text:'+1 week (of +12w als plan te zwak)'}],
+        },
+      },
+      {
+        id: 'overleg',
+        label: 'Persoonlijk gesprek aanvragen: uitleggen wat je wil bereiken',
+        desc: 'Je neemt de tijd om de directeur te overtuigen met jouw verhaal. Je doet een kleine toezegging. Dit is de veilige route.',
+        weeksCost: 4, integLoss: 8,
+        chips: [ { type:'time', text:'+4 weken' }, { type:'bad', text:'−8% kleine toezegging' }, { type:'good', text:'✓ Directeur overtuigd' } ],
+        narrative: {
+          headerColor: '#16A34A', header: 'Wat er gebeurde',
+          headline: () => 'Goed gesprek: directeur zegt ja',
+          text: () => `Na een persoonlijk gesprek is de directeur overtuigd. Je doet een kleine toezegging, maar het plan staat. Groene vlag.`,
+          consequences: [
+            { type:'neg-time',  text:'+4 weken' },
+            { type:'neg-integ', text:'−8% kleine toezegging' },
+            { type:'pos',       text:'Directeur zegt ja' },
+          ],
+        },
+      },
+      {
+        id: 'aanpassen',
+        label: 'Jouw plan flink aanpassen zodat ze zeker ja zegt',
+        desc: 'Je past jouw plan zo aan dat de directeur geen enkel bezwaar meer heeft. Gegarandeerd ja, maar fors inleveren.',
+        weeksCost: 1, integLoss: 22,
+        chips: [ { type:'time', text:'+1 week' }, { type:'bad', text:'−22% plan sterk aangepast' }, { type:'good', text:'✓ Gegarandeerd ja' } ],
+        narrative: {
+          headerColor: '#D97706', header: 'Wat er gebeurde',
+          headline: () => 'Directeur akkoord: plan sterk ingeleverd',
+          text: () => `De directeur gaat akkoord. Maar je plan is nu zo anders dat de vraag rijst of dit nog hetzelfde idee is als aan het begin.`,
+          consequences: [
+            { type:'neg-time',  text:'+1 week' },
+            { type:'neg-integ', text:'−22% plan sterk aangepast' },
+            { type:'pos',       text:'Gegarandeerd goedgekeurd' },
+          ],
+        },
+      },
+    ],
+  },
+];
+
+// ══ STATE ════════════════════════════════════════════════════
+
+let state = {
+  char: null, stageIdx: 0,
+  weeksUsed: 0, integrityLost: 0,
+  riskFlags: new Set(), politicalCapital: false,
+  history: [],
+};
+
+// ══ HELPERS ══════════════════════════════════════════════════
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateMeters() {
+  const maxW = 30;
+  const sPct = Math.max(0, 100 - (state.weeksUsed / maxW) * 100);
+  const iPct = Math.max(0, 100 - state.integrityLost);
+  document.getElementById('speed-bar').style.width = sPct + '%';
+  document.getElementById('integ-bar').style.width = iPct + '%';
+  document.getElementById('speed-val').textContent = state.weeksUsed + 'w';
+  document.getElementById('integ-val').textContent = Math.round(iPct) + '%';
+  const sb = document.getElementById('speed-bar');
+  sb.style.background = sPct > 50 ? '#16A34A' : sPct > 25 ? '#D97706' : '#DC2626';
+}
+
+function updateStagePips() {
+  const c = document.getElementById('stage-pips');
+  c.innerHTML = '';
+  STAGES.forEach((st, i) => {
+    const pip = document.createElement('div');
+    pip.className = 'stage-pip' +
+      (i < state.stageIdx ? ' done' : i === state.stageIdx ? ' active' : '');
+    const labels = ['Klas 1', 'Klas 2', 'Klas 3', 'Leerlingenraad', 'Directeur'];
+    pip.innerHTML = `
+      ${i > 0 ? '<div class="pip-line"></div>' : ''}
+      <div class="pip">${i < state.stageIdx ? '✓' : i + 1}</div>
+      <span>${labels[i]}</span>`;
+    c.appendChild(pip);
+  });
+}
+
+// ══ WELCOME ══════════════════════════════════════════════════
+
+function renderWelcome() {
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = '';
+  CHARS.forEach(ch => {
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.style.setProperty('--char-color', ch.color);
+    const dots = [1,2,3].map(d => `<span class="${d <= ch.moeilijkheid ? 'on' : ''}"></span>`).join('');
+    card.innerHTML = `
+      <div class="char-avatar">${ch.emoji}</div>
+      <h3>${ch.name}</h3>
+      <div class="char-info">${ch.info}</div>
+      <div class="voorstel-box">
+        <strong>Jouw voorstel</strong>
+        ${ch.voorstel}
+      </div>
+      <div class="moeilijkheid" style="margin-top:10px">
+        ${dots}
+        <span class="moeilijkheid-label">Moeilijkheid</span>
+      </div>`;
+    card.onclick = () => startGame(ch);
+    grid.appendChild(card);
+  });
+}
+
+// ══ GAME ════════════════════════════════════════════════════
+
+function startGame(ch) {
+  clearAllTimers();
+  window.dispatchEvent(new Event('gameReset'));
+  state = { char:ch, stageIdx:0, weeksUsed:0, integrityLost:0,
+            riskFlags:new Set(), politicalCapital:false, history:[],
+            reflections:[] };
+  document.getElementById('tb-dot').style.background = ch.color;
+  document.getElementById('tb-dot').textContent = ch.emoji;
+  document.getElementById('tb-name').textContent = ch.name;
+  document.getElementById('tb-sub').textContent = ch.voorstelKort;
+  document.getElementById('topbar').classList.add('visible');
+  updateMeters(); updateStagePips();
+  renderStage(); show('stage-screen');
+}
+
+function renderStage() {
+  const stage = STAGES[state.stageIdx];
+  updateStagePips();
+  document.getElementById('st-eyebrow').textContent = stage.eyebrow;
+  document.getElementById('st-title').textContent   = stage.titleFn();
+  document.getElementById('st-context').innerHTML   = stage.contextFn(state.char);
+
+  const container = document.getElementById('choices-container');
+  container.innerHTML = '';
+  const letters = ['A','B','C'];
+  const cards = [];
+
+  stage.choices.forEach((ch, idx) => {
+    const card = document.createElement('div');
+    card.className = 'choice-card locked'; // locked until timer fires
+    const chips = ch.chips.map(c => `<span class="cost-chip ${c.type}">${c.text}</span>`).join('');
+    card.innerHTML = `
+      <div class="choice-letter">${letters[idx]}</div>
+      <div class="choice-body">
+        <div class="choice-label">${ch.label}</div>
+        <div class="choice-desc">${ch.desc}</div>
+        <div class="choice-costs">${chips}</div>
+      </div>`;
+    card.onclick = () => makeChoice(stage, ch);
+    container.appendChild(card);
+    cards.push(card);
+  });
+
+  // lock choices for 10s so students actually read
+  startReadTimer(10, () => {
+    cards.forEach(c => c.classList.remove('locked'));
+  });
+}
+
+function makeChoice(stage, choice) {
+  // Conditional directeur "direct": outcome depends on current integ
+  let effectiveChoice = choice;
+  let extraWeeks = 0, extraInteg = 0;
+  if (stage.id === 'directeur' && choice.id === 'direct') {
+    const integPct = Math.max(0, 100 - state.integrityLost);
+    if (integPct < 70) {
+      extraWeeks = 12;
+      extraInteg = 20;
+      // Swap narrative to "rejected" version but keep same choice object
+    }
+  }
+
+  state.weeksUsed     += choice.weeksCost + extraWeeks;
+  state.integrityLost += (choice.integLoss || 0) + extraInteg;
+  if (choice.riskFlag) state.riskFlags.add(choice.riskFlag);
+
+  state.history.push({
+    stageTitle:  stage.titleFn(),
+    choiceLabel: choice.label.split('—')[0].trim(),
+    weeksCost:   choice.weeksCost + extraWeeks,
+    integLoss:   (choice.integLoss || 0) + extraInteg,
+    rejected:    extraWeeks > 0,
+  });
+
+  updateMeters();
+  renderNarrative(stage, effectiveChoice);
+  show('narrative-screen');
+}
+
+// ── Stage transition (checks for automatic complication screens) ──
+
+function advanceFromStage(stageId) {
+  if (stageId === 'klas_2') {
+    const flagCount = [0,1,2].filter(i => state.riskFlags.has(`klas_${i}_gehaast`)).length;
+    if (flagCount > 0) { showKlasComplication(flagCount); return; }
+  }
+  if (stageId === 'leerlingenraad' && state.riskFlags.has('lr_geblokkeerd')) {
+    showLRComplication(); return;
+  }
+  state.stageIdx++;
+  if (state.stageIdx >= STAGES.length) { renderResult(); show('result-screen'); }
+  else { renderStage(); show('stage-screen'); }
+}
+
+// ── Automatic narrative before leerlingenraad (based on klas riskFlags) ──
+
+function showKlasComplication(flagCount) {
+  const data = [
+    null,
+    { weeks:3,  integ:12, color:'#D97706', icon:'📬',
+      title:'Klacht bij de leerlingenraad',
+      text:'De groep die jij genegeerd hebt, heeft een klacht ingediend bij de leerlingenraad. Ze willen dat jouw voorstel herbesproken wordt. De vergadering loopt vertraging op én je plan verliest verder geloofwaardigheid.' },
+    { weeks:8,  integ:25, color:'#DC2626', icon:'🔥',
+      title:'Twee groepen staan op de barricaden',
+      text:'Twee groepen werken nu samen om jouw voorstel te blokkeren. Ze spreken de leerlingenraad aan, vragen om een herhaling van de discussie en zorgen dat grote delen van jouw plan worden afgekapt voordat de stemming plaatsvindt.' },
+    { weeks:15, integ:40, color:'#7C3AED', icon:'💥',
+      title:'Alle drie de groepen zijn boos: de leerlingenraad dreigt te blokkeren',
+      text:'Je hebt álle drie de groepen genegeerd. Ze werken samen en dreigen de leerlingenraad ertoe te bewegen jouw voorstel compleet af te wijzen. Na maanden van extra onderhandelen, en het weggeven van grote stukken van je plan: mag je toch nog door. Maar er is weinig over.' },
+  ];
+  const d = data[flagCount];
+  state.weeksUsed     += d.weeks;
+  state.integrityLost += d.integ;
+  updateMeters();
+
+  showAutoNarrative({
+    headerColor: d.color, header: `${d.icon} Wat er ondertussen gebeurde`,
+    headline: d.title, text: d.text,
+    consequences: [
+      { type:'neg-time',  text:`+${d.weeks} weken` },
+      { type:'neg-integ', text:`−${d.integ}% plan beschadigd` },
+    ],
+  }, () => { state.stageIdx = 3; renderStage(); show('stage-screen'); });
+}
+
+// ── Automatic narrative before directeur (lr_geblokkeerd) ──
+
+function showLRComplication() {
+  state.weeksUsed     += 3;
+  state.integrityLost += 10;
+  updateMeters();
+
+  showAutoNarrative({
+    headerColor: '#D97706', header: '📋 Wat er daarna gebeurde',
+    headline: 'Bezwaarschrift bij de directeur',
+    text: 'De leerlingenraad heeft een officieel bezwaarschrift gestuurd naar de directeur. Ze zegt: "Ik moet dit bezwaar eerst behandelen voordat ik naar jouw plan kijk." Extra overleg. Extra tijd. Je plan verliest opnieuw.',
+    consequences: [
+      { type:'neg-time',  text:'+3 weken' },
+      { type:'neg-integ', text:'−10% plan verder beschadigd' },
+    ],
+  }, () => { state.stageIdx = 4; renderStage(); show('stage-screen'); });
+}
+
+// ── Generic auto-narrative (mandatory, no choice, no reflection) ──
+
+function showAutoNarrative(data, onContinue) {
+  clearAllTimers();
+  window.dispatchEvent(new Event('gameReset'));
+
+  const container = document.getElementById('narrative-screen');
+  container.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'news-card';
+  const consHtml = data.consequences.map(c => `<div class="delta ${c.type}">${c.text}</div>`).join('');
+  card.innerHTML = `
+    <div class="news-header" style="background:${data.headerColor}">${data.header}</div>
+    <div class="news-body">
+      <div class="news-headline">${data.headline}</div>
+      <div class="news-text">${data.text}</div>
+      <div class="consequence-box">
+        <div class="label">Automatisch toegepast</div>
+        <div class="consequence-row">${consHtml}</div>
+      </div>
+    </div>`;
+  container.appendChild(card);
+
+  const btn = document.createElement('button');
+  btn.className = 'narrative-btn';
+  btn.id = 'auto-narr-btn';
+  btn.disabled = true;
+  btn.textContent = 'Ik begrijp het, verder →';
+  btn.onclick = onContinue;
+  container.appendChild(btn);
+
+  // 5s read timer for auto narratives (no reflection box needed)
+  startNarrativeTimer(5, 'auto-narr-btn');
+  safeTimeout(() => { btn.disabled = false; }, 5000);
+
+  show('narrative-screen');
+}
+
+// Reflection questions per stage (5 stages now)
+const REFLECT_QUESTIONS = [
+  'Leg uit: waarom koos je voor doordrukken, deels toegeven, of alles accepteren?',
+  'Was je keuze bij groep 2 hetzelfde als bij groep 1? Waarom wel of niet?',
+  'De twijfelaars zijn het moeilijkst te overtuigen. Hoe heb je dat aangepakt?',
+  'Wat moest jij opgeven bij de leerlingenraad, en was dat slim?',
+  'Terugkijkend op alle vijf stappen: wat had je anders willen doen?',
+];
+
+function renderNarrative(stage, choice) {
+  const hasComplication = false; // old flag: kept for template below
+  const narr = choice.narrative;
+  const ch = state.char;
+  const container = document.getElementById('narrative-screen');
+  container.innerHTML = '';
+
+  const newsCard = document.createElement('div');
+  newsCard.className = 'news-card';
+  const consHtml = narr.consequences.map(c => `<div class="delta ${c.type}">${c.text}</div>`).join('');
+  newsCard.innerHTML = `
+    <div class="news-header" style="background:${narr.headerColor}">${narr.header}</div>
+    <div class="news-body">
+      <div class="news-headline">${narr.headline(ch)}</div>
+      <div class="news-text">${narr.text(ch)}</div>
+      <div class="consequence-box">
+        <div class="label">Gevolgen</div>
+        <div class="consequence-row">${consHtml}</div>
+      </div>
+    </div>`;
+  container.appendChild(newsCard);
+
+  if (hasComplication) {
+    const comp = document.createElement('div');
+    comp.className = 'complication-box';
+    comp.innerHTML = `
+      <div class="complication-icon">⚡</div>
+      <div class="complication-text">
+        <strong>Onverwachte complicatie!</strong>
+        Je haastte je bij meerdere groepen in de klas en de directeur voelt die weerstand. Ze eist extra overleg voordat ze tekent. Dit kost je <strong>5 extra weken</strong> en <strong>12% van je plan</strong>.
+      </div>`;
+    container.appendChild(comp);
+  }
+
+  // ── Reflection input ──
+  const reflectQ = REFLECT_QUESTIONS[state.stageIdx] || 'Wat leerde je van deze keuze?';
+  const MIN_CHARS = 15;
+  const reflectBox = document.createElement('div');
+  reflectBox.className = 'reflect-input-box';
+  reflectBox.innerHTML = `
+    <div class="rib-label">Jouw uitleg</div>
+    <div class="rib-q">${reflectQ}</div>
+    <textarea id="reflect-ta" placeholder="Schrijf hier je antwoord…" rows="3"></textarea>
+    <div class="rib-hint" id="rib-hint">Typ minstens ${MIN_CHARS} tekens om verder te gaan.</div>`;
+  container.appendChild(reflectBox);
+
+  const isLast = state.stageIdx === STAGES.length - 1;
+  const captureStageIdx = state.stageIdx; // freeze idx for closure
+  const btn = document.createElement('button');
+  btn.className = 'narrative-btn';
+  btn.id = 'narr-next-btn';
+  btn.disabled = true;
+  btn.textContent = isLast ? 'Zie het eindresultaat →' : 'Volgende stap →';
+  btn.onclick = () => {
+    // save reflection before navigating away
+    const ta = document.getElementById('reflect-ta');
+    if (ta) {
+      state.reflections[captureStageIdx] = {
+        question: reflectQ,
+        answer:   ta.value.trim(),
+        choice:   choice.label.split('—')[0].trim(),
+        stage:    stage.titleFn(),
+      };
+    }
+    advanceFromStage(stage.id);
+  };
+  container.appendChild(btn);
+
+  // Unlock button: timer (6s) AND min chars typed
+  // Use safeTimeout so these are cancelled if a new game starts
+  let timerDone = false;
+  let textOk    = false;
+  let alive     = true; // guards against stale closure after game reset
+
+  function tryUnlock() {
+    if (!alive) return;
+    if (timerDone && textOk) btn.disabled = false;
+  }
+
+  // 6s read timer (visual only)
+  startNarrativeTimer(6, 'narr-next-btn');
+  safeTimeout(() => { timerDone = true; tryUnlock(); }, 6000);
+
+  // watch textarea: tiny delay so DOM is settled
+  safeTimeout(() => {
+    if (!alive) return;
+    const ta   = document.getElementById('reflect-ta');
+    const hint = document.getElementById('rib-hint');
+    if (!ta) return;
+    ta.addEventListener('input', () => {
+      if (!alive) return;
+      const len = ta.value.trim().length;
+      textOk = len >= MIN_CHARS;
+      if (hint) {
+        hint.textContent = textOk
+          ? '✓ Goed zo, je kunt nu verder.'
+          : `Typ nog ${MIN_CHARS - len} teken${MIN_CHARS - len !== 1 ? 's' : ''}.`;
+        hint.style.color = textOk ? 'var(--green)' : 'var(--muted)';
+      }
+      tryUnlock();
+    });
+  }, 100);
+
+  // mark closure dead when a new game starts (clearAllTimers kills the
+  // setTimeout IDs, but the textarea listener closure still has alive flag)
+  const killOnReset = () => { alive = false; };
+  window.addEventListener('gameReset', killOnReset, { once: true });
+}
+
+// ══ RESULT ══════════════════════════════════════════════════
+
+function renderResult() {
+  updateStagePips();
+  const maxW = 30;
+  const integPct = Math.max(0, 100 - state.integrityLost);
+
+  // Tiered scoring: non-linear to make rushing/caving clearly worse
+  const integScore =
+    integPct >= 75 ? 50 :
+    integPct >= 60 ? 30 :
+    integPct >= 45 ? 15 :
+    integPct >= 30 ? 5  : 0;
+
+  const weekScore =
+    state.weeksUsed <= 13 ? 50 :
+    state.weeksUsed <= 17 ? 35 :
+    state.weeksUsed <= 21 ? 20 :
+    state.weeksUsed <= 26 ? 8  : 0;
+
+  const total = integScore + weekScore;
+
+  const diplomas = [
+    { min:85, emoji:'🏆', title:'Meesterkompromis',
+      desc:'Jouw plan haalde het grotendeels intact én snel. Dat is zeldzaam: je hebt goed geluisterd én je principes bewaard. Zo werkt politiek als het goed gaat.' },
+    { min:60, emoji:'⚖️', title:'Bewust onderhandelaar',
+      desc:'Je plan haalde het, maar er is flink wat van afgeknapt, óf het duurde langer dan nodig. Zo werkt politiek in de praktijk meestal.' },
+    { min:35, emoji:'🤝', title:'Moeilijke weg',
+      desc:'Je plan haalde het, maar nauwelijks. Je hebt te veel weggegeven óf te veel weerstand opgeroepen. Andere aanpak nodig.' },
+    { min:10, emoji:'🐢', title:'Politieke schade',
+      desc:'Het is gelukt, maar ten koste van bijna alles. Je plan is onherkenbaar of het heeft maanden te lang geduurd.' },
+    { min:0,  emoji:'💥', title:'Politieke ramp',
+      desc:'Doordrukken of alles weggeven: beide wegen leiden naar hetzelfde: niemand is blij en jouw idee bestaat nauwelijks meer.' },
+  ];
+  const diploma = diplomas.find(d => total >= d.min);
+
+  const histHtml = state.history.map(h => {
+    const chips = [];
+    if (h.weeksCost) chips.push(`<span class="cost-chip time">+${h.weeksCost}w</span>`);
+    if (h.integLoss) chips.push(`<span class="cost-chip bad">−${h.integLoss}%</span>`);
+    if (h.complication) chips.push(`<span class="cost-chip risk">⚡</span>`);
+    return `<div class="history-item">
+      <div class="history-stage">${h.stageTitle.split(' ')[0]}<br>${h.stageTitle.split(' ')[1] || ''}</div>
+      <div class="history-choice">${h.choiceLabel}</div>
+      <div class="history-deltas">${chips.join('')}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('result-screen').innerHTML = `
+    <div class="result-title">Het is geregeld.</div>
+    <div class="result-sub">Na ${state.weeksUsed} weken en ${state.integrityLost}% aanpassingen is jouw schoolregel er.</div>
+
+    <div class="diploma-box">
+      <div class="diploma-emoji">${diploma.emoji}</div>
+      <div class="diploma-title">${diploma.title}</div>
+      <div class="diploma-desc">${diploma.desc}</div>
+    </div>
+
+    <div class="score-card">
+      <div class="score-row">
+        <div class="score-label">⏱ Snelheid (${state.weeksUsed} weken: goed: ≤13w, matig: ≤17w)</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${weekScore*2}%;background:#D97706"></div></div>
+        <div class="score-num" style="color:#D97706">${weekScore}<span style="color:#94A3B8;font-size:13px">/50</span></div>
+      </div>
+      <div class="score-row" style="margin-bottom:0">
+        <div class="score-label">💡 Plan bewaard (${Math.round(integPct)}% intact)</div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${integScore*2}%;background:#16A34A"></div></div>
+        <div class="score-num" style="color:#16A34A">${integScore}<span style="color:#94A3B8;font-size:13px">/50</span></div>
+      </div>
+      <div class="total-score-box">
+        <div class="total-label">Totaalscore</div>
+        <div class="total-num">${total}<span>/100</span></div>
+      </div>
+    </div>
+
+    <div class="history-card">
+      <h3>Jouw keuzes</h3>
+      ${histHtml}
+    </div>
+
+    <div class="politiek-box">
+      <h3>En in de échte politiek?</h3>
+      <div class="prow"><span class="pschool">Jouw klas</span><span class="pecht">= de Tweede Kamer (150 gekozen volksvertegenwoordigers)</span></div>
+      <div class="prow"><span class="pschool">De leerlingenraad</span><span class="pecht">= de Eerste Kamer (controleren of de wet goed is)</span></div>
+      <div class="prow"><span class="pschool">De directeur</span><span class="pecht">= de minister (voert de wet uit en tekent hem)</span></div>
+      <div class="prow" style="margin-top:10px"><span class="pschool">Jouw schoolregel</span><span class="pecht">= een wet, en in het echt duurt dat geen weken maar <strong>jaren</strong></span></div>
+    </div>
+
+    <div class="reflect-q">
+      <h3>Nadenken</h3>
+      <p>1. Welke keuze kostte jou het meest? Had je het anders gedaan?</p>
+      <p>2. Waarom moet een idee langs zoveel mensen voordat het een regel wordt?</p>
+      <p>3. Is langzaam altijd slecht of heeft het ook voordelen?</p>
+    </div>
+
+    <button class="replay-btn" onclick="restartGame()">↩ Opnieuw spelen</button>
+  `;
+}
+
+function restartGame() {
+  clearAllTimers();
+  window.dispatchEvent(new Event('gameReset'));
+  state = { char:null, stageIdx:0, weeksUsed:0, integrityLost:0,
+            riskFlags:new Set(), politicalCapital:false, history:[], reflections:[] };
+  document.getElementById('topbar').classList.remove('visible');
+  renderWelcome(); show('welcome');
+}
+
+// ══ TEACHER VIEW ════════════════════════════════════════════
+
+function showTeacherView() {
+  const body = document.getElementById('tm-body');
+  body.innerHTML = '';
+
+  if (!state.char) {
+    body.innerHTML = '<p class="tm-empty">Er is nog geen leerling begonnen. Kies een personage om te starten.</p>';
+    document.getElementById('teacher-modal').classList.add('open');
+    return;
+  }
+
+  // Status strip
+  const maxW = 30;
+  const integPct = Math.max(0, 100 - state.integrityLost);
+  const integScore = integPct>=75?50 : integPct>=60?30 : integPct>=45?15 : integPct>=30?5 : 0;
+  const weekScore  = state.weeksUsed<=13?50 : state.weeksUsed<=17?35 : state.weeksUsed<=21?20 : state.weeksUsed<=26?8 : 0;
+  const total = integScore + weekScore;
+  const stageLabels = ['Klas 1', 'Klas 2', 'Klas 3', 'Leerlingenraad', 'Directeur'];
+  const currentStage = state.stageIdx < STAGES.length
+    ? stageLabels[state.stageIdx]
+    : 'Afgerond';
+
+  const statusDiv = document.createElement('div');
+  statusDiv.className = 'tm-status';
+  statusDiv.innerHTML = `
+    <div class="ts"><strong>Personage</strong>${state.char.emoji} ${state.char.name}</div>
+    <div class="ts"><strong>Voorstel</strong>${state.char.voorstelKort}</div>
+    <div class="ts"><strong>Fase</strong>${currentStage}</div>
+    <div class="ts"><strong>Weken gebruikt</strong>${state.weeksUsed}w</div>
+    <div class="ts"><strong>Plan bewaard</strong>${Math.round(integPct)}%</div>
+    ${state.stageIdx >= STAGES.length
+      ? `<div class="ts"><strong>Eindscore</strong>${total}/100</div>`
+      : ''}`;
+  body.appendChild(statusDiv);
+
+  // Reflections
+  if (state.reflections.length === 0) {
+    const none = document.createElement('p');
+    none.className = 'tm-empty';
+    none.textContent = 'Nog geen reflecties ingevuld.';
+    body.appendChild(none);
+  } else {
+    const reflDiv = document.createElement('div');
+    reflDiv.className = 'tm-reflect';
+    reflDiv.innerHTML = '<div class="tr-head">Ingevulde reflecties</div>';
+    const rows = document.createElement('div');
+    rows.className = 'tr-body';
+    state.reflections.forEach((r, i) => {
+      if (!r) return;
+      const row = document.createElement('div');
+      row.className = 'tr-row';
+      row.innerHTML = `
+        <div class="tr-q">${stageLabels[i] || 'Stap ' + (i+1)}: ${r.question}</div>
+        <div class="tr-choice">Keuze: ${r.choice}</div>
+        <div class="tr-a">${r.answer || '<em>leeg</em>'}</div>`;
+      rows.appendChild(row);
+    });
+    reflDiv.appendChild(rows);
+    body.appendChild(reflDiv);
+  }
+
+  document.getElementById('teacher-modal').classList.add('open');
+}
+
+function closeTeacherView() {
+  document.getElementById('teacher-modal').classList.remove('open');
+}
+
+// Close modal on backdrop click
+document.getElementById('teacher-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('teacher-modal')) closeTeacherView();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeTeacherView();
+});
+
+renderWelcome();
+</script>
+</body>
+</html>

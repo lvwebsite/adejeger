@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De stellingen &amp; het rooster · 3 VWO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE1C4;--paper-edge:#E2CFA6;--card:#F7EFD9;--card-hi:#FCF6E6;
+    --ink:#43301C;--muted:#8A7556;--route:#C06A3F;--line:rgba(67,48,28,.16);--phase:#9C5A64;
+    --voor:#5C7A4A;--tegen:#A23C2B;
+    --display:'Fraunces',Georgia,serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background:radial-gradient(130% 90% at 50% -5%,#F3E7CD 0%,var(--paper) 45%,var(--paper-edge) 100%) fixed;
+    min-height:100vh;
+  }
+  .wrap{max-width:740px;margin:0 auto;padding:56px 26px 90px;}
+  .back{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--route);text-decoration:none;margin-bottom:34px;}
+  .back:hover{text-decoration:underline;}
+  .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--phase);margin:0 0 14px;}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(2rem,5.6vw,2.85rem);letter-spacing:-.01em;margin:0 0 8px;line-height:1.1;}
+  .lesnum{font-family:var(--display);font-style:italic;color:var(--muted);font-size:1.02rem;margin:0 0 40px;}
+
+  section.block{margin-bottom:30px;}
+  section.block h2{font-family:var(--display);font-weight:500;font-size:1.18rem;color:var(--ink);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+  section.block h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--phase);flex-shrink:0;}
+  .content{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 8px 22px -18px rgba(67,48,28,.6);}
+  .content p{margin:0 0 10px;}
+  .content p:last-child{margin-bottom:0;}
+  .rooster-note{font-family:var(--display);font-style:italic;color:var(--muted);}
+
+  .stellingen{list-style:none;margin:0;padding:0;}
+  .stelling{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:11px;}
+  .stelling:nth-child(odd){background:var(--card-hi);}
+  .stelling .nr{font-family:var(--display);font-weight:600;font-size:.9rem;color:var(--phase);min-width:2.4ch;flex-shrink:0;}
+  .stelling .tekst{flex:1;line-height:1.4;}
+  .badge{flex-shrink:0;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:100px;color:#fff;}
+  .badge.voor{background:var(--voor);}
+  .badge.tegen{background:var(--tegen);}
+
+  @media (max-width:520px){
+    .stelling{flex-wrap:wrap;}
+    .stelling .tekst{flex:1 1 100%;order:4;margin-top:6px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../../3vwo.html" onclick="if(history.length>1){history.back();return false;}">&larr; Terug naar de route</a>
+  <p class="eyebrow">Presentatie · doorlopend · 3 VWO</p>
+  <h1>De stellingen &amp; het rooster</h1>
+  <p class="lesnum">Zoek het nummer op dat bij jouw naam staat</p>
+
+  <section class="block">
+    <h2><span class="dot"></span>Het rooster</h2>
+    <div class="content">
+      <p class="rooster-note">De namenlijst per nummer komt hier binnenkort te staan.</p>
+      <p>Naast je naam staat straks een nummer van 1 tot 30. In de week die bij jouw naam hoort, geef je aan het begin van de les je presentatie. Zoek je nummer hieronder op om je stelling te zien en of je vóór of tegen moet zijn.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="dot"></span>De stellingen</h2>
+    <div class="content">
+      <ul class="stellingen">
+      <li class="stelling"><span class="nr">01</span><span class="tekst">Iedere tiener moet een jaar lang een bijbaantje hebben om verantwoordelijkheid te leren</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">02</span><span class="tekst">De overheid moet stoppen met religieuze scholen te financieren</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">03</span><span class="tekst">Social media doen meer kwaad dan goed voor de mentale gezondheid van jongeren</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">04</span><span class="tekst">Euthanasie (het recht op hulp bij sterven als je ernstig ziek bent) is iets goeds</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">05</span><span class="tekst">Geloof heeft een positief effect op de samenleving</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">06</span><span class="tekst">Iedereen zou minstens één dag per week zonder smartphone moeten leven</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">07</span><span class="tekst">Schooluniformen moeten verplicht worden</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">08</span><span class="tekst">Euthanasie (het recht op hulp bij sterven als je ernstig ziek bent) is iets goeds</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">09</span><span class="tekst">Iedereen moet vegetariër worden</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">10</span><span class="tekst">Videogames met geweld moeten verboden worden voor iedereen onder de 18</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">11</span><span class="tekst">Vrijheid van meningsuiting mag nooit worden beperkt, wat iemand ook zegt</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">12</span><span class="tekst">Iedereen moet vegetariër worden</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">13</span><span class="tekst">Wij moeten in Nederland meer vluchtelingen opnemen</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">14</span><span class="tekst">Geloof heeft een negatief effect op de samenleving</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">15</span><span class="tekst">Iedereen zou minstens één dag per week zonder smartphone moeten leven</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">16</span><span class="tekst">Kleding moet verplicht duurzamer worden, ook als de prijs daardoor omhoog gaat</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">17</span><span class="tekst">Vrijheid van meningsuiting mag nooit worden beperkt, wat iemand ook zegt</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">18</span><span class="tekst">Als je honger hebt, dan mag je best een brood stelen</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">19</span><span class="tekst">De overheid moet stoppen met religieuze scholen te financieren</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">20</span><span class="tekst">De verkoop van tabak en vapes moet volledig verboden worden</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">21</span><span class="tekst">Social media doen meer kwaad dan goed voor de mentale gezondheid van jongeren</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">22</span><span class="tekst">Energiedrankjes moeten verboden worden voor jongeren onder de 16 vanwege gezondheidsrisico's</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">23</span><span class="tekst">Energiedrankjes moeten verboden worden voor jongeren onder de 16 vanwege gezondheidsrisico's</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">24</span><span class="tekst">Videogames met geweld moeten verboden worden voor iedereen onder de 18</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">25</span><span class="tekst">Iedere tiener moet een jaar lang een bijbaantje hebben om verantwoordelijkheid te leren</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">26</span><span class="tekst">Schooluniformen moeten verplicht worden</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">27</span><span class="tekst">Kleding moet verplicht duurzamer worden, ook als de prijs daardoor omhoog gaat</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">28</span><span class="tekst">De verkoop van tabak en vapes moet volledig verboden worden</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">29</span><span class="tekst">Wij moeten in Nederland meer vluchtelingen opnemen</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">30</span><span class="tekst">Als je honger hebt, dan mag je best een brood stelen</span><span class="badge voor">voor</span></li>
+      </ul>
+    </div>
+  </section>
+</div>
+</body>
+</html>

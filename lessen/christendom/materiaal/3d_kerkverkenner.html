@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twee kerken, één verhaal: katholiek en protestant</title>
+<style>
+  :root{
+    --ink:#262019;
+    --ink-soft:#5c544a;
+    --plaster:#e8e5dd;
+    --paper:#fbfaf6;
+    --line:#d4cfc3;
+    --accent:#7e2a2a;        /* katholiek: diep bordeaux */
+    --accent-soft:#b08a3c;   /* katholiek: oud goud */
+    --accent-wash:#f3e9e4;
+    --radius:10px;
+    --serif:Georgia, "Times New Roman", Cambria, serif;
+    --sans:"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --pijl:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M4 11h12.2l-5.6-5.6L12 4l8 8-8 8-1.4-1.4 5.6-5.6H4z'/></svg>");
+    --vink:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M9.5 17.6 4.4 12.5l1.4-1.4 3.7 3.7 8.3-8.3 1.4 1.4z'/></svg>");
+    --slot-icoon:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 0 1 6 0z'/></svg>");
+  }
+  body.prot{
+    --accent:#2f4e63;        /* protestants: leiblauw */
+    --accent-soft:#7e93a3;
+    --accent-wash:#e7edf1;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--plaster);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    transition:background .4s;
+  }
+  ::selection{background:var(--accent-soft);color:#fff;}
+
+  header.site{
+    max-width:980px;margin:0 auto;padding:34px 20px 10px;
+  }
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin-bottom:8px;
+    transition:color .4s;
+  }
+  h1{
+    font-family:var(--serif);
+    font-size:clamp(1.7rem,4.4vw,2.6rem);
+    line-height:1.12;margin:0 0 14px;font-weight:400;
+  }
+  h1 em{font-style:italic;color:var(--accent);transition:color .4s;}
+  .intro{max-width:760px;color:var(--ink-soft);}
+  .intro strong{color:var(--ink);}
+
+  /* ---------- toggle ---------- */
+  .toggle-row{
+    max-width:980px;margin:18px auto 0;padding:0 20px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .toggle{
+    display:flex;border:1px solid var(--line);border-radius:999px;
+    background:var(--paper);overflow:hidden;
+    box-shadow:0 1px 3px rgba(40,30,20,.08);
+  }
+  .toggle button{
+    appearance:none;border:0;background:transparent;cursor:pointer;
+    font-family:var(--sans);font-size:.95rem;font-weight:600;
+    padding:11px 22px;color:var(--ink-soft);
+    transition:background .25s,color .25s;
+  }
+  .toggle button.active{background:var(--accent);color:#fff;}
+  .toggle button:focus-visible{outline:3px solid var(--accent-soft);outline-offset:-3px;}
+  .toggle-hint{font-size:.85rem;color:var(--ink-soft);}
+
+  /* ---------- 3D viewport ---------- */
+  .stage-wrap{max-width:980px;margin:14px auto 0;padding:0 20px;}
+  #stage{
+    position:relative;width:100%;height:66vh;min-height:440px;
+    border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--line);
+    background:#222;
+    box-shadow:0 10px 30px rgba(40,30,20,.18);
+  }
+  #stage canvas{display:block;width:100%;height:100%;cursor:grab;}
+  #stage canvas.dragging{cursor:grabbing;}
+  #stage canvas.hotspot-hover{cursor:pointer;}
+
+  .scene-label{
+    position:absolute;top:14px;left:14px;z-index:5;
+    background:rgba(20,16,12,.62);color:#f4efe6;
+    font-family:var(--serif);font-size:1rem;letter-spacing:.02em;
+    padding:7px 14px;border-radius:8px;pointer-events:none;
+    border-left:3px solid var(--accent-soft);
+  }
+  .instructions{
+    position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
+    z-index:5;width:max-content;max-width:92%;
+    background:rgba(20,16,12,.7);color:#efe9dd;
+    font-size:.82rem;padding:8px 16px;border-radius:999px;
+    pointer-events:none;text-align:center;
+  }
+  .instructions kbd{
+    background:rgba(255,255,255,.16);border-radius:4px;padding:0 5px;
+    font-family:var(--sans);font-size:.78rem;
+  }
+
+  /* ---------- info panel ---------- */
+  #infoPanel{
+    position:absolute;z-index:10;
+    left:50%;bottom:18px;transform:translateX(-50%) translateY(12px);
+    width:min(480px,92%);
+    max-height:78%;overflow-y:auto;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:4px solid var(--accent);
+    border-radius:var(--radius);
+    padding:20px 22px 16px;
+    box-shadow:0 14px 40px rgba(15,10,5,.35);
+    opacity:0;pointer-events:none;
+    transition:opacity .22s,transform .22s;
+  }
+  #infoPanel.open{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+  #infoPanel figure{
+    margin:0 0 14px;display:none;
+  }
+  #infoPanel figure.heeft-foto{display:block;}
+  #infoPanel figure img{
+    display:block;width:100%;max-height:230px;object-fit:cover;
+    border-radius:8px;border:1px solid var(--line);background:#eee;
+  }
+  #infoPanel figcaption{
+    font-size:.74rem;color:var(--ink-soft);margin-top:5px;line-height:1.4;
+  }
+  #infoPanel figcaption a{color:var(--ink-soft);}
+  #infoPanel .panel-eyebrow{
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin:0 0 4px;
+  }
+  #infoPanel h2{
+    font-family:var(--serif);font-weight:400;
+    font-size:1.45rem;margin:0 0 10px;line-height:1.15;
+  }
+  #infoPanel p{margin:0 0 12px;font-size:.95rem;}
+  #infoPanel .zie-ander{
+    background:var(--accent-wash);
+    border-radius:8px;padding:12px 14px;margin-bottom:14px;
+  }
+  #infoPanel .zie-ander p{margin:0;font-size:.92rem;}
+  #closePanel{
+    appearance:none;border:1px solid var(--accent);border-radius:999px;
+    background:var(--accent);color:#fff;font-weight:600;font-size:.92rem;
+    padding:9px 26px;cursor:pointer;font-family:var(--sans);
+  }
+  #closePanel:hover{filter:brightness(1.12);}
+  #closePanel:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px;}
+
+  /* ---------- questions ---------- */
+  .vragen{
+    max-width:980px;margin:46px auto 70px;padding:0 20px;
+  }
+  .vragen-kop{
+    display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);
+    padding-bottom:10px;margin-bottom:6px;
+  }
+  .vragen-kop h2{
+    font-family:var(--serif);font-weight:400;font-size:2rem;margin:0;
+  }
+  .vragen-kop span{font-size:.85rem;color:var(--ink-soft);}
+  .vragen-intro{color:var(--ink-soft);max-width:720px;margin-bottom:26px;}
+
+  .vraag{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:18px;
+    box-shadow:0 1px 4px rgba(40,30,20,.06);
+  }
+  .vraag .thema{
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:6px;transition:color .4s;
+  }
+  .vraag h3{
+    font-family:var(--serif);font-weight:400;font-size:1.2rem;margin:0 0 14px;line-height:1.3;
+  }
+
+  /* ---------- vergrendeling ---------- */
+  .vraag.vergrendeld{background:#f1eee7;border-style:dashed;}
+  .slot{display:none;}
+  .vraag.vergrendeld .slot{display:block;}
+  .vraag.vergrendeld .vraag-inhoud{display:none;}
+  .slot-kop{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .slot-kop::before{
+    content:"";width:18px;height:18px;flex:none;
+    background:var(--ink-soft);
+    -webkit-mask:var(--slot-icoon) center/contain no-repeat; mask:var(--slot-icoon) center/contain no-repeat;
+  }
+  .slot-kop b{font-size:.95rem;color:var(--ink);}
+  .slot p{margin:0 0 12px;font-size:.9rem;color:var(--ink-soft);}
+  .slot-knoppen{display:flex;flex-wrap:wrap;gap:8px;}
+  .slot-link{
+    border:1px solid var(--line);border-radius:999px;
+    background:#fff;color:var(--ink-soft);font-weight:600;font-size:.83rem;
+    padding:7px 14px;font-family:var(--sans);
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .slot-link.gelezen{border-color:#9dbb8e;color:#4f7a45;background:#eef4ea;}
+  .slot-link.gelezen::before{
+    content:"";width:13px;height:13px;flex:none;background:#4f7a45;
+    -webkit-mask:var(--vink) center/contain no-repeat; mask:var(--vink) center/contain no-repeat;
+  }
+  .opties{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .optie{
+    display:flex;gap:10px;align-items:flex-start;
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    cursor:pointer;background:#fff;transition:border-color .15s,background .15s;
+    font-size:.95rem;
+  }
+  .optie:hover{border-color:var(--accent-soft);}
+  .optie input{margin-top:3px;accent-color:var(--accent);}
+  .optie.gekozen{border-color:var(--accent);background:var(--accent-wash);}
+  .optie .letter{font-weight:700;color:var(--accent);min-width:1.1em;}
+  .check-btn,.reveal-btn{
+    appearance:none;border:1px solid var(--accent);background:var(--accent);
+    color:#fff;border-radius:999px;padding:9px 24px;font-weight:600;
+    font-size:.9rem;cursor:pointer;font-family:var(--sans);
+  }
+  .check-btn:hover,.reveal-btn:hover{filter:brightness(1.12);}
+  .check-btn:disabled{opacity:.45;cursor:not-allowed;filter:none;}
+  .check-btn:focus-visible,.reveal-btn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px;}
+  .feedback{
+    margin-top:14px;border-radius:8px;padding:13px 15px;font-size:.93rem;display:none;
+  }
+  .feedback.goed{display:block;background:#e7efe3;border:1px solid #9dbb8e;}
+  .feedback.fout{display:block;background:#f4e4e0;border:1px solid #cf9c90;}
+  .feedback b{display:block;margin-bottom:4px;}
+  textarea.open-antwoord{
+    width:100%;min-height:110px;resize:vertical;
+    border:1px solid var(--line);border-radius:8px;padding:12px;
+    font-family:var(--sans);font-size:.95rem;color:var(--ink);
+    background:#fff;margin-bottom:12px;
+  }
+  textarea.open-antwoord:focus-visible{outline:2px solid var(--accent-soft);}
+  .model{
+    display:none;margin-top:14px;background:var(--accent-wash);
+    border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+    padding:13px 16px;font-size:.93rem;
+  }
+  .model.zichtbaar{display:block;}
+  .model b{display:block;margin-bottom:4px;color:var(--accent);}
+
+  footer.site{
+    max-width:980px;margin:0 auto;padding:0 20px 50px;
+    font-size:.8rem;color:var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+  @media (max-width:640px){
+    #stage{height:58vh;min-height:380px;}
+    .instructions{font-size:.72rem;}
+  }
+</style>
+</head>
+<body class="kath">
+
+<header class="site">
+  <div class="eyebrow">Levensbeschouwing &middot; hv3 &middot; christendom</div>
+  <h1>Twee kerken, <em>één verhaal</em>: katholiek en protestant</h1>
+  <p class="intro">
+    In deze opdracht loop je rond in twee virtuele kerkgebouwen: een <strong>rooms-katholieke kerk</strong>
+    en een <strong>protestantse kerk</strong>. Als voorbeeld van de protestantse traditie gebruiken we een
+    Nederlands hervormde kerk (tegenwoordig onderdeel van de Protestantse Kerk in Nederland), omdat dit
+    historisch gezien de meest verspreide protestantse kerk in Nederland is. Onthoud daarbij: deze kerk
+    staat hier model voor de bredere protestantse traditie. Andere protestantse kerken &mdash; zoals
+    baptisten, lutheranen en evangelische gemeenten &mdash; delen veel van dezelfde kernpunten, maar hebben
+    elk hun eigen accenten. Klik in de kerken op de gele bolletjes en beantwoord daarna de vragen onderaan.
+  </p>
+</header>
+
+<div class="toggle-row">
+  <div class="toggle" role="tablist" aria-label="Kies een kerk">
+    <button id="btnKath" class="active" role="tab" aria-selected="true">Katholieke kerk</button>
+    <button id="btnProt" role="tab" aria-selected="false">Protestantse kerk</button>
+  </div>
+  <div class="toggle-hint">Wissel van gebouw &mdash; je start steeds weer bij de ingang.</div>
+</div>
+
+<div class="stage-wrap">
+  <div id="stage">
+    <div class="scene-label" id="sceneLabel">Rooms-katholieke kerk</div>
+    <div class="instructions">
+      Gebruik <kbd>WASD</kbd> om te bewegen, sleep de muis om rond te kijken.
+      Klik op een geel bolletje voor meer informatie.
+    </div>
+
+    <div id="infoPanel" role="dialog" aria-modal="false" aria-labelledby="panelTitle">
+      <p class="panel-eyebrow" id="panelEyebrow"></p>
+      <h2 id="panelTitle"></h2>
+      <figure id="panelFig">
+        <img id="panelImg" alt="" loading="lazy">
+        <figcaption id="panelCap"></figcaption>
+      </figure>
+      <p id="panelBody"></p>
+      <div class="zie-ander">
+        <p id="panelZieTekst"></p>
+      </div>
+      <button id="closePanel">Sluit</button>
+    </div>
+  </div>
+</div>
+
+<section class="vragen" id="vragen">
+  <div class="vragen-kop">
+    <h2>Vragen</h2>
+    <span>Eerst rondlopen en alle bolletjes bekijken, daarna pas antwoorden.</span>
+  </div>
+  <p class="vragen-intro">
+    De vragen gaan over vijf grote thema's: <strong>sacramenten</strong>, de <strong>rol van de
+    voorganger</strong>, <strong>iconografie</strong> (beelden), <strong>liturgie</strong> en
+    <strong>Schrift en traditie</strong>. Elke vraag is eerst <strong>vergrendeld</strong>: je kunt
+    hem pas beantwoorden nadat je de bijbehorende uitleg in de kerk(en) hebt gelezen. Onder elke
+    vergrendelde vraag staat welke onderdelen je nodig hebt &mdash; ga ze zelf in de kerk opzoeken.
+  </p>
+  <div id="mcContainer"></div>
+  <div id="openContainer"></div>
+</section>
+
+<footer class="site">
+  Gemaakt voor het vak levensbeschouwing. De protestantse kerk in deze app is een hervormde
+  (gereformeerde) kerk en staat model voor de bredere protestantse traditie; afzonderlijke
+  protestantse kerken kunnen op onderdelen verschillen. Foto's via Wikimedia Commons
+  (publiek domein of Creative Commons); klik op de bronvermelding bij een foto voor de
+  maker en de licentie. Voor het laden van de foto's is internet nodig.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+
+/* =====================================================
+   HOTSPOT-INHOUD
+   ===================================================== */
+const HOTSPOTS = {
+  kath: [
+    {
+      pos:[0, 2.6, -16.2], title:"Altaar",
+      body:"Het altaar is het hart van de katholieke kerk. Hier viert de priester de eucharistie: volgens het katholieke geloof worden brood en wijn werkelijk het lichaam en bloed van Christus. Dat heet transsubstantiatie. Het altaar is daarom geen gewone tafel, maar een heilige plek waar het offer van Christus opnieuw tegenwoordig wordt gesteld.",
+      zieOok:"Avondmaalstafel"
+    },
+    {
+      pos:[-3.2, 2.4, -13.2], title:"Ambo (lezenaar)",
+      body:"Vanaf de ambo worden tijdens de mis de Bijbellezingen voorgelezen en houdt de priester of diaken de preek (homilie). Het Woord van God heeft dus ook in de katholieke kerk een vaste plaats. Toch is de preek niet het hoogtepunt van de viering: de mis loopt uit op de eucharistie aan het altaar.",
+      zieOok:"Kansel (preekstoel)"
+    },
+    {
+      pos:[3.2, 2.2, 14.5], title:"Doopvont",
+      body:"In de doopvont worden kinderen (en soms volwassenen) gedoopt. Het doopsel is het eerste van de zeven sacramenten: volgens de katholieke leer wast het doopwater de erfzonde af en word je lid van de Kerk. De doopvont staat vaak bij de ingang: door de doop kom je de Kerk 'binnen'.",
+      zieOok:"Doopbekken"
+    },
+    {
+      pos:[0, 5.0, -18.8], title:"Kruisbeeld",
+      body:"Boven het altaar hangt een kruisbeeld: een kruis mét het lichaam van de lijdende Christus (corpus). Het herinnert eraan dat de mis het offer van Christus tegenwoordig stelt. Katholieken vinden afbeeldingen toegestaan en waardevol: omdat God in Jezus zelf zichtbaar mens werd (de incarnatie), mag je Hem ook afbeelden.",
+      zieOok:"Geen beelden"
+    },
+    {
+      pos:[1.6, 2.5, -15.0], title:"De priester",
+      body:"De priester heeft het sacrament van de wijding ontvangen. Daardoor mag hij de sacramenten toedienen en handelt hij in de mis 'in de persoon van Christus': via hem deelt Christus zelf genade uit. Priesters in de rooms-katholieke kerk zijn altijd mannen en leven meestal celibatair, dus ongehuwd.",
+      zieOok:"De dominee"
+    },
+    {
+      pos:[2.6, 2.0, -16.8], title:"Missaal (liturgieboek)",
+      body:"Op het zij-tafeltje ligt het missaal: het officiële liturgieboek met alle vaste gebeden en teksten van de mis. De katholieke mis is een vast, eeuwenoud ritueel dat over de hele wereld in grote lijnen hetzelfde verloopt. Wie in Tokio, Lagos of Amsterdam naar de mis gaat, herkent dezelfde opbouw.",
+      zieOok:"Kansel (preekstoel)"
+    },
+    {
+      pos:[-2.4, 2.3, -16.8], title:"Kaarsen en rituele voorwerpen",
+      body:"Kaarsen, wierook, wijwater, gewaden in liturgische kleuren: de katholieke eredienst spreekt alle zintuigen aan. De grote paaskaars symboliseert de verrezen Christus als licht van de wereld. Veel van deze voorwerpen heten sacramentaliën: tekens die helpen om je op God te richten.",
+      zieOok:"Soberheid"
+    },
+    {
+      pos:[0, 2.3, 4.0], title:"Kerkbanken",
+      body:"De banken staan in rijen gericht op het altaar: daar gebeurt het belangrijkste van de viering. Aan de banken zitten knielbanken, want tijdens het eucharistisch gebed knielen katholieken uit eerbied. Het brede middenpad is er voor processies, bijvoorbeeld de intocht van de priester en misdienaars.",
+      zieOok:"Kerkbanken"
+    },
+    {
+      pos:[-5.0, 2.6, 8.0], title:"Biechtstoel",
+      body:"In de biechtstoel vindt het sacrament van boete en verzoening plaats: de biecht. De gelovige belijdt zijn zonden aan de priester, die in naam van Christus de vergeving uitspreekt (de absolutie). De priester mag nooit doorvertellen wat hij hoort: dat heet het biechtgeheim.",
+      zieOok:"De dominee"
+    },
+    {
+      pos:[0, 3.4, -18.6], title:"Tabernakel en godslamp",
+      body:"Het tabernakel is een kostbaar kastje waarin de geconsacreerde hosties worden bewaard. Volgens het katholieke geloof blijft Christus daarin werkelijk aanwezig, ook buiten de mis. De rode godslamp ernaast brandt altijd als teken van die aanwezigheid; katholieken maken een kniebuiging als ze langslopen.",
+      zieOok:"Avondmaalstafel"
+    },
+    {
+      pos:[5.0, 2.6, -8.0], title:"Heiligenbeelden",
+      body:"Hier staan beelden van Maria en Jozef, met kaarsjes ervoor. Heiligen zijn voor katholieken voorbeelden van geloof én voorsprekers: je kunt hen vragen om voor jou te bidden bij God. Katholieken aanbidden heiligen niet: aanbidding is alleen voor God, maar vereren hen; elk kaarsje is een gebed.",
+      zieOok:"Geen beelden"
+    }
+  ],
+
+  prot: [
+    {
+      pos:[0, 2.0, -13.0], title:"Avondmaalstafel",
+      body:"Deze eenvoudige houten tafel is de avondmaalstafel. Een paar keer per jaar viert de gemeente hier het Heilig Avondmaal: brood en wijn als gedachtenis aan Christus' dood en als teken en zegel van Gods beloften. In de gereformeerde traditie is Christus daarbij geestelijk aanwezig; brood en wijn veranderen niet.",
+      zieOok:"Altaar"
+    },
+    {
+      pos:[0, 4.0, -16.0], title:"Kansel (preekstoel)",
+      body:"De hoge kansel met het klankbord erboven is het hart van deze kerk. Alles draait hier om de 'bediening van het Woord': de dominee legt de Bijbel uit in een preek die het middelpunt van de dienst vormt. De kansel staat hoog en het klankbord kaatst het geluid de kerk in, zodat iedereen het goed kan horen.",
+      zieOok:"Ambo (lezenaar)"
+    },
+    {
+      pos:[1.8, 1.9, -14.2], title:"Doopbekken",
+      body:"Dit koperen bekken op een standaard is het doopbekken (doopvont). De doop is één van de twee protestantse sacramenten. In de hervormde traditie worden kinderen gedoopt als teken van Gods verbond: God doet zijn belofte al vóórdat het kind zelf kan geloven. Het bekken staat vlak bij de kansel, want sacrament en Woord horen bij elkaar.",
+      zieOok:"Doopvont"
+    },
+    {
+      pos:[-4.0, 3.2, -17.5], title:"Geen beelden",
+      body:"Kijk om je heen: geen beelden, geen schilderijen, geen kruisbeeld. Dat is een bewuste keuze. Protestanten lezen in het tweede gebod dat je geen beelden mag maken om te vereren, en zij vrezen dat beelden tussen God en mensen in gaan staan. Tijdens de Beeldenstorm van 1566 werden in Nederlandse kerken de beelden daarom weggehaald.",
+      zieOok:"Kruisbeeld"
+    },
+    {
+      pos:[-1.6, 2.2, -14.8], title:"De dominee",
+      body:"De dominee (predikant) heeft theologie gestudeerd en is vooral verkondiger, leraar en pastor. De zwarte toga met witte bef is geen priestergewaad maar van oorsprong geleerdenkleding: de dominee spreekt als uitlegger van de Schrift. Een dominee mag trouwen, en in de Protestantse Kerk in Nederland zijn er ook vrouwelijke predikanten.",
+      zieOok:"De priester"
+    },
+    {
+      pos:[0, 3.3, -15.3], title:"Kanselbijbel (Statenbijbel)",
+      body:"Op de kansel ligt een grote, opengeslagen Bijbel: de kanselbijbel, vaak een Statenbijbel. De Statenvertaling (1637) was de eerste officiële Nederlandse Bijbelvertaling en heeft onze taal diep beïnvloed. Dat de Bijbel hier zo'n centrale plek heeft, is geen toeval: protestanten belijden 'sola scriptura': alleen de Schrift is het hoogste gezag in geloofszaken.",
+      zieOok:"Ambo (lezenaar)"
+    },
+    {
+      pos:[0, 2.6, -9.0], title:"Soberheid",
+      body:"De ruimte is licht, wit en bijna leeg: geen wierook, geen rijen kaarsen, geen versiering. Die soberheid is theologie in steen. Niets mag afleiden van het luisteren naar Gods Woord; de schoonheid zit hier in het licht, de stilte en de samenzang van de gemeente.",
+      zieOok:"Kaarsen en rituele voorwerpen"
+    },
+    {
+      pos:[0, 2.3, 3.0], title:"Kerkbanken",
+      body:"De banken zijn op de kansel gericht en staan er deels omheen: de gemeente schaart zich letterlijk rond het Woord. Iedereen moet de preek goed kunnen horen. In oude kerken zie je soms nog een aparte 'herenbank' voor vooraanstaande families, met een eigen overkapping.",
+      zieOok:"Kerkbanken"
+    },
+    {
+      pos:[0, 5.0, 17.6], title:"Orgel",
+      body:"Boven de ingang prijkt het orgel, vaak het pronkstuk van een protestantse kerk. Het begeleidt de samenzang: psalmen en gezangen die de hele gemeente samen zingt. Dat gezamenlijke zingen, teruggaand op de psalmberijmingen uit de tijd van Calvijn, is dé manier waarop de gemeente actief aan de dienst deelneemt.",
+      zieOok:"Kaarsen en rituele voorwerpen"
+    },
+    {
+      pos:[5.0, 3.0, 3.0], title:"De lege muur",
+      body:"Deze kale, witgekalkte muur vertelt geschiedenis. Veel Nederlandse protestantse kerken waren vóór de Reformatie katholieke kerken; na de overgang werden de muurschilderingen overgewit en de beelden verwijderd. De lege muur is zo zelf een geloofsbelijdenis: Gods Woord heeft geen beelden nodig.",
+      zieOok:"Heiligenbeelden"
+    }
+  ]
+};
+
+/* =====================================================
+   VRAGEN
+   ===================================================== */
+const MC_VRAGEN = [
+  {
+    thema:"Thema 1 · Sacramenten",
+    vereist:[{c:"kath",t:"Doopvont"},{c:"prot",t:"Doopbekken"}],
+    vraag:"Hoeveel sacramenten erkent de Rooms-Katholieke Kerk, en hoeveel erkennen de meeste protestantse kerken?",
+    opties:[
+      "Katholiek twee, protestants zeven",
+      "Katholiek zeven, protestants twee",
+      "Beide tradities erkennen zeven sacramenten",
+      "Beide tradities erkennen alleen de doop"
+    ],
+    goed:1,
+    uitleg:"De Rooms-Katholieke Kerk kent zeven sacramenten (zoals doop, eucharistie, biecht en wijding) en ziet ze als kanalen waardoor Gods genade tot de mens komt. De meeste protestantse kerken erkennen er twee: doop en avondmaal: omdat alleen die twee volgens hen door Christus zelf zijn ingesteld. Zij zien de sacramenten als teken en zegel van Gods beloften."
+  },
+  {
+    thema:"Thema 1 · Sacramenten",
+    vereist:[{c:"kath",t:"Altaar"},{c:"prot",t:"Avondmaalstafel"}],
+    vraag:"Wat gebeurt er volgens beide tradities met het brood en de wijn?",
+    opties:[
+      "Katholiek én protestants: ze veranderen werkelijk in lichaam en bloed van Christus",
+      "Katholiek: ze blijven tekenen; protestants: ze veranderen werkelijk",
+      "Katholiek: ze worden werkelijk lichaam en bloed (transsubstantiatie); protestants: ze blijven brood en wijn, als teken en gedachtenis",
+      "Katholiek én protestants: het zijn slechts symbolen zonder betekenis"
+    ],
+    goed:2,
+    uitleg:"Voor katholieken worden brood en wijn in de eucharistie werkelijk het lichaam en bloed van Christus: dat heet transsubstantiatie. In de gereformeerde traditie veranderen brood en wijn niet; ze zijn teken en zegel en herinneren aan Christus, die geestelijk aanwezig is. Dat verschil verklaart waarom het ene gebouw een altaar in het hart heeft en het andere een eenvoudige avondmaalstafel."
+  },
+  {
+    thema:"Thema 2 · Rol van de voorganger",
+    vereist:[{c:"kath",t:"De priester"},{c:"prot",t:"De dominee"}],
+    vraag:"Wat is het belangrijkste verschil tussen een katholieke priester en een protestantse dominee?",
+    opties:[
+      "Een priester preekt nooit; een dominee preekt wel",
+      "Een dominee heeft gestudeerd; een priester niet",
+      "Een priester dient als gewijde bemiddelaar de sacramenten toe; een dominee is vooral verkondiger van het Woord",
+      "Er is geen verschil: het zijn twee woorden voor hetzelfde beroep"
+    ],
+    goed:2,
+    uitleg:"De priester heeft het wijdingssacrament ontvangen en handelt in de mis 'in de persoon van Christus': via hem worden de sacramenten toegediend. De dominee is geen bemiddelaar maar verkondiger, leraar en pastor. Daarachter zit het protestantse 'algemeen priesterschap der gelovigen': iedere gelovige heeft rechtstreeks toegang tot God. Overigens preken priesters wél (de homilie), en ook zij hebben gestudeerd."
+  },
+  {
+    thema:"Thema 2 · Rol van de voorganger",
+    vereist:[{c:"kath",t:"De priester"},{c:"prot",t:"De dominee"}],
+    vraag:"Welke uitspraak over trouwen en voorgangers klopt?",
+    opties:[
+      "Zowel priesters als dominees leven verplicht celibatair",
+      "Een katholieke priester leeft meestal celibatair; een dominee mag trouwen, en in de PKN kunnen ook vrouwen dominee worden",
+      "Alleen dominees moeten ongehuwd blijven",
+      "Vrouwen mogen in geen enkele kerk voorganger worden"
+    ],
+    goed:1,
+    uitleg:"Rooms-katholieke priesters zijn altijd mannen en leven meestal celibatair (ongehuwd). Een protestantse dominee mag trouwen, en in de Protestantse Kerk in Nederland kunnen ook vrouwen predikant worden. Dat past bij het idee dat de dominee vooral verkondiger en pastor is, en niet een gewijde bemiddelaar."
+  },
+  {
+    thema:"Thema 3 · Iconografie",
+    vereist:[{c:"kath",t:"Kruisbeeld"},{c:"prot",t:"Geen beelden"}],
+    vraag:"Waarom hangt er in een katholieke kerk wél een kruisbeeld en in veel protestantse kerken niet?",
+    opties:[
+      "Protestanten vinden kruizen te duur",
+      "Katholieken vinden afbeelden goed (God werd mens in Jezus); veel protestanten wijzen naar het tweede gebod en vrezen beeldenverering",
+      "Katholieken geloven niet in de kruisiging",
+      "Er is geen reden; het is puur toeval"
+    ],
+    goed:1,
+    uitleg:"Katholieken vinden afbeeldingen waardevol omdat God in Jezus zichtbaar mens werd (de incarnatie); het kruisbeeld met corpus herinnert aan Christus' offer. Veel protestanten beroepen zich op het tweede gebod ('geen gesneden beelden') en vrezen dat beelden aanbeden worden of tussen God en mens in gaan staan. Als er al een kruis hangt, is het vaak een leeg kruis dat de opstanding benadrukt."
+  },
+  {
+    thema:"Thema 3 · Iconografie",
+    vereist:[{c:"kath",t:"Heiligenbeelden"}],
+    vraag:"Wat bedoelen katholieken als ze zeggen dat ze heiligen 'vereren' maar niet 'aanbidden'?",
+    opties:[
+      "Aanbidding en verering zijn precies hetzelfde",
+      "Ze aanbidden de heiligen in plaats van God",
+      "Aanbidding is alleen voor God; heiligen worden vereerd en gevraagd om voor je te bidden",
+      "Ze bidden helemaal niet tot heiligen"
+    ],
+    goed:2,
+    uitleg:"Voor katholieken is aanbidding alleen voor God. Heiligen worden vereerd: ze gelden als voorbeelden van geloof en als voorsprekers, aan wie je kunt vragen om voor jou te bidden bij God. Een kaarsje voor een beeld is zo'n gebed. Protestanten wijzen heiligenverering juist af, omdat er volgens hen maar één middelaar is: Christus."
+  },
+  {
+    thema:"Thema 4 · Liturgie",
+    vereist:[{c:"kath",t:"Ambo (lezenaar)"},{c:"prot",t:"Kansel (preekstoel)"}],
+    vraag:"Wat is het hoogtepunt van de katholieke mis, en waar draait een protestantse dienst om?",
+    opties:[
+      "Katholiek: de eucharistie aan het altaar; protestants: de preek (bediening van het Woord) vanaf de kansel",
+      "Katholiek: de samenzang; protestants: de wierook",
+      "Katholiek: de preek; protestants: het avondmaal, dat elke dag wordt gevierd",
+      "In beide staat de biecht centraal"
+    ],
+    goed:0,
+    uitleg:"In de katholieke kerk klinkt het Woord vanaf de ambo, maar de mis loopt uit op de eucharistie aan het altaar, dat is het hoogtepunt. In de protestantse kerk draait alles om de 'bediening van het Woord': de preek vanaf de hoge kansel is het middelpunt. Je ziet dat terug in het gebouw: altaar als hart bij de katholieken, kansel bij de protestanten."
+  },
+  {
+    thema:"Thema 4 · Liturgie",
+    vereist:[{c:"kath",t:"Missaal (liturgieboek)"}],
+    vraag:"Wat is kenmerkend voor de vorm van de katholieke mis, vergeleken met veel protestantse diensten?",
+    opties:[
+      "De mis verandert elke week volledig en is overal anders",
+      "De mis is een vast, eeuwenoud ritueel dat wereldwijd in grote lijnen hetzelfde verloopt",
+      "In de mis wordt niet gelezen uit de Bijbel",
+      "De mis kent helemaal geen vaste gebeden"
+    ],
+    goed:1,
+    uitleg:"Het missaal bevat de vaste teksten en gebeden van de mis. Daardoor is de katholieke mis een vast, eeuwenoud ritueel dat over de hele wereld in grote lijnen dezelfde opbouw heeft. Protestantse diensten zijn vrijer van vorm en verschillen sterker per gemeente en per zondag; de variatie binnen het protestantisme is groot."
+  },
+  {
+    thema:"Thema 5 · Schrift en traditie",
+    vereist:[{c:"prot",t:"Kanselbijbel (Statenbijbel)"}],
+    vraag:"Wat betekent het protestantse uitgangspunt 'sola scriptura'?",
+    opties:[
+      "Alleen de paus mag de Bijbel uitleggen",
+      "De Bijbel mag alleen in het Latijn gelezen worden",
+      "Alleen de Schrift (de Bijbel) is het hoogste gezag in geloofszaken",
+      "De traditie van de kerk staat boven de Bijbel"
+    ],
+    goed:2,
+    uitleg:"'Sola scriptura' is Latijn voor 'alleen de Schrift': voor protestanten is de Bijbel het hoogste en uiteindelijke gezag in het geloof. Daarom ligt de grote kanselbijbel (vaak een Statenbijbel) zo zichtbaar op de preekstoel. Katholieken zien dat anders: bij hen rust het gezag op Schrift én Traditie samen, gezaghebbend uitgelegd door het leergezag van paus en bisschoppen."
+  },
+  {
+    thema:"Thema 3 · Iconografie",
+    vereist:[{c:"prot",t:"Geen beelden"},{c:"prot",t:"De lege muur"}],
+    vraag:"Wat gebeurde er tijdens de Beeldenstorm van 1566, en wat zie je daar nu nog van terug?",
+    opties:[
+      "Er werden nieuwe beelden in de kerken geplaatst",
+      "Beelden en schilderingen werden uit kerken verwijderd of overgewit; veel protestantse kerken hebben daardoor kale, witte muren",
+      "Alle kerken werden afgebroken",
+      "De paus liet de kerken opnieuw beschilderen"
+    ],
+    goed:1,
+    uitleg:"Tijdens de Beeldenstorm (1566) werden in Nederlandse kerken beelden weggehaald en muurschilderingen overgewit. Veel kerken die eerst katholiek waren, werden protestants en kregen kale, witgekalkte muren. Die lege muur is zo zelf een geloofsbelijdenis geworden: volgens protestanten heeft Gods Woord geen beelden nodig."
+  }
+];
+
+const OPEN_VRAGEN = [
+  {
+    thema:"Open vraag · Iconografie",
+    vereist:[{c:"kath",t:"Kruisbeeld"},{c:"prot",t:"Geen beelden"}],
+    vraag:"Waarom hangt er in een katholieke kerk wel een kruisbeeld en in een protestantse kerk vaak niet? Leg uit vanuit de theologie van beide tradities.",
+    model:"Katholiek: afbeeldingen zijn toegestaan en waardevol, omdat God in Jezus zichtbaar mens is geworden (de incarnatie). Het kruisbeeld met corpus herinnert aan het offer van Christus, dat in elke mis tegenwoordig wordt gesteld. De eer die je aan een beeld bewijst, gaat door naar wie het afbeeldt; katholieken vereren beelden, maar aanbidden alleen God. Protestants: het tweede gebod verbiedt het maken van beelden om te vereren, en beelden kunnen volgens protestanten tussen God en mensen in gaan staan (gevaar van afgoderij). God wil gehoord worden in zijn Woord, niet gezien in een beeld; vandaar de Beeldenstorm van 1566. Als er al een kruis hangt, is het vaak leeg: nadruk op de opstanding. Variatie: lutherse kerken hebben vaak wél afbeeldingen en een crucifix."
+  },
+  {
+    thema:"Open vraag · Liturgie en ruimte",
+    vereist:[{c:"kath",t:"Kerkbanken"},{c:"prot",t:"Kerkbanken"}],
+    vraag:"Wat zegt de opstelling van een kerkruimte over de theologie van die kerk? Vergelijk de twee kerken die je hebt bezocht.",
+    model:"De katholieke kerk is gebouwd rond het altaar: alle banken wijzen ernaartoe, er is een breed middenpad voor processies en er zijn knielbanken. Dat laat zien dat de eucharistie het hart van het geloof is en dat de mis een vast, plechtig ritueel is dat alle zintuigen aanspreekt (beelden, kaarsen, wierook). De protestantse kerk is gebouwd rond de kansel: de banken zijn erop gericht of staan eromheen, de ruimte is sober en wit, en het orgel ondersteunt de samenzang. Dat laat zien dat het Woord centraal staat (sola scriptura), dat niets mag afleiden van het luisteren, en dat de gemeente zelf actief deelneemt: passend bij het algemeen priesterschap der gelovigen. Kortom: een kerkgebouw is theologie in steen."
+  },
+  {
+    thema:"Open vraag · Sacramenten en ruimte",
+    vereist:[{c:"kath",t:"Doopvont"},{c:"prot",t:"Doopbekken"}],
+    vraag:"In een katholieke kerk staat de doopvont vaak bij de ingang, in een protestantse kerk staat het doopbekken meestal vooraan bij de kansel. Leg uit wat die plekken vertellen over hoe elke traditie over de doop denkt.",
+    model:"Katholiek: de doopvont staat vaak bij de ingang, omdat de doop het eerste van de zeven sacramenten is en je er letterlijk de Kerk mee 'binnenkomt'. Volgens de katholieke leer wast het doopwater de erfzonde af en word je lid van de Kerk; de plek bij de deur maakt dat zichtbaar. Protestants: het doopbekken staat vooraan, vlak bij de kansel, omdat sacrament en Woord bij elkaar horen. De doop is één van de twee sacramenten en geldt als teken en zegel van Gods verbond: God belooft iets, en dat wordt verkondigd vanaf diezelfde plek waar ook de Bijbel wordt uitgelegd. Let op de variatie: baptisten en veel evangelische gemeenten dopen alleen volwassenen, vaak door onderdompeling. Kortom: waar het doopwater staat, laat zien wat de doop in die traditie betekent."
+  }
+];
+
+/* =====================================================
+   FOTO'S BIJ DE HOTSPOTS (Wikimedia Commons, vrije licenties)
+   f = bestandsnaam op Commons, c = onderschrift, b = bron/licentie
+   ===================================================== */
+const FOTOS = {
+  kath: {
+    "Altaar": { f:"Interieur, overzicht hoogaltaar - Dongen - 20336487 - RCE.jpg",
+      c:"Neogotisch hoogaltaar in de kerk van Dongen.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "Ambo (lezenaar)": { f:"Simpelveld-Kerk-preekstoel 1.JPG",
+      c:"Preekstoel/ambo in de Sint-Remigiuskerk, Simpelveld.", b:"Via Wikimedia Commons" },
+    "Doopvont": { f:"Simpelveld-Kerk-doopvont.JPG",
+      c:"Doopvont in de Sint-Remigiuskerk, Simpelveld.", b:"Via Wikimedia Commons" },
+    "Kruisbeeld": { f:"Kruisbeeld.JPG",
+      c:"Kruisbeeld met corpus.", b:"Via Wikimedia Commons, CC BY-SA 3.0" },
+    "De priester": { f:"Palm-sunday-latin-mass.jpg",
+      c:"Priester in kazuifel tijdens de mis (Boston, 2009).", b:"Foto: John Stephen Dwyer, CC BY-SA 3.0" },
+    "Missaal (liturgieboek)": { f:"Missale Romanum 2008 02.jpg",
+      c:"Missale Romanum, het Romeins missaal.", b:"Via Wikimedia Commons" },
+    "Kaarsen en rituele voorwerpen": { f:"Lamm Gottes Osterkerze 2010.JPG",
+      c:"Versierde paaskaars met Lam Gods en kruis.", b:"Foto: 4028mdk09, CC BY-SA 3.0" },
+    "Kerkbanken": { f:"Simpelveld-Kerk-schip.JPG",
+      c:"Het schip met kerkbanken, gericht op het altaar (Simpelveld).", b:"Via Wikimedia Commons" },
+    "Biechtstoel": { f:"Simpelveld-Kerk-biechtstoel noord.JPG",
+      c:"Biechtstoel in de Sint-Remigiuskerk, Simpelveld.", b:"Via Wikimedia Commons, CC0" },
+    "Tabernakel en godslamp": { f:"Heckendalheim St. Josef Tabernakel.JPG",
+      c:"Verguld tabernakel.", b:"Via Wikimedia Commons" },
+    "Heiligenbeelden": { f:"Simpelveld-Kerk-Maria.JPG",
+      c:"Mariabeeld in de Sint-Remigiuskerk, Simpelveld.", b:"Via Wikimedia Commons" }
+  },
+  prot: {
+    "Avondmaalstafel": { f:"INTERIEUR, AVONDMAALSSTEL - Arkel - 20276761 - RCE.jpg",
+      c:"Zilveren avondmaalsstel, hervormde kerk van Arkel.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "Kansel (preekstoel)": { f:"Delft-Nieuwe kerk - preekstoel.JPG",
+      c:"Kansel met klankbord in de Nieuwe Kerk, Delft.", b:"Via Wikimedia Commons" },
+    "Doopbekken": { f:"INTERIEUR, HOUDER, DOOPBEKKEN - Nieuw-Lekkerland - 20269947 - RCE.jpg",
+      c:"Doopbekken met houder, hervormde kerk van Nieuw-Lekkerland.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "Geen beelden": { f:"Interieur van de Sint Odulphuskerk te Assendelft, gezien vanuit het koor naar het westen, SK-C-217.jpg",
+      c:"Pieter Saenredam, interieur van de kerk van Assendelft (1649): witte muren, geen beelden.", b:"Rijksmuseum, publiek domein" },
+    "De dominee": { f:"Pieter Jansz. Saenredam - Interior of the Church of St Odulphus, Assendelft (detail) - WGA20620.jpg",
+      c:"De predikant op de kansel, detail uit Saenredams schilderij (1649).", b:"Publiek domein" },
+    "Kanselbijbel (Statenbijbel)": { f:"Blessum, Mariatsjerke, steatebibel.jpg",
+      c:"Statenbijbel in de kerk van Blessum (Friesland).", b:"Via Wikimedia Commons" },
+    "Soberheid": { f:"Inwendig - Jisp - 20120904 - RCE.jpg",
+      c:"Het sobere, witte interieur van de hervormde kerk van Jisp.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "Kerkbanken": { f:"Herenbank - Nieuw-Lekkerland - 20165320 - RCE.jpg",
+      c:"Herenbank in de hervormde kerk van Nieuw-Lekkerland.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "Orgel": { f:"Interieur, aanzicht orgel, orgelnummer 1419 - Sint Annaparochie - 20359320 - RCE.jpg",
+      c:"Orgel van de Van Harenskerk, Sint Annaparochie.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" },
+    "De lege muur": { f:"Interieur naar het noorden - Sint Annaparochie - 20022835 - RCE.jpg",
+      c:"Witgekalkte muren in de Van Harenskerk, Sint Annaparochie.", b:"Foto: Rijksdienst voor het Cultureel Erfgoed, CC BY-SA 4.0" }
+  }
+};
+
+/* =====================================================
+   THREE.JS: BASIS
+   ===================================================== */
+const stage = document.getElementById('stage');
+const sceneLabel = document.getElementById('sceneLabel');
+const infoPanel = document.getElementById('infoPanel');
+const panelEyebrow = document.getElementById('panelEyebrow');
+const panelTitle = document.getElementById('panelTitle');
+const panelBody = document.getElementById('panelBody');
+const panelZieTekst = document.getElementById('panelZieTekst');
+const closeBtn = document.getElementById('closePanel');
+const btnKath = document.getElementById('btnKath');
+const btnProt = document.getElementById('btnProt');
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// onthoudt welke hotspots de leerling heeft gelezen (sleutel: "kerk::titel")
+const gelezen = new Set();
+// alle vragen met hun vergrendel-status, gevuld door buildQuestions()
+const vergrendeldeVragen = [];
+const kerkNaam = { kath:"katholieke kerk", prot:"protestantse kerk" };
+const andersNaam = { kath:"protestanten", prot:"katholieken" };
+
+let renderer, camera, scene, raycaster, clock;
+let hotspotMeshes = [];
+let currentChurch = 'kath';
+let paused = false;
+
+let yaw = 0, pitch = 0;
+const keys = {};
+const EYE = 1.6;
+const SPEED = 4.2;
+let BOUNDS = { minX:-5.1, maxX:5.1, minZ:-13.2, maxZ:18.2 };
+
+const NAVE = { w:12, l:40, half:6 };
+
+/* ---------- materiaalcache ---------- */
+const MAT = {};
+function mat(c, sh, spec, dbl){
+  const key = c + '/' + (sh||0) + '/' + (spec||0) + '/' + (dbl?1:0);
+  if(!MAT[key]){
+    MAT[key] = new THREE.MeshPhongMaterial({
+      color:c, shininess:(sh==null?8:sh),
+      specular:(spec==null?0x1a1a1a:spec),
+      side: dbl ? THREE.DoubleSide : THREE.FrontSide
+    });
+  }
+  return MAT[key];
+}
+function glow(c, i){
+  return new THREE.MeshLambertMaterial({
+    color:c, emissive:new THREE.Color(c), emissiveIntensity:(i==null?0.6:i),
+    side:THREE.DoubleSide
+  });
+}
+const GOLD = ()=> mat(0xb6913f, 80, 0x9a7a30);
+const BRASS = ()=> mat(0xa07f37, 70, 0x8a6a28);
+
+/* ---------- bouwhelpers (schaduw standaard aan) ---------- */
+function add(m, noCast, noRecv){
+  m.castShadow = !noCast; m.receiveShadow = !noRecv;
+  scene.add(m); return m;
+}
+function box(w,h,d,c,x,y,z,sh){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat(c,sh));
+  m.position.set(x,y,z); return add(m);
+}
+function cyl(rt,rb,h,c,x,y,z,seg,sh){
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg||18), mat(c,sh));
+  m.position.set(x,y,z); return add(m);
+}
+function sphere(r,c,x,y,z,sh){
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r,18,14), mat(c,sh));
+  m.position.set(x,y,z); return add(m);
+}
+function lathe(pts,c,x,y,z,seg,sh){
+  const v = pts.map(p=>new THREE.Vector2(p[0],p[1]));
+  const m = new THREE.Mesh(new THREE.LatheGeometry(v, seg||20), mat(c,sh));
+  m.position.set(x,y,z); return add(m);
+}
+function flame(r,x,y,z){
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r,8,8),
+    new THREE.MeshBasicMaterial({ color:0xffd27a }));
+  m.scale.y = 1.6;
+  m.position.set(x,y,z);
+  scene.add(m); return m;
+}
+
+/* boogvorm (spitsboog of rondboog) */
+function archShape(w, y0, y1, pointed){
+  const s = new THREE.Shape();
+  s.moveTo(-w/2, y0);
+  if(pointed){
+    const sp = Math.max(y0+0.1, y1 - w*0.72);
+    s.lineTo(-w/2, sp);
+    s.quadraticCurveTo(-w/2, y1-0.06, 0, y1);
+    s.quadraticCurveTo(w/2, y1-0.06, w/2, sp);
+    s.lineTo(w/2, y0);
+  } else {
+    s.lineTo(-w/2, y1 - w/2);
+    s.absarc(0, y1 - w/2, w/2, Math.PI, 0, true);
+    s.lineTo(w/2, y0);
+  }
+  s.lineTo(-w/2, y0);
+  return s;
+}
+
+/* mensfiguur met geronde toga */
+function figure(robeC, skinC, kind){
+  const g = new THREE.Group();
+  const pts = [[0.001,0],[0.33,0],[0.30,0.10],[0.21,0.82],[0.185,1.04],
+               [0.235,1.16],[0.215,1.30],[0.08,1.40],[0.001,1.41]]
+    .map(p=>new THREE.Vector2(p[0],p[1]));
+  const robe = new THREE.Mesh(new THREE.LatheGeometry(pts, 22), mat(robeC, 5));
+  robe.castShadow = true; g.add(robe);
+  [-1,1].forEach(s=>{
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.055,0.52,10), mat(robeC,5));
+    arm.position.set(s*0.27, 1.0, 0.05);
+    arm.rotation.z = s*0.38; arm.rotation.x = -0.25;
+    arm.castShadow = true; g.add(arm);
+  });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.15,16,13), mat(skinC,12));
+  head.position.set(0,1.55,0); head.castShadow = true; g.add(head);
+  if(kind === 'bef'){
+    const bef = new THREE.Mesh(new THREE.BoxGeometry(0.15,0.15,0.02), mat(0xf5f2ea,4));
+    bef.position.set(0,1.32,0.18); g.add(bef);
+  }
+  if(kind === 'stola'){
+    [-1,1].forEach(s=>{
+      const st = new THREE.Mesh(new THREE.BoxGeometry(0.07,0.95,0.02), mat(0x2f6b3a,10));
+      st.position.set(s*0.1, 0.85, 0.215); g.add(st);
+    });
+  }
+  if(kind === 'halo'){
+    const h = new THREE.Mesh(new THREE.TorusGeometry(0.18,0.018,8,28), GOLD());
+    h.position.set(0,1.58,-0.12); g.add(h);
+  }
+  return g;
+}
+
+/* hotspot-bolletje */
+function addHotspot(data, index){
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.16, 18, 14),
+    new THREE.MeshBasicMaterial({ color:0xffd200 })
+  );
+  m.position.set(data.pos[0], data.pos[1], data.pos[2]);
+  m.userData = { hotspot:data, baseY:data.pos[1], phase:index * 0.8 };
+  scene.add(m);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.25, 0.022, 8, 26),
+    new THREE.MeshBasicMaterial({ color:0xffd200, transparent:true, opacity:0.85 })
+  );
+  ring.rotation.x = Math.PI/2;
+  ring.position.copy(m.position);
+  ring.userData = { isRing:true, follow:m };
+  scene.add(ring);
+  hotspotMeshes.push(m);
+}
+
+/* =====================================================
+   CASCO-ONDERDELEN
+   ===================================================== */
+function buildFloor(c1, c2, tile){
+  const base = new THREE.Mesh(new THREE.PlaneGeometry(NAVE.w, NAVE.l), mat(c1, 4, 0x222222, true));
+  base.rotation.x = -Math.PI/2;
+  base.receiveShadow = true;
+  scene.add(base);
+  const g = new THREE.PlaneGeometry(tile-0.05, tile-0.05);
+  const m2 = mat(c2, 4, 0x222222, true);
+  const nx = Math.round(NAVE.w/tile), nz = Math.round(NAVE.l/tile);
+  for(let i=0;i<nx;i++){
+    for(let j=0;j<nz;j++){
+      if((i+j)%2) continue;
+      const t = new THREE.Mesh(g, m2);
+      t.rotation.x = -Math.PI/2;
+      t.position.set(-NAVE.w/2 + tile/2 + i*tile, 0.012, -NAVE.l/2 + tile/2 + j*tile);
+      t.receiveShadow = true;
+      scene.add(t);
+    }
+  }
+}
+
+function buildWalls(c, wallH, dadoC){
+  const wm = mat(c, 3, 0x111111, true);
+  const mk = (w,h,x,y,z,ry)=>{
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), wm);
+    m.position.set(x,y,z); m.rotation.y = ry;
+    m.receiveShadow = true; scene.add(m);
+  };
+  mk(NAVE.l, wallH, -NAVE.half, wallH/2, 0,  Math.PI/2);
+  mk(NAVE.l, wallH,  NAVE.half, wallH/2, 0, -Math.PI/2);
+  mk(NAVE.w, wallH, 0, wallH/2, -NAVE.l/2, 0);
+  mk(NAVE.w, wallH, 0, wallH/2,  NAVE.l/2, Math.PI);
+  if(dadoC){ // lambrisering / plint
+    [-1,1].forEach(s=>{
+      const d = box(0.08, 1.15, NAVE.l, dadoC, s*(NAVE.half-0.045), 0.575, 0, 6);
+      d.castShadow = false;
+    });
+    box(NAVE.w, 1.15, 0.08, dadoC, 0, 0.575, -NAVE.l/2+0.045, 6).castShadow = false;
+  }
+  // kroonlijst langs beide muren
+  [-1,1].forEach(s=>{
+    box(0.16, 0.14, NAVE.l, dadoC || c, s*(NAVE.half-0.08), wallH-0.07, 0, 6).castShadow = false;
+  });
+}
+
+/* gewelf uit segmenten, optioneel met gordelbogen (ribben) */
+function buildVault(color, baseY, ribC){
+  const R = NAVE.half, n = 14;
+  const vm = mat(color, 2, 0x111111, true);
+  for(let i=0;i<n;i++){
+    const a0 = Math.PI*i/n, a1 = Math.PI*(i+1)/n, mid = (a0+a1)/2;
+    const segW = 2*R*Math.sin((a1-a0)/2) + 0.06;
+    const geo = new THREE.PlaneGeometry(segW, NAVE.l);
+    geo.rotateX(-Math.PI/2);
+    const m = new THREE.Mesh(geo, vm);
+    m.position.set(R*Math.cos(mid), baseY + R*Math.sin(mid), 0);
+    m.rotation.z = mid - Math.PI/2;
+    m.receiveShadow = true;
+    scene.add(m);
+  }
+  if(ribC){
+    for(let z=-16; z<=16; z+=4){
+      const rib = new THREE.Mesh(new THREE.TorusGeometry(R-0.04, 0.09, 8, 36, Math.PI), mat(ribC,6));
+      rib.position.set(0, baseY, z);
+      scene.add(rib);
+    }
+  }
+  const capM = mat(color, 2, 0x111111, true);
+  const capF = new THREE.Mesh(new THREE.CircleGeometry(R, 28, 0, Math.PI), capM);
+  capF.position.set(0, baseY, -NAVE.l/2 + 0.04);
+  capF.receiveShadow = true; scene.add(capF);
+  const capB = new THREE.Mesh(new THREE.CircleGeometry(R, 28, 0, Math.PI), capM);
+  capB.position.set(0, baseY, NAVE.l/2 - 0.04);
+  capB.rotation.y = Math.PI;
+  capB.receiveShadow = true; scene.add(capB);
+}
+
+/* zuilen met basement en kapiteel (gedraaid profiel) */
+function buildColumns(shaftC, h){
+  const prof = [[0.50,0],[0.50,0.10],[0.40,0.16],[0.32,0.30],[0.285,0.55],
+                [0.265,h-0.65],[0.30,h-0.45],[0.40,h-0.28],[0.46,h-0.12],[0.46,h]]
+    .map(p=>new THREE.Vector2(p[0],p[1]));
+  const geo = new THREE.LatheGeometry(prof, 18);
+  const m = mat(shaftC, 6);
+  for(let z=-12; z<=12; z+=6){
+    [-1,1].forEach(side=>{
+      const col = new THREE.Mesh(geo, m);
+      col.position.set(side*3.7, 0, z);
+      col.castShadow = true; col.receiveShadow = true;
+      scene.add(col);
+    });
+  }
+}
+
+/* boograam met diepe omlijsting */
+function buildWindow(side, z, kind, frameC){
+  const g = new THREE.Group();
+  const pointed = (kind === 'stained');
+  const w = pointed ? 1.45 : 1.8;
+  const yb = pointed ? 1.85 : 1.9;
+  const yt = pointed ? 4.62 : 5.05;
+
+  const outer = archShape(w+0.36, yb-0.18, yt+0.16, pointed);
+  outer.holes.push(archShape(w, yb, yt, pointed));
+  const frame = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(outer, { depth:0.26, bevelEnabled:false }),
+    mat(frameC, 5)
+  );
+  frame.castShadow = false; frame.receiveShadow = true;
+  g.add(frame);
+
+  // vensterbank
+  const sill = new THREE.Mesh(new THREE.BoxGeometry(w+0.6, 0.1, 0.34), mat(frameC,5));
+  sill.position.set(0, yb-0.23, 0.14);
+  g.add(sill);
+
+  if(pointed){
+    // gebrandschilderd: basisvlak + gekleurde banen + roosje
+    const glass = new THREE.Mesh(new THREE.ShapeGeometry(archShape(w, yb, yt, true)), glow(0x2c4f9e, 0.55));
+    glass.position.z = 0.12; g.add(glass);
+    const palet = [0xb23535, 0xc99b27, 0x3a7d44, 0x7a3ab0];
+    const c1 = palet[(Math.abs(z/6)+ (side>0?0:2)) % 4];
+    const c2 = palet[(Math.abs(z/6)+ (side>0?1:3)) % 4];
+    const s1 = new THREE.Mesh(new THREE.PlaneGeometry(0.42, yt-yb-1.0), glow(c1, 0.7));
+    s1.position.set(-0.42, (yb+yt-1.0)/2 - 0.0, 0.135); g.add(s1);
+    const s2 = new THREE.Mesh(new THREE.PlaneGeometry(0.42, yt-yb-1.0), glow(c2, 0.7));
+    s2.position.set(0.42, (yb+yt-1.0)/2 - 0.0, 0.135); g.add(s2);
+    const roos = new THREE.Mesh(new THREE.CircleGeometry(0.26, 18), glow(0xc99b27, 0.8));
+    roos.position.set(0, yt-0.62, 0.135); g.add(roos);
+    // verticale traceringen
+    [-0.21, 0.21, -0.63, 0.63].forEach(x=>{
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.045, yt-yb-0.5, 0.05), mat(frameC,5));
+      t.position.set(x, (yb+yt)/2 - 0.25, 0.13); g.add(t);
+    });
+  } else {
+    // helder glas met roedeverdeling
+    const glass = new THREE.Mesh(new THREE.ShapeGeometry(archShape(w, yb, yt, false)), glow(0xe6efe9, 0.6));
+    glass.position.z = 0.12; g.add(glass);
+    [-0.3, 0.3].forEach(x=>{
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.04, yt-yb-0.2, 0.05), mat(0xefede4,4));
+      t.position.set(x, (yb+yt)/2 - 0.1, 0.13); g.add(t);
+    });
+    [0.35, 0.5, 0.65].forEach(f=>{
+      const t = new THREE.Mesh(new THREE.BoxGeometry(w-0.1, 0.04, 0.05), mat(0xefede4,4));
+      t.position.set(0, yb + (yt-yb)*f - 0.3, 0.13); g.add(t);
+    });
+  }
+
+  const x = side*(NAVE.half - 0.02);
+  g.rotation.y = side<0 ? Math.PI/2 : -Math.PI/2;
+  g.position.set(x, 0, z);
+  scene.add(g);
+}
+
+function buildWindows(kind, frameC){
+  [-12,-6,0,6,12].forEach(z=>{
+    [-1,1].forEach(side=> buildWindow(side, z, kind, frameC));
+  });
+}
+
+/* kerkbanken: zitting, schuine rug, wangen, eventueel knielbank */
+function buildPews(woodC, zFrom, zTo, step, kneelers){
+  const wood = mat(woodC, 14, 0x332211);
+  for(let z=zFrom; z<=zTo; z+=step){
+    [-1,1].forEach(side=>{
+      const g = new THREE.Group();
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.07, 0.46), wood);
+      seat.position.set(0, 0.47, 0);
+      const back = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.85, 0.06), wood);
+      back.position.set(0, 0.82, 0.26); back.rotation.x = -0.13;
+      const front = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.5, 0.05), wood);
+      front.position.set(0, 0.25, -0.2);
+      g.add(seat, back, front);
+      [-1,1].forEach(e=>{
+        const wang = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.05, 0.6), wood);
+        wang.position.set(e*1.72, 0.52, 0.05);
+        g.add(wang);
+      });
+      if(kneelers){
+        const kn = new THREE.Mesh(new THREE.BoxGeometry(3.3, 0.07, 0.22), mat(0x6e2222, 8));
+        kn.position.set(0, 0.13, -0.42);
+        g.add(kn);
+      }
+      g.children.forEach(ch=>{ ch.castShadow = true; ch.receiveShadow = true; });
+      g.position.set(side*2.55, 0, z);
+      scene.add(g);
+    });
+  }
+}
+
+/* koperen kroonluchter (Hollandse bollenkroon) */
+function chandelier(x, y, z, hangFrom){
+  const g = new THREE.Group();
+  const brass = BRASS();
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03, hangFrom - y, 8), brass);
+  rod.position.y = (hangFrom - y)/2;
+  g.add(rod);
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,1.0,10), brass);
+  stem.position.y = -0.3; g.add(stem);
+  const bal = new THREE.Mesh(new THREE.SphereGeometry(0.21,18,14), brass);
+  bal.position.y = -0.85; bal.castShadow = true; g.add(bal);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62,0.035,10,30), brass);
+  ring.rotation.x = Math.PI/2; ring.position.y = -0.25; g.add(ring);
+  for(let i=0;i<4;i++){
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.62,8), brass);
+    arm.rotation.z = Math.PI/2; arm.rotation.y = i*Math.PI/4;
+    arm.position.y = -0.25; g.add(arm);
+  }
+  for(let i=0;i<8;i++){
+    const a = i*Math.PI/4;
+    const cx = Math.cos(a)*0.62, cz = Math.sin(a)*0.62;
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.035,0.05,10), brass);
+    cup.position.set(cx,-0.22,cz); g.add(cup);
+    const kaars = new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.17,8), mat(0xf4efe0,6));
+    kaars.position.set(cx,-0.11,cz); g.add(kaars);
+    const fl = new THREE.Mesh(new THREE.SphereGeometry(0.028,8,8),
+      new THREE.MeshBasicMaterial({color:0xffd27a}));
+    fl.scale.y = 1.7; fl.position.set(cx,-0.0,cz); g.add(fl);
+  }
+  g.position.set(x, y, z);
+  scene.add(g);
+}
+
+/* hekwerk met balusters (communiebank / doophek) */
+function railing(x0, x1, z, woodC, brassKnobs){
+  const wood = mat(woodC, 12, 0x332211);
+  const len = x1 - x0, cx = (x0+x1)/2;
+  const top = new THREE.Mesh(new THREE.BoxGeometry(len, 0.07, 0.14), wood);
+  top.position.set(cx, 0.82, z); top.castShadow = true; scene.add(top);
+  const bot = new THREE.Mesh(new THREE.BoxGeometry(len, 0.06, 0.1), wood);
+  bot.position.set(cx, 0.1, z); scene.add(bot);
+  const balProf = [[0.045,0],[0.045,0.06],[0.025,0.12],[0.05,0.34],[0.025,0.56],[0.045,0.62],[0.045,0.68]]
+    .map(p=>new THREE.Vector2(p[0],p[1]));
+  const balGeo = new THREE.LatheGeometry(balProf, 10);
+  for(let xx = x0+0.22; xx < x1-0.1; xx += 0.42){
+    const b = new THREE.Mesh(balGeo, wood);
+    b.position.set(xx, 0.13, z); b.castShadow = true;
+    scene.add(b);
+  }
+  [x0, x1].forEach(px=>{
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.95,0.12), wood);
+    post.position.set(px, 0.475, z); post.castShadow = true; scene.add(post);
+    if(brassKnobs){
+      const k = new THREE.Mesh(new THREE.SphereGeometry(0.07,12,10), BRASS());
+      k.position.set(px, 1.0, z); scene.add(k);
+    }
+  });
+}
+
+/* lichtbundels door de ramen (alleen sfeer) */
+function lightShafts(){
+  const m = new THREE.MeshBasicMaterial({
+    color:0xffe7bf, transparent:true, opacity:0.05,
+    blending:THREE.AdditiveBlending, depthWrite:false, side:THREE.DoubleSide
+  });
+  [-6, 0, 6].forEach(z=>{
+    const shaft = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 6.6), m);
+    shaft.position.set(3.4, 3.1, z);
+    shaft.rotation.z = 0.62;
+    scene.add(shaft);
+  });
+}
+
+/* houten toegangsdeur in de achterwand */
+function buildDoor(woodC, frameC){
+  const g = new THREE.Group();
+  const outer = archShape(2.6, -0.02, 3.3, false);
+  outer.holes.push(archShape(2.2, 0, 3.1, false));
+  const frame = new THREE.Mesh(new THREE.ExtrudeGeometry(outer,{depth:0.22, bevelEnabled:false}), mat(frameC,5));
+  g.add(frame);
+  const door = new THREE.Mesh(new THREE.ShapeGeometry(archShape(2.2, 0, 3.1, false)), mat(woodC, 16, 0x332211, true));
+  door.position.z = 0.1; g.add(door);
+  const naad = new THREE.Mesh(new THREE.BoxGeometry(0.04, 3.0, 0.04), mat(0x1f1812, 5));
+  naad.position.set(0, 1.5, 0.12); g.add(naad);
+  [-0.55, 0.55].forEach(x=>{
+    const knop = new THREE.Mesh(new THREE.TorusGeometry(0.09,0.02,8,20), BRASS());
+    knop.position.set(x, 1.5, 0.14); g.add(knop);
+  });
+  g.rotation.y = Math.PI;
+  g.position.set(0, 0, NAVE.l/2 - 0.02);
+  scene.add(g);
+}
+
+/* =====================================================
+   SCÈNE: KATHOLIEKE KERK
+   ===================================================== */
+function buildCatholic(){
+  scene.background = new THREE.Color(0x131008);
+  scene.fog = new THREE.Fog(0x131008, 22, 60);
+
+  buildFloor(0x8d8070, 0x6f6354, 2.0);
+  buildWalls(0xbcb0a0, 5, 0x9a8d79);
+  buildVault(0xd9d2c3, 5, 0xb3a692);
+  buildColumns(0xaA9c88, 5);
+  buildWindows('stained', 0x9a8d79);
+  lightShafts();
+  buildDoor(0x4a3424, 0x9a8d79);
+  buildPews(0x5b3a24, -8, 12, 1.65, true);
+
+  // rode loper door het middenpad
+  const loper = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 27), mat(0x7c2420, 4, 0x110505, true));
+  loper.rotation.x = -Math.PI/2; loper.position.set(0, 0.02, 0.2);
+  loper.receiveShadow = true; scene.add(loper);
+
+  // kruiswegstaties langs de muren
+  const statieZ = [-9,-3,3,9];
+  statieZ.forEach(z=>{
+    const fr = box(0.07, 0.62, 0.46, 0x4a3826, -(NAVE.half-0.1), 2.75, z, 12);
+    fr.castShadow = false;
+    box(0.03, 0.5, 0.36, 0xd9cdb4, -(NAVE.half-0.07), 2.75, z, 4).castShadow = false;
+  });
+  [3,9].forEach(z=>{
+    box(0.07, 0.62, 0.46, 0x4a3826, NAVE.half-0.1, 2.75, z, 12).castShadow = false;
+    box(0.03, 0.5, 0.36, 0xd9cdb4, NAVE.half-0.07, 2.75, z, 4).castShadow = false;
+  });
+
+  // priesterkoor: twee treden + bordes
+  box(11.9, 0.22, 1.2, 0x9a8c76, 0, 0.11, -13.0, 5);
+  box(11.9, 0.44, 6.2, 0x9a8c76, 0, 0.22, -16.7, 5);
+
+  // communiebank met balusters (met doorgang in het midden)
+  railing(-4.2, -0.8, -13.35, 0x4a3826, false);
+  railing(0.8, 4.2, -13.35, 0x4a3826, false);
+
+  // retabel (sierwand) achter het altaar
+  const ret = archShape(3.4, 0.44, 5.4, true);
+  ret.holes.push(archShape(2.9, 0.7, 5.0, true));
+  const retM = new THREE.Mesh(new THREE.ExtrudeGeometry(ret,{depth:0.25,bevelEnabled:false}), GOLD());
+  retM.position.set(0, 0, -19.75);
+  retM.castShadow = false; retM.receiveShadow = true;
+  scene.add(retM);
+  const retVlak = new THREE.Mesh(new THREE.ShapeGeometry(archShape(2.9, 0.7, 5.0, true)), mat(0x5e1f1f, 6, 0x220a0a, true));
+  retVlak.position.set(0, 0, -19.7);
+  scene.add(retVlak);
+
+  // altaar: mensa op zuiltjes met groen antependium
+  const mensa = box(2.7, 0.12, 1.25, 0xcfc6b4, 0, 1.42, -16.2, 10);
+  [-1,1].forEach(sx=>{ [-1,1].forEach(sz=>{
+    cyl(0.09, 0.11, 0.92, 0xb9ae9b, sx*1.15, 0.92, -16.2 + sz*0.46, 12, 10);
+  });});
+  box(2.5, 0.85, 0.08, 0x2f6b3a, 0, 0.95, -15.62, 10);                  // antependium
+  box(2.5, 0.07, 0.08, 0xb6913f, 0, 1.34, -15.62, 60);                  // goudgalon
+  box(2.76, 0.025, 1.31, 0xf2eee2, 0, 1.49, -16.2, 4);                  // altaardwaal
+  // altaarkruis + kandelaars (gedraaid messing)
+  const ksProf = [[0.10,0],[0.10,0.03],[0.045,0.07],[0.03,0.4],[0.055,0.46],[0.035,0.5],[0.06,0.54]];
+  [-1,1].forEach(s=>{
+    lathe(ksProf, 0xb6913f, s*1.0, 1.5, -16.2, 14, 80);
+    cyl(0.022,0.022,0.3,0xf4efe0, s*1.0, 2.2, -16.2, 8, 6);
+    flame(0.03, s*1.0, 2.38, -16.2);
+  });
+  box(0.05, 0.42, 0.05, 0xb6913f, 0, 1.75, -16.45, 80);
+  box(0.22, 0.05, 0.05, 0xb6913f, 0, 1.85, -16.45, 80);
+
+  // paaskaars + grote kandelaar (hotspot: kaarsen)
+  lathe([[0.16,0],[0.16,0.04],[0.07,0.1],[0.05,1.0],[0.09,1.08],[0.07,1.14]], 0xb6913f, -2.4, 0.44, -16.8, 14, 80);
+  cyl(0.06, 0.06, 0.85, 0xf4efe0, -2.4, 2.0, -16.8, 12, 6);
+  flame(0.045, -2.4, 2.48, -16.8);
+
+  // credens met rood missaal
+  box(1.0, 0.06, 0.6, 0x6e5436, 2.6, 1.32, -16.8, 12);
+  [-1,1].forEach(sx=>{ [-1,1].forEach(sz=>{
+    cyl(0.04,0.04,0.86,0x6e5436, 2.6+sx*0.42, 0.86, -16.8+sz*0.24, 8, 12);
+  });});
+  const mis = box(0.44, 0.09, 0.32, 0x8d2424, 2.6, 1.42, -16.8, 14);
+  mis.rotation.y = 0.2;
+  box(0.4, 0.02, 0.28, 0xe9dfc8, 2.6, 1.48, -16.8, 4).rotation.y = 0.2;
+
+  // tabernakel op marmeren sokkel + godslamp
+  box(1.5, 0.95, 0.7, 0x8c8174, 0, 0.92, -19.3, 8);
+  const tab = box(0.74, 0.78, 0.56, 0xb6913f, 0, 1.79, -19.3, 90);
+  tab.material = GOLD();
+  box(0.08, 0.4, 0.06, 0xb6913f, 0, 2.45, -19.3, 90);
+  box(0.26, 0.07, 0.06, 0xb6913f, 0, 2.54, -19.3, 90);
+  // godslamp hangend aan ketting
+  cyl(0.012, 0.012, 1.5, 0x4d4338, 1.1, 3.4, -19.0, 6, 8);
+  const lampje = new THREE.Mesh(new THREE.SphereGeometry(0.09,12,10),
+    new THREE.MeshBasicMaterial({color:0xe23b3b}));
+  lampje.position.set(1.1, 2.6, -19.0); scene.add(lampje);
+  const lampHouder = new THREE.Mesh(new THREE.TorusGeometry(0.11,0.015,8,20), BRASS());
+  lampHouder.rotation.x = Math.PI/2; lampHouder.position.set(1.1, 2.68, -19.0);
+  scene.add(lampHouder);
+
+  // kruisbeeld boven het retabel
+  box(0.16, 2.2, 0.1, 0x4a3826, 0, 6.1, -19.6, 16);
+  box(1.35, 0.16, 0.1, 0x4a3826, 0, 6.55, -19.6, 16);
+  const corpus = cyl(0.085, 0.115, 0.85, 0xd8b89a, 0, 6.2, -19.52, 12, 10);
+  corpus.castShadow = false;
+  [-1,1].forEach(s=>{
+    const armc = cyl(0.04, 0.045, 0.6, 0xd8b89a, s*0.34, 6.5, -19.52, 8, 10);
+    armc.rotation.z = s*1.35; armc.castShadow = false;
+  });
+  cyl(0.05, 0.07, 0.5, 0xd8b89a, 0, 5.6, -19.52, 8, 10).castShadow = false;
+  const corpusHoofd = sphere(0.11, 0xd8b89a, 0, 6.7, -19.52, 10);
+  corpusHoofd.rotation.x = 0.4; corpusHoofd.castShadow = false;
+
+  // roosvenster in de topgevel
+  const roosKleuren = [0xb23535, 0x2c4f9e, 0xc99b27, 0x3a7d44];
+  for(let i=0;i<8;i++){
+    const wedge = new THREE.Mesh(new THREE.CircleGeometry(1.35, 10, i*Math.PI/4, Math.PI/4),
+      glow(roosKleuren[i%4], 0.75));
+    wedge.position.set(0, 7.7, -19.9);
+    scene.add(wedge);
+  }
+  const roosRing = new THREE.Mesh(new THREE.TorusGeometry(1.38, 0.07, 8, 40), mat(0x9a8d79,6));
+  roosRing.position.set(0, 7.7, -19.88); scene.add(roosRing);
+  const roosHart = new THREE.Mesh(new THREE.CircleGeometry(0.22, 16), glow(0xfff1cf, 0.9));
+  roosHart.position.set(0, 7.7, -19.87); scene.add(roosHart);
+
+  // ambo (lezenaar) links op het koor
+  box(0.9, 1.15, 0.7, 0x6e5436, -3.2, 1.0, -13.6, 14);
+  const lessenaar = box(0.95, 0.06, 0.75, 0x8d6b40, -3.2, 1.62, -13.55, 14);
+  lessenaar.rotation.x = -0.3;
+  box(0.5, 0.6, 0.04, 0xb6913f, -3.2, 0.95, -13.24, 70);   // verguld paneel
+
+  // priesterfiguur
+  const priester = figure(0xf4efe0, 0xd8b89a, 'stola');
+  priester.position.set(1.6, 0.44, -15.2);
+  scene.add(priester);
+
+  // doopvont (gedraaid steen) bij de ingang
+  lathe([[0.34,0],[0.34,0.08],[0.16,0.16],[0.13,0.7],[0.3,0.86],[0.52,0.96],[0.55,1.1],[0.4,1.16],[0.2,1.2],[0.001,1.22]],
+        0x9a8c76, 3.2, 0, 14.5, 18, 8);
+
+  // biechtstoel met drie nissen en kroonlijst
+  box(2.3, 2.55, 0.95, 0x4a3826, -5.0, 1.27, 8.0, 14);
+  box(2.5, 0.14, 1.05, 0x3a2c1d, -5.0, 2.62, 8.0, 14);
+  box(0.66, 1.85, 0.06, 0x6e5436, -4.55, 1.02, 7.45, 14);
+  box(0.66, 1.85, 0.06, 0x6e5436, -4.55, 1.02, 8.55, 14);
+  const gordijn = box(0.06, 1.7, 0.6, 0x5e1f1f, -4.5, 1.0, 8.0, 4);
+  gordijn.castShadow = false;
+  box(0.09, 0.34, 0.09, 0x6e5436, -5.0, 2.86, 8.0, 14);
+  box(0.3, 0.09, 0.09, 0x6e5436, -5.0, 2.94, 8.0, 14);
+
+  // heiligenbeelden met aureool en kaarsenstandaard
+  const mkStatue = (robeC, x, z)=>{
+    lathe([[0.42,0],[0.42,0.1],[0.3,0.16],[0.27,0.7],[0.36,0.78],[0.38,0.86]], 0x8c8174, x, 0, z, 14, 8);
+    const fg = figure(robeC, 0xe6cdb4, 'halo');
+    fg.scale.setScalar(0.92);
+    fg.position.set(x, 0.86, z);
+    fg.rotation.y = -Math.PI/2;
+    scene.add(fg);
+    // kaarsenrek
+    box(0.7, 0.04, 0.3, 0x3a2c1d, x-0.05, 0.95, z+0.75, 12);
+    cyl(0.025,0.03,0.55,0x3a2c1d, x-0.05, 0.65, z+0.75, 8, 12);
+    for(let i=0;i<4;i++){
+      cyl(0.018,0.018,0.1,0xf4efe0, x-0.32+i*0.18, 1.02, z+0.75, 6, 4);
+      flame(0.02, x-0.32+i*0.18, 1.09, z+0.75);
+    }
+  };
+  mkStatue(0x35589e, 5.05, -8.0);   // Maria
+  mkStatue(0x6e5436, 5.05, -3.0);   // Jozef
+
+  // kroonluchters
+  chandelier(0, 4.4, -6, 9.6);
+  chandelier(0, 4.4, 2, 9.9);
+  chandelier(0, 4.4, 10, 9.6);
+
+  // licht: warm en gericht
+  const hemi = new THREE.HemisphereLight(0xffe8c8, 0x352718, 0.5);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffdfae, 0.85);
+  dir.position.set(7, 12, 5);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(2048, 2048);
+  dir.shadow.camera.left = -16; dir.shadow.camera.right = 16;
+  dir.shadow.camera.top = 26; dir.shadow.camera.bottom = -26;
+  dir.shadow.camera.near = 1; dir.shadow.camera.far = 45;
+  dir.shadow.bias = -0.0015;
+  scene.add(dir);
+  const altarLight = new THREE.PointLight(0xffd9a0, 0.85, 20);
+  altarLight.position.set(0, 4.2, -16); scene.add(altarLight);
+  const naveLight = new THREE.PointLight(0xffe2b6, 0.35, 26);
+  naveLight.position.set(0, 4.5, 4); scene.add(naveLight);
+
+  HOTSPOTS.kath.forEach(addHotspot);
+}
+
+/* =====================================================
+   SCÈNE: PROTESTANTSE KERK
+   ===================================================== */
+function buildProtestant(){
+  scene.background = new THREE.Color(0x171a1d);
+  scene.fog = new THREE.Fog(0x171a1d, 26, 64);
+
+  buildFloor(0x9d988d, 0x8e897e, 2.0);
+  buildWalls(0xf1efe8, 5.5, 0xdedacd);
+  buildVault(0x7d5c3c, 5.5, 0x5d4430);          // houten tongewelf
+  // trekbalken met korbelen
+  for(let z=-16; z<=16; z+=4){
+    box(NAVE.w-0.1, 0.26, 0.22, 0x4f3a28, 0, 5.36, z, 12);
+    [-1,1].forEach(s=>{
+      const kor = box(0.18, 0.7, 0.2, 0x4f3a28, s*(NAVE.half-0.32), 5.0, z, 12);
+      kor.rotation.z = s*0.5;
+    });
+  }
+  buildColumns(0xe8e5dc, 5.5);
+  buildWindows('clear', 0xdedacd);
+  buildDoor(0x4f3a28, 0xdedacd);
+  buildPews(0x6b4a2e, -6, 12, 1.65, false);
+
+  // zijbanken gedraaid naar de kansel (rond het Woord)
+  [-1,1].forEach(side=>{
+    for(let i=0;i<3;i++){
+      const g = new THREE.Group();
+      const wood = mat(0x6b4a2e, 14, 0x332211);
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.07, 0.46), wood);
+      seat.position.y = 0.47;
+      const back = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.85, 0.06), wood);
+      back.position.set(0, 0.82, 0.26); back.rotation.x = -0.13;
+      g.add(seat, back);
+      [-1,1].forEach(e=>{
+        const wang = new THREE.Mesh(new THREE.BoxGeometry(0.07,1.0,0.58), wood);
+        wang.position.set(e*1.18, 0.5, 0.05); g.add(wang);
+      });
+      g.children.forEach(ch=>{ ch.castShadow = true; ch.receiveShadow = true; });
+      g.position.set(side*4.05, 0, -9.8 + i*1.5);
+      g.rotation.y = -side * Math.PI/2.25;
+      scene.add(g);
+    }
+  });
+
+  // herenbank met overkapping tegen de linkermuur
+  box(2.6, 0.18, 1.4, 0x5d4430, -4.6, 0.09, -4.0, 12);
+  box(2.6, 1.0, 0.07, 0x5d4430, -4.6, 0.7, -3.34, 12);
+  box(2.4, 0.07, 0.45, 0x6b4a2e, -4.6, 0.62, -3.9, 12);
+  box(2.6, 1.9, 0.08, 0x5d4430, -4.6, 1.15, -4.66, 12);
+  [-1,1].forEach(s=>{
+    box(0.1, 2.5, 0.1, 0x5d4430, -4.6+s*1.25, 1.25, -3.36, 12);
+  });
+  box(2.9, 0.12, 1.6, 0x4f3a28, -4.6, 2.55, -4.0, 12);
+
+  /* ----- liturgisch centrum: kansel, doophek, tafel, doopbekken ----- */
+
+  // doophek rond het liturgisch centrum, met opening in het midden
+  railing(-3.4, -0.7, -12.1, 0x5d4430, true);
+  railing(0.7, 3.4, -12.1, 0x5d4430, true);
+  // korte zijstukken
+  (function(){
+    const wood = mat(0x5d4430, 12, 0x332211);
+    [-3.4, 3.4].forEach(px=>{
+      const zij = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 2.4), wood);
+      zij.position.set(px, 0.82, -13.3); zij.castShadow = true; scene.add(zij);
+      for(let zz=-12.4; zz>-14.4; zz-=0.45){
+        const b = new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.04,0.66,8), wood);
+        b.position.set(px, 0.45, zz); scene.add(b);
+      }
+    });
+  })();
+
+  // kansel: gedraaide voet, zeszijdige kuip met panelen, trap, klankbord
+  lathe([[0.55,0],[0.55,0.08],[0.3,0.16],[0.22,1.6],[0.5,1.85],[0.55,1.95]],
+        0x4f3a28, 0, 0, -16.0, 12, 14);
+  const kuip = cyl(1.0, 0.82, 1.3, 0x5d4430, 0, 2.6, -16.0, 6, 14);
+  kuip.rotation.y = Math.PI/6;
+  const kuipRand = cyl(1.08, 1.08, 0.09, 0x3c2d1f, 0, 3.3, -16.0, 6, 14);
+  kuipRand.rotation.y = Math.PI/6;
+  // panelen op de kuip
+  for(let i=0;i<6;i++){
+    const a = i*Math.PI/3;
+    const p = box(0.62, 0.8, 0.03, 0x6b4a2e, Math.sin(a)*0.93, 2.62, -16.0 + Math.cos(a)*0.93, 16);
+    p.rotation.y = a; p.castShadow = false;
+  }
+  // trap met leuning
+  for(let i=0;i<5;i++){
+    box(0.66, 0.11, 0.5, 0x5d4430, 1.3, 0.34 + i*0.42, -14.5 - i*0.4, 12);
+  }
+  const leuning = box(0.05, 0.07, 2.3, 0x3c2d1f, 1.62, 1.7, -15.3, 12);
+  leuning.rotation.x = -0.72;
+  // klankbord met sierlijke bekroning
+  cyl(1.75, 1.75, 0.12, 0x4f3a28, 0, 4.75, -16.0, 8, 14);
+  cyl(1.55, 1.75, 0.1, 0x3c2d1f, 0, 4.64, -16.0, 8, 14);
+  lathe([[0.4,0],[0.34,0.12],[0.12,0.3],[0.05,0.5],[0.09,0.56],[0.001,0.72]],
+        0x4f3a28, 0, 4.82, -16.0, 12, 14);
+  cyl(0.05, 0.05, 1.3, 0x4f3a28, 0, 4.05, -16.7, 8, 14);
+
+  // kanselbijbel: opengeslagen boek (twee schuine helften)
+  const kaft = box(0.62, 0.06, 0.44, 0x2c2620, 0, 3.36, -15.45, 10);
+  kaft.rotation.x = -0.28;
+  [-1,1].forEach(s=>{
+    const blz = box(0.28, 0.03, 0.4, 0xf3eee0, s*0.15, 3.41, -15.44, 4);
+    blz.rotation.x = -0.28; blz.rotation.z = s*0.1; blz.castShadow = false;
+  });
+
+  // avondmaalstafel met gedraaide poten en wit kleed
+  box(2.4, 0.07, 1.0, 0x6b4a2e, 0, 0.97, -13.0, 14);
+  const pootProf = [[0.07,0],[0.07,0.1],[0.04,0.2],[0.075,0.45],[0.04,0.7],[0.06,0.85]];
+  [-1,1].forEach(sx=>{ [-1,1].forEach(sz=>{
+    lathe(pootProf, 0x5d4430, sx*1.02, 0.06, -13.0 + sz*0.38, 10, 14);
+  });});
+  box(2.2, 0.02, 0.88, 0xf3efe4, 0, 1.02, -13.0, 4);
+  // tinnen avondmaalsbeker en schaal
+  lathe([[0.07,0],[0.05,0.02],[0.025,0.1],[0.06,0.18],[0.07,0.24]], 0xb9b4a6, -0.4, 1.03, -13.0, 12, 60);
+  cyl(0.16, 0.13, 0.03, 0xb9b4a6, 0.35, 1.05, -13.0, 16, 60);
+
+  // doopbekken: koperen schaal op smeedwerk standaard
+  lathe([[0.12,0],[0.12,0.03],[0.03,0.08],[0.025,0.85],[0.1,0.95],[0.28,1.0],[0.3,1.08],[0.26,1.1],[0.05,1.05]],
+        0xa07f37, 1.8, 0, -14.2, 16, 70);
+
+  // dominee in zwarte toga met bef
+  const dominee = figure(0x1d1b18, 0xd8b89a, 'bef');
+  dominee.position.set(-1.6, 0, -14.6);
+  scene.add(dominee);
+
+  // tekstborden (tien geboden) met boogvormige top
+  [-1,1].forEach(s=>{
+    const g = new THREE.Group();
+    const bordF = archShape(1.5, 0, 2.1, false);
+    bordF.holes.push(archShape(1.26, 0.1, 1.98, false));
+    const fr = new THREE.Mesh(new THREE.ExtrudeGeometry(bordF,{depth:0.08,bevelEnabled:false}), mat(0x2c2620,14));
+    g.add(fr);
+    const vlak = new THREE.Mesh(new THREE.ShapeGeometry(archShape(1.26, 0.1, 1.98, false)), mat(0xf3eee0,4,0x111111,true));
+    vlak.position.z = 0.04; g.add(vlak);
+    for(let i=0;i<5;i++){
+      const regel = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.035), mat(0x6a6258,2,0x111111,true));
+      regel.position.set(0, 0.45 + i*0.28, 0.05); g.add(regel);
+    }
+    g.position.set(s*3.4, 2.5, -19.86);
+    scene.add(g);
+  });
+
+  /* ----- orgel boven de ingang ----- */
+  // balkon op twee gedraaide kolommen
+  [-1,1].forEach(s=>{
+    lathe([[0.3,0],[0.3,0.07],[0.18,0.14],[0.16,2.7],[0.24,2.85],[0.28,3.0]],
+          0xdedacd, s*2.8, 0, 17.6, 14, 6);
+  });
+  box(8.2, 0.32, 2.8, 0x4f3a28, 0, 3.15, 18.5, 12);
+  // balustrade met balusters
+  (function(){
+    const wood = mat(0x5d4430, 12, 0x332211);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.07, 0.12), wood);
+    top.position.set(0, 4.0, 17.15); scene.add(top);
+    for(let xx=-3.9; xx<=3.9; xx+=0.42){
+      const b = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.035,0.62,8), wood);
+      b.position.set(xx, 3.65, 17.15); scene.add(b);
+    }
+  })();
+  // orgelkas: drie pijptorens met gouden accenten
+  box(6.2, 0.5, 1.2, 0x2f2620, 0, 3.6, 19.3, 16);
+  const torens = [
+    { x:0,    w:2.0, hTop:4.0, pipes:5, pr:0.13 },
+    { x:-2.2, w:1.7, hTop:2.9, pipes:4, pr:0.11 },
+    { x: 2.2, w:1.7, hTop:2.9, pipes:4, pr:0.11 }
+  ];
+  torens.forEach(t=>{
+    box(t.w, 0.4, 1.1, 0x2f2620, t.x, 3.95, 19.3, 16);
+    for(let i=0;i<t.pipes;i++){
+      const px = t.x - (t.pipes-1)*0.5*(t.w-0.3)/(t.pipes-1||1) + i*((t.w-0.3)/(t.pipes-1||1));
+      const mid = Math.abs(i - (t.pipes-1)/2) / ((t.pipes-1)/2 || 1);
+      const h = t.hTop - mid*1.0;
+      const pijp = cyl(t.pr, t.pr, h, 0xc8c4b6, px, 4.15 + h/2, 19.0, 14, 85);
+      pijp.material = mat(0xc8c4b6, 85, 0x777777);
+      const mond = cyl(t.pr+0.005, t.pr+0.005, 0.07, 0xb6913f, px, 4.5, 19.0 - 0.0, 14, 85);
+      mond.material = GOLD();
+    }
+    box(t.w+0.1, 0.22, 1.15, 0x2f2620, t.x, 4.3 + t.hTop, 19.3, 16);
+    box(t.w-0.2, 0.12, 1.0, 0xb6913f, t.x, 4.45 + t.hTop, 19.3, 80);
+  });
+
+  // kroonluchters: dé blikvanger van een hervormde kerk
+  chandelier(0, 4.3, -8, 9.4);
+  chandelier(0, 4.3, -1, 9.8);
+  chandelier(0, 4.3, 6, 9.8);
+  chandelier(0, 4.3, 12, 9.4);
+
+  // licht: helder noordelijk daglicht
+  const hemi = new THREE.HemisphereLight(0xf6f8fa, 0x7d756a, 0.85);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xfff6e2, 0.8);
+  dir.position.set(-7, 12, 4);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(2048, 2048);
+  dir.shadow.camera.left = -16; dir.shadow.camera.right = 16;
+  dir.shadow.camera.top = 26; dir.shadow.camera.bottom = -26;
+  dir.shadow.camera.near = 1; dir.shadow.camera.far = 45;
+  dir.shadow.bias = -0.0015;
+  scene.add(dir);
+  const fill = new THREE.PointLight(0xfff3da, 0.3, 30);
+  fill.position.set(0, 5, -8); scene.add(fill);
+
+  HOTSPOTS.prot.forEach(addHotspot);
+}
+
+/* =====================================================
+   SCÈNEBEHEER
+   ===================================================== */
+function loadChurch(which){
+  currentChurch = which;
+  hotspotMeshes = [];
+  scene = new THREE.Scene();
+  if(which === 'kath'){
+    buildCatholic();
+    BOUNDS = { minX:-5.1, maxX:5.1, minZ:-12.6, maxZ:18.2 };
+  } else {
+    buildProtestant();
+    BOUNDS = { minX:-5.1, maxX:5.1, minZ:-11.5, maxZ:16.6 };
+  }
+  resetCamera();
+  closeInfo();
+
+  document.body.classList.toggle('prot', which === 'prot');
+  document.body.classList.toggle('kath', which === 'kath');
+  sceneLabel.textContent = which === 'kath' ? 'Rooms-katholieke kerk' : 'Protestantse kerk (hervormd)';
+  btnKath.classList.toggle('active', which === 'kath');
+  btnProt.classList.toggle('active', which === 'prot');
+  btnKath.setAttribute('aria-selected', which === 'kath');
+  btnProt.setAttribute('aria-selected', which === 'prot');
+}
+
+function init(){
+  renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(stage.clientWidth, stage.clientHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  stage.insertBefore(renderer.domElement, stage.firstChild);
+
+  camera = new THREE.PerspectiveCamera(68, stage.clientWidth/stage.clientHeight, 0.1, 200);
+  camera.rotation.order = 'YXZ';
+
+  raycaster = new THREE.Raycaster();
+  clock = new THREE.Clock();
+
+  loadChurch('kath');
+  bindControls();
+  animate();
+}
+
+function resetCamera(){
+  camera.position.set(0, EYE, 16.2);
+  yaw = 0; pitch = 0;
+  camera.rotation.set(0, 0, 0);
+}
+
+/* =====================================================
+   BESTURING
+   ===================================================== */
+let dragging = false, dragMoved = 0, lastX = 0, lastY = 0;
+
+function bindControls(){
+  const cv = renderer.domElement;
+
+  cv.addEventListener('mousedown', e=>{
+    dragging = true; dragMoved = 0;
+    lastX = e.clientX; lastY = e.clientY;
+    cv.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', e=>{
+    if(dragging && !paused){
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      dragMoved += Math.abs(dx) + Math.abs(dy);
+      yaw   -= dx * 0.0045;
+      pitch -= dy * 0.0045;
+      pitch = Math.max(-1.25, Math.min(1.25, pitch));
+      lastX = e.clientX; lastY = e.clientY;
+    } else if(!dragging && !paused){
+      hoverCheck(e);
+    }
+  });
+  window.addEventListener('mouseup', e=>{
+    if(!dragging) return;
+    dragging = false;
+    cv.classList.remove('dragging');
+    if(dragMoved < 6 && !paused){ tryPick(e.clientX, e.clientY); }
+  });
+
+  // aanraakbediening: slepen = rondkijken, tikken = klikken
+  let tStartX=0, tStartY=0, tMoved=0;
+  cv.addEventListener('touchstart', e=>{
+    if(e.touches.length === 1){
+      tStartX = lastX = e.touches[0].clientX;
+      tStartY = lastY = e.touches[0].clientY;
+      tMoved = 0;
+    }
+  }, {passive:true});
+  cv.addEventListener('touchmove', e=>{
+    if(e.touches.length === 1 && !paused){
+      const t = e.touches[0];
+      const dx = t.clientX - lastX, dy = t.clientY - lastY;
+      tMoved += Math.abs(dx) + Math.abs(dy);
+      yaw   -= dx * 0.006;
+      pitch -= dy * 0.006;
+      pitch = Math.max(-1.25, Math.min(1.25, pitch));
+      lastX = t.clientX; lastY = t.clientY;
+    }
+  }, {passive:true});
+  cv.addEventListener('touchend', ()=>{
+    if(tMoved < 8 && !paused){ tryPick(tStartX, tStartY); }
+  });
+
+  window.addEventListener('keydown', e=>{
+    keys[e.code] = true;
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)){
+      if(document.activeElement === document.body) e.preventDefault();
+    }
+    if(e.code === 'Escape') closeInfo();
+  });
+  window.addEventListener('keyup', e=>{ keys[e.code] = false; });
+
+  window.addEventListener('resize', ()=>{
+    camera.aspect = stage.clientWidth / stage.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(stage.clientWidth, stage.clientHeight);
+  });
+
+  btnKath.addEventListener('click', ()=> loadChurch('kath'));
+  btnProt.addEventListener('click', ()=> loadChurch('prot'));
+  closeBtn.addEventListener('click', closeInfo);
+}
+
+function ndcFromClient(cx, cy){
+  const r = renderer.domElement.getBoundingClientRect();
+  return new THREE.Vector2(
+    ((cx - r.left) / r.width) * 2 - 1,
+    -((cy - r.top) / r.height) * 2 + 1
+  );
+}
+
+function tryPick(cx, cy){
+  raycaster.setFromCamera(ndcFromClient(cx, cy), camera);
+  const hits = raycaster.intersectObjects(hotspotMeshes);
+  if(hits.length){ openInfo(hits[0].object.userData.hotspot); }
+}
+
+function hoverCheck(e){
+  if(!renderer) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+  raycaster.setFromCamera(ndcFromClient(e.clientX, e.clientY), camera);
+  const hits = raycaster.intersectObjects(hotspotMeshes);
+  renderer.domElement.classList.toggle('hotspot-hover', hits.length > 0);
+}
+
+function openInfo(h){
+  paused = true;
+  panelEyebrow.textContent = currentChurch === 'kath' ? 'Katholieke kerk' : 'Protestantse kerk';
+  panelTitle.textContent = h.title;
+  panelBody.textContent = h.body;
+
+  // verwijzing naar de andere traditie
+  const ander = currentChurch === 'kath' ? 'prot' : 'kath';
+  panelZieTekst.textContent = 'Wil je weten hoe ' + andersNaam[currentChurch] +
+    ' hier over denken? Kijk dan zelf bij \u201C' + h.zieOok + '\u201D in de ' + kerkNaam[ander] + '.';
+
+  // foto uit Wikimedia Commons, indien beschikbaar
+  const fig = document.getElementById('panelFig');
+  const img = document.getElementById('panelImg');
+  const cap = document.getElementById('panelCap');
+  const foto = (FOTOS[currentChurch] || {})[h.title];
+  if(foto){
+    const fileEnc = encodeURIComponent(foto.f);
+    img.onerror = ()=>{ fig.classList.remove('heeft-foto'); };
+    img.onload = ()=>{ fig.classList.add('heeft-foto'); };
+    img.alt = foto.c;
+    img.src = 'https://commons.wikimedia.org/wiki/Special:FilePath/' + fileEnc + '?width=640';
+    cap.innerHTML = foto.c + ' ' +
+      '<a href="https://commons.wikimedia.org/wiki/File:' + fileEnc +
+      '" target="_blank" rel="noopener">' + foto.b + '</a>.';
+    fig.classList.add('heeft-foto');
+  } else {
+    fig.classList.remove('heeft-foto');
+    img.removeAttribute('src');
+  }
+
+  infoPanel.scrollTop = 0;
+  infoPanel.classList.add('open');
+  closeBtn.focus();
+
+  // markeer als gelezen en werk de vergrendelde vragen bij
+  gelezen.add(currentChurch + '::' + h.title);
+  updateLocks();
+}
+function closeInfo(){
+  paused = false;
+  infoPanel.classList.remove('open');
+}
+
+/* ga naar een specifieke hotspot, eventueel in de andere kerk */
+function gaNaarHotspot(church, title){
+  if(currentChurch !== church) loadChurch(church);
+  const data = (HOTSPOTS[church] || []).find(x => x.title === title);
+  if(data) openInfo(data);
+  if(stage && stage.scrollIntoView) stage.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+/* ontgrendel vragen waarvan alle vereiste teksten zijn gelezen */
+function updateLocks(){
+  vergrendeldeVragen.forEach(v => {
+    // werk de leeslampjes bij
+    v.linkEls.forEach(el => {
+      if(gelezen.has(el.dataset.key)) el.classList.add('gelezen');
+    });
+    if(v.ontgrendeld) return;
+    const klaar = v.vereist.every(p => gelezen.has(p.c + '::' + p.t));
+    if(klaar){
+      v.ontgrendeld = true;
+      v.card.classList.remove('vergrendeld');
+    }
+  });
+}
+
+/* =====================================================
+   ANIMATIELUS
+   ===================================================== */
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  if(!paused){
+    let f = 0, s = 0;
+    if(keys['KeyW'] || keys['ArrowUp'])    f += 1;
+    if(keys['KeyS'] || keys['ArrowDown'])  f -= 1;
+    if(keys['KeyA'] || keys['ArrowLeft'])  s -= 1;
+    if(keys['KeyD'] || keys['ArrowRight']) s += 1;
+    if(f !== 0 || s !== 0){
+      const len = Math.hypot(f, s); f/=len; s/=len;
+      const sin = Math.sin(yaw), cos = Math.cos(yaw);
+      camera.position.x += (-sin*f + cos*s) * SPEED * dt;
+      camera.position.z += (-cos*f - sin*s) * SPEED * dt;
+      camera.position.x = Math.max(BOUNDS.minX, Math.min(BOUNDS.maxX, camera.position.x));
+      camera.position.z = Math.max(BOUNDS.minZ, Math.min(BOUNDS.maxZ, camera.position.z));
+    }
+    camera.position.y = EYE;
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+  }
+
+  const amp = reducedMotion ? 0 : 0.07;
+  scene.traverse(obj=>{
+    if(obj.userData && obj.userData.hotspot){
+      obj.position.y = obj.userData.baseY + Math.sin(t*2 + obj.userData.phase) * amp;
+      const sc = 1 + (reducedMotion ? 0 : 0.08*Math.sin(t*3 + obj.userData.phase));
+      obj.scale.setScalar(sc);
+    }
+    if(obj.userData && obj.userData.isRing){
+      obj.position.x = obj.userData.follow.position.x;
+      obj.position.z = obj.userData.follow.position.z;
+      obj.position.y = obj.userData.follow.userData.baseY - 0.05;
+    }
+  });
+
+  renderer.render(scene, camera);
+}
+
+/* =====================================================
+   VRAGENSECTIE
+   ===================================================== */
+function buildQuestions(){
+  const letters = ['A','B','C','D'];
+
+  // bouwt de "lees eerst"-balk en registreert de vraag als vergrendeld
+  function bouwSlot(card, vereist){
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const kop = document.createElement('div');
+    kop.className = 'slot-kop';
+    const b = document.createElement('b');
+    b.textContent = 'Eerst lezen, dan beantwoorden';
+    kop.appendChild(b);
+    const p = document.createElement('p');
+    p.textContent = vereist.length > 1
+      ? 'Zoek deze onderdelen zelf op in de kerk(en) en lees de uitleg:'
+      : 'Zoek dit onderdeel zelf op in de kerk en lees de uitleg:';
+    const knoppen = document.createElement('div');
+    knoppen.className = 'slot-knoppen';
+    const linkEls = [];
+    vereist.forEach(v => {
+      const k = document.createElement('span');
+      k.className = 'slot-link';
+      k.dataset.key = v.c + '::' + v.t;
+      k.textContent = v.t + ' \u2014 ' + kerkNaam[v.c];
+      if(gelezen.has(k.dataset.key)) k.classList.add('gelezen');
+      knoppen.appendChild(k);
+      linkEls.push(k);
+    });
+    slot.appendChild(kop); slot.appendChild(p); slot.appendChild(knoppen);
+    card.appendChild(slot);
+    return linkEls;
+  }
+
+  const mc = document.getElementById('mcContainer');
+  MC_VRAGEN.forEach((q, qi)=>{
+    const card = document.createElement('div');
+    card.className = 'vraag vergrendeld';
+    card.innerHTML =
+      '<div class="thema">'+q.thema+'</div>' +
+      '<h3>'+(qi+1)+'. '+q.vraag+'</h3>';
+
+    const linkEls = bouwSlot(card, q.vereist);
+
+    const inhoud = document.createElement('div');
+    inhoud.className = 'vraag-inhoud';
+    let optHtml = '';
+    q.opties.forEach((opt, oi)=>{
+      optHtml += '<label class="optie"><input type="radio" name="mc'+qi+'" value="'+oi+'">' +
+        '<span class="letter">'+letters[oi]+'</span><span>'+opt+'</span></label>';
+    });
+    inhoud.innerHTML =
+      '<div class="opties">'+optHtml+'</div>' +
+      '<button class="check-btn" disabled>Controleer antwoord</button>' +
+      '<div class="feedback" role="status"></div>';
+    card.appendChild(inhoud);
+    mc.appendChild(card);
+
+    const radios = inhoud.querySelectorAll('input[type=radio]');
+    const btn = inhoud.querySelector('.check-btn');
+    const fb = inhoud.querySelector('.feedback');
+    radios.forEach(r=>{
+      r.addEventListener('change', ()=>{
+        btn.disabled = false;
+        inhoud.querySelectorAll('.optie').forEach(o=>o.classList.remove('gekozen'));
+        r.closest('.optie').classList.add('gekozen');
+      });
+    });
+    btn.addEventListener('click', ()=>{
+      const sel = inhoud.querySelector('input[type=radio]:checked');
+      if(!sel) return;
+      const gekozen = parseInt(sel.value, 10);
+      if(gekozen === q.goed){
+        fb.className = 'feedback goed';
+        fb.innerHTML = '<b>Goed! Antwoord '+letters[q.goed]+' is juist.</b>'+q.uitleg;
+      } else {
+        fb.className = 'feedback fout';
+        fb.innerHTML = '<b>Helaas, antwoord '+letters[gekozen]+' is niet juist. Het goede antwoord is '+
+          letters[q.goed]+'.</b>'+q.uitleg;
+      }
+    });
+
+    vergrendeldeVragen.push({ card, vereist:q.vereist, linkEls, ontgrendeld:false });
+  });
+
+  const oc = document.getElementById('openContainer');
+  OPEN_VRAGEN.forEach((q, qi)=>{
+    const card = document.createElement('div');
+    card.className = 'vraag vergrendeld';
+    card.innerHTML =
+      '<div class="thema">'+q.thema+'</div>' +
+      '<h3>'+(MC_VRAGEN.length+qi+1)+'. '+q.vraag+'</h3>';
+
+    const linkEls = bouwSlot(card, q.vereist);
+
+    const inhoud = document.createElement('div');
+    inhoud.className = 'vraag-inhoud';
+    inhoud.innerHTML =
+      '<textarea class="open-antwoord" placeholder="Typ hier je eigen antwoord voordat je het modelantwoord bekijkt..."></textarea>' +
+      '<button class="reveal-btn">Toon modelantwoord</button>' +
+      '<div class="model"><b>Modelantwoord</b>'+q.model+'</div>';
+    card.appendChild(inhoud);
+    oc.appendChild(card);
+
+    const btn = inhoud.querySelector('.reveal-btn');
+    const model = inhoud.querySelector('.model');
+    btn.addEventListener('click', ()=>{
+      model.classList.toggle('zichtbaar');
+      btn.textContent = model.classList.contains('zichtbaar') ? 'Verberg modelantwoord' : 'Toon modelantwoord';
+    });
+
+    vergrendeldeVragen.push({ card, vereist:q.vereist, linkEls, ontgrendeld:false });
+  });
+}
+
+/* =====================================================
+   START
+   ===================================================== */
+buildQuestions();
+init();
+</script>
+</body>
+</html>

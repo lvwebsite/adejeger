@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ik ben omdat wij zijn: Drie wegen naar de Waarheidscommissie</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --ink:#1c140d;
+    --night:#150f09;
+    --bone:#F2E9D8;
+    --bone-soft:#E7DAC2;
+    --muted:#b9a884;
+    --muted-dim:#8c7a5b;
+    --ember:#D89240;          /* warm amber: Ubuntu's warmte */
+    --ember-deep:#B0701F;
+    /* drie wegen */
+    --mandela:#C8941E;        /* goud: waardigheid */
+    --guard:#6E7E86;          /* koel leisteen: het systeem */
+    --tutu:#B0492F;           /* terracotta: geloof, hart */
+    --gold-glow:rgba(216,146,64,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% -10%, #3a2814 0%, var(--ink) 55%, var(--night) 100%) fixed;
+    color:var(--bone);
+    font-family:'Inter',-apple-system,system-ui,sans-serif;
+    min-height:100vh;
+    padding:30px 16px 70px;
+    overflow-x:hidden;
+    line-height:1.6;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  /* ---------- Masthead ---------- */
+  .masthead{text-align:center;margin-bottom:30px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
+    color:var(--ember);margin:0 0 10px;
+  }
+  h1.title{
+    font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(32px,6.2vw,52px);line-height:1.05;
+    margin:0 0 6px;color:var(--bone);
+    text-shadow:0 0 34px var(--gold-glow);
+  }
+  .title-sub{
+    font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-size:clamp(17px,3vw,22px);color:var(--muted);margin:0;
+  }
+
+  /* ---------- Progress corridor (drie lantaarns) ---------- */
+  .paths-progress{
+    display:flex;align-items:center;justify-content:center;gap:0;
+    margin:26px auto 8px;max-width:430px;
+  }
+  .lantern{display:flex;flex-direction:column;align-items:center;gap:7px;width:96px;flex-shrink:0;}
+  .lantern svg{width:30px;height:38px;}
+  .lantern .flame{transition:opacity .5s ease;}
+  .lantern.dim .flame{opacity:0.12;}
+  .lantern.lit .flame{opacity:1;filter:drop-shadow(0 0 7px var(--gold-glow));}
+  .lantern small{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:var(--muted-dim);text-align:center;}
+  .lantern.lit small{color:var(--ember);}
+  .prog-link{flex:1;height:2px;background:#3d2c19;min-width:18px;margin-top:-15px;}
+  .prog-link.lit{background:linear-gradient(90deg,var(--ember-deep),var(--ember));box-shadow:0 0 6px var(--gold-glow);}
+
+  /* ---------- Screens ---------- */
+  .screen{display:none;animation:fade .5s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- Intro card ---------- */
+  .intro-card{
+    background:rgba(0,0,0,0.22);border:1px solid #3d2c19;border-radius:16px;
+    padding:30px 30px 34px;margin-top:14px;
+  }
+  .intro-card p{font-size:15px;color:var(--bone-soft);margin:0 0 16px;}
+  .intro-card p.lead{font-size:16.5px;color:var(--bone);}
+  .ubuntu-line{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;
+    font-size:24px;color:var(--ember);text-align:center;
+    margin:24px 0;text-shadow:0 0 24px var(--gold-glow);
+  }
+  .note-block{
+    font-size:13px;color:var(--muted);background:rgba(110,126,134,0.1);
+    border-left:3px solid var(--guard);border-radius:0 8px 8px 0;
+    padding:13px 16px;margin:22px 0 6px;line-height:1.6;
+  }
+
+  /* ---------- Hub ---------- */
+  .hub-intro{text-align:center;font-size:15px;color:var(--bone-soft);max-width:560px;margin:0 auto 26px;}
+  .path-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
+  @media (max-width:620px){.path-cards{grid-template-columns:1fr;}}
+  .path-card{
+    background:linear-gradient(165deg,#241a10,#1a130b);
+    border:1px solid #3d2c19;border-radius:14px;
+    padding:22px 18px 20px;text-align:center;cursor:pointer;
+    transition:transform .15s ease,border-color .2s ease,box-shadow .2s ease;
+    position:relative;border-top:4px solid var(--accent,#3d2c19);
+  }
+  .path-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px -16px rgba(0,0,0,0.7);}
+  .path-card:focus-visible{outline:2px solid var(--ember);outline-offset:3px;}
+  .path-card .pc-role{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .path-card .pc-name{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:700;color:var(--bone);margin:0 0 4px;line-height:1.1;}
+  .path-card .pc-tag{font-size:12.5px;color:var(--muted);min-height:34px;}
+  .path-card .pc-status{
+    margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    padding:5px 12px;border-radius:20px;display:inline-block;
+    background:rgba(255,255,255,0.05);color:var(--muted-dim);
+  }
+  .path-card.done .pc-status{background:rgba(200,148,30,0.16);color:var(--ember);}
+  .path-card.done{border-top-color:var(--ember);}
+  .path-card .pc-check{
+    position:absolute;top:14px;right:16px;font-size:15px;color:var(--ember);opacity:0;transition:opacity .3s;
+  }
+  .path-card.done .pc-check{opacity:1;}
+
+  .gate-card{
+    background:linear-gradient(165deg,#1a130b,#120c07);
+    border:1px dashed #4a3620;border-radius:14px;
+    padding:26px 22px;text-align:center;transition:all .4s ease;
+  }
+  .gate-card.open{
+    border:1px solid var(--ember);border-style:solid;
+    background:linear-gradient(165deg,#2a1d0e,#1c130a);
+    box-shadow:0 0 40px -10px var(--gold-glow);cursor:pointer;
+  }
+  .gate-card.open:hover{transform:translateY(-2px);}
+  .gate-card .gc-lock{font-size:22px;opacity:.5;margin-bottom:8px;}
+  .gate-card.open .gc-lock{opacity:1;}
+  .gate-card .gc-title{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;color:var(--bone);margin:0 0 4px;}
+  .gate-card .gc-sub{font-size:13px;color:var(--muted);max-width:440px;margin:0 auto;}
+  .gate-card.open .gc-sub{color:var(--bone-soft);}
+
+  /* ---------- Story beats ---------- */
+  .story-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+  .story-id{display:flex;align-items:center;gap:11px;}
+  .story-dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px -1px var(--accent);}
+  .story-who{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);}
+  .beat-dots{display:flex;gap:6px;}
+  .beat-dots span{width:7px;height:7px;border-radius:50%;background:#3d2c19;transition:background .3s;}
+  .beat-dots span.on{background:var(--accent);}
+  .back-link{background:none;border:none;color:var(--muted-dim);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;padding:4px 0;}
+  .back-link:hover{color:var(--muted);}
+
+  .beat{
+    background:linear-gradient(170deg,var(--bone) 0%, #ECE0C8 100%);
+    color:var(--ink);border-radius:16px;padding:32px 30px 30px;
+    box-shadow:0 22px 46px -18px rgba(0,0,0,0.6);
+    border-top:5px solid var(--accent);
+  }
+  .beat-title{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;color:#2a1c0c;margin:0 0 14px;line-height:1.15;}
+  .beat-body p{font-size:15.5px;color:#3a2c1a;margin:0 0 14px;}
+  .beat-body p:last-child{margin-bottom:0;}
+  .beat-body em{color:#5a4322;}
+
+  .quote-beat{
+    font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-size:24px;line-height:1.4;color:#3a2410;
+    border-left:4px solid var(--accent);padding:6px 0 6px 22px;margin:8px 0 14px;
+  }
+  .quote-src{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:12px;color:#7a6038;margin-top:10px;letter-spacing:0.03em;}
+
+  /* choices */
+  .choice-prompt{font-size:15.5px;font-weight:600;color:#2a1c0c;margin:4px 0 16px;}
+  .choices{display:flex;flex-direction:column;gap:11px;}
+  .choice-btn{
+    text-align:left;background:#fff;border:1.5px solid #d3bd92;border-radius:10px;
+    padding:14px 18px;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:500;
+    color:var(--ink);cursor:pointer;transition:all .15s ease;line-height:1.45;
+  }
+  .choice-btn:hover{border-color:var(--accent);background:#fffdf7;}
+  .choice-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .choice-btn.chosen{border-color:var(--accent);background:#fdf6e9;box-shadow:inset 0 0 0 1px var(--accent);}
+  .choice-btn.dim{opacity:.45;}
+  .choice-response{
+    margin-top:16px;padding:16px 18px;background:rgba(176,112,31,0.09);
+    border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+    font-size:14.5px;color:#3a2c1a;display:none;
+  }
+  .choice-response.show{display:block;animation:fade .4s ease;}
+  .choice-response strong{color:#5a3c12;}
+
+  /* reflect / schrijfmoment */
+  .reflect-card{background:rgba(176,112,31,0.08);border:1px solid #d8c39a;border-radius:12px;padding:18px 20px;}
+  .reflect-flag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--ember-deep);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+  .reflect-prompt{font-size:15.5px;font-weight:600;color:#2a1c0c;margin:0 0 6px;line-height:1.45;}
+  .reflect-hint{font-size:12.5px;color:#7a6038;margin:0 0 12px;font-style:italic;}
+  .reflect-card textarea{
+    width:100%;min-height:78px;resize:vertical;border:1.5px solid #d3bd92;border-radius:9px;
+    padding:11px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:#fffdf8;line-height:1.5;
+  }
+  .reflect-card textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(176,112,31,0.15);}
+
+  /* nav */
+  .beat-nav{display:flex;justify-content:flex-end;margin-top:22px;}
+  button.advance{
+    background:var(--accent);color:#1c1108;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    border:none;border-radius:9px;padding:12px 26px;cursor:pointer;transition:transform .12s,filter .12s;
+  }
+  button.advance:hover{filter:brightness(1.08);}
+  button.advance:active{transform:scale(.97);}
+  button.advance:disabled{opacity:.4;cursor:not-allowed;}
+  button.advance:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+
+  /* ---------- Convergence / finale ---------- */
+  .conv-accent{--accent:var(--ember);}
+  .finale-card{
+    text-align:center;background:linear-gradient(170deg,#2a1d0e,#170f07);
+    border:1px solid var(--ember);border-radius:18px;padding:40px 30px 36px;
+    box-shadow:0 0 60px -16px var(--gold-glow);
+  }
+  .finale-card .fc-key{font-size:30px;margin-bottom:12px;filter:drop-shadow(0 0 16px var(--gold-glow));}
+  .finale-card h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--bone);margin:0 0 14px;}
+  .finale-card p{font-size:15px;color:var(--bone-soft);max-width:520px;margin:0 auto 14px;}
+  .finale-ubuntu{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:var(--ember);margin:22px auto;text-shadow:0 0 20px var(--gold-glow);}
+  .restart{background:none;border:1px solid #5a4322;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;border-radius:8px;padding:10px 20px;cursor:pointer;margin-top:8px;}
+  .restart:hover{border-color:var(--ember);color:var(--ember);}
+
+  footer.note{text-align:center;font-size:11.5px;color:#6e5a3e;margin-top:34px;line-height:1.7;}
+  footer.note strong{color:#8c7a5b;}
+
+  /* ---------- Zwevende sintels (warmte van Ubuntu) ---------- */
+  .embers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .ember{position:absolute;bottom:-14px;border-radius:50%;
+    background:radial-gradient(circle,var(--ember) 0%,rgba(216,146,64,0) 70%);
+    opacity:0;animation:emberRise linear infinite;}
+  @keyframes emberRise{
+    0%{transform:translateY(0) translateX(0) scale(.6);opacity:0;}
+    14%{opacity:.65;}
+    82%{opacity:.4;}
+    100%{transform:translateY(-104vh) translateX(var(--drift,0)) scale(1.15);opacity:0;}
+  }
+  .wrap{position:relative;z-index:1;}
+
+  /* ---------- Glow-puls op de Ubuntu-regels ---------- */
+  .ubuntu-line,.finale-ubuntu{animation:glowPulse 4.6s ease-in-out infinite;}
+  @keyframes glowPulse{
+    0%,100%{text-shadow:0 0 18px var(--gold-glow);}
+    50%{text-shadow:0 0 34px var(--gold-glow),0 0 12px rgba(216,146,64,.4);}
+  }
+
+  /* ---------- Lantaarn-vlam flikkert ---------- */
+  .lantern.lit .flame{animation:flicker 2.9s ease-in-out infinite;}
+  @keyframes flicker{0%,100%{opacity:1;}45%{opacity:.74;}70%{opacity:.93;}}
+
+  /* ---------- Figuren (aanklikbare poppetjes) ---------- */
+  .figure-holder{display:flex;justify-content:center;margin-bottom:8px;}
+  .figure{width:76px;height:96px;overflow:visible;}
+  .fig-aura{transform-origin:center;animation:auraPulse 5s ease-in-out infinite;}
+  @keyframes auraPulse{0%,100%{opacity:.26;}50%{opacity:.56;}}
+  .fig-body,.fig-head,.fig-mark{transition:fill .25s ease;}
+  .path-card .figure{transition:transform .32s cubic-bezier(.2,.8,.3,1);}
+  .path-card:hover .figure,.path-card:focus-visible .figure{transform:translateY(-6px) scale(1.05);}
+  .path-card:hover .fig-aura,.path-card:focus-visible .fig-aura{animation-duration:2s;}
+  .path-card.done .fig-aura{animation-duration:3.4s;}
+
+  /* ---------- Beat-overgang ---------- */
+  .beat-in{animation:beatIn .46s cubic-bezier(.16,.8,.3,1);}
+  @keyframes beatIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- Gate-onthulling (puls bij openen) ---------- */
+  .gate-card.open{animation:gateGlow 1.15s ease-out;}
+  @keyframes gateGlow{
+    0%{box-shadow:0 0 0 0 rgba(216,146,64,0);}
+    45%{box-shadow:0 0 64px 8px var(--gold-glow);}
+    100%{box-shadow:0 0 40px -10px var(--gold-glow);}
+  }
+
+  /* ---------- Terug-knop binnen een weg ---------- */
+  .beat-nav{justify-content:space-between;gap:12px;}
+  .ghost-back{
+    background:transparent;border:1.5px solid #d3bd92;color:#6b5536;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    border-radius:9px;padding:11px 20px;cursor:pointer;transition:all .15s ease;
+  }
+  .ghost-back:hover{background:#fffaf0;border-color:var(--accent);color:#3a2c1a;}
+  .ghost-back:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  /* ---------- Drie figuren ontmoeten elkaar in de finale ---------- */
+  .finale-figures{display:flex;justify-content:center;align-items:flex-end;gap:6px;margin-bottom:14px;}
+  .finale-figures .figure{width:62px;height:80px;}
+  .fig-fin{opacity:0;transform:translateY(15px);}
+  #screen-finale.active .fig-fin{animation:figIn .75s cubic-bezier(.16,.8,.3,1) forwards;}
+  #screen-finale.active .fig-fin:nth-child(1){animation-delay:.14s;}
+  #screen-finale.active .fig-fin:nth-child(2){animation-delay:.36s;}
+  #screen-finale.active .fig-fin:nth-child(3){animation-delay:.58s;}
+  @keyframes figIn{to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- Geanimeerde scène-illustratie bovenaan elke beat ---------- */
+  .scene-band{
+    margin:-32px -30px 22px;height:130px;position:relative;overflow:hidden;
+    border-radius:11px 11px 0 0;background:linear-gradient(160deg,#1d140c,#120b06);
+  }
+  .scene-band::after{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 128%, var(--accent), transparent 66%);opacity:.22;}
+  .scene{display:block;width:100%;height:100%;position:relative;}
+  .scene-band.sc-enter{animation:scEnter .6s ease;}
+  @keyframes scEnter{from{opacity:0;}to{opacity:1;}}
+
+  .sc-glow{transform-box:fill-box;transform-origin:center;animation:scGlow 4s ease-in-out infinite;}
+  @keyframes scGlow{0%,100%{opacity:.5;}50%{opacity:.95;}}
+  .sc-flicker{transform-box:fill-box;transform-origin:50% 100%;animation:scFlick 1.5s ease-in-out infinite;}
+  .sc-flicker2{transform-box:fill-box;transform-origin:50% 100%;animation:scFlick 1.5s ease-in-out infinite reverse;}
+  @keyframes scFlick{0%,100%{transform:scaleY(1) skewX(0deg);}30%{transform:scaleY(1.09) skewX(2.5deg);}62%{transform:scaleY(.93) skewX(-2.5deg);}}
+  .sc-beam{transform-box:fill-box;transform-origin:center;animation:scBeam 9s ease-in-out infinite;}
+  @keyframes scBeam{0%,100%{transform:translateX(-22px);opacity:.4;}50%{transform:translateX(22px);opacity:.8;}}
+  .sc-dot{animation:scDot 3.6s linear infinite;}
+  @keyframes scDot{0%{transform:translateX(0);opacity:0;}12%{opacity:1;}88%{opacity:1;}100%{transform:translateX(160px);opacity:0;}}
+  .sc-dash{animation:scDash 1.5s linear infinite;}
+  @keyframes scDash{from{transform:translateY(-18px);}to{transform:translateY(0);}}
+  .sc-rise{animation:scRise 6s linear infinite;}
+  @keyframes scRise{0%{transform:translateY(18px);opacity:0;}25%{opacity:.7;}100%{transform:translateY(-95px);opacity:0;}}
+  .sc-sway{transform-box:fill-box;transform-origin:50% 0;animation:scSway 5.5s ease-in-out infinite;}
+  @keyframes scSway{0%,100%{transform:rotate(-3.5deg);}50%{transform:rotate(3.5deg);}}
+
+  /* ---------- Figuren ademen ---------- */
+  .figure-holder{animation:breathe 5s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+
+  /* ---------- Inleef-regel + geen-fout hint ---------- */
+  .empathy-rule{text-align:center;font-weight:600;color:var(--ember);font-size:15px;margin:18px auto 4px;max-width:480px;}
+  .choice-hint{font-size:12.5px;color:#8a6f4a;font-style:italic;margin:-10px 0 14px;}
+
+  /* ---------- Kleurflits bij betreden van een weg ---------- */
+  #flash{position:fixed;inset:0;pointer-events:none;z-index:45;opacity:0;}
+  #flash.go{animation:flashIn .65s ease-out;}
+  @keyframes flashIn{0%{opacity:.5;}100%{opacity:0;}}
+
+  /* ---------- Foute keuze + feedback ---------- */
+  .choice-btn.wrong{border-color:#9A4A3A;background:#fbeae6;box-shadow:inset 0 0 0 1px #9A4A3A;animation:shake .4s;}
+  @keyframes shake{25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+  .choice-feedback{font-size:13.5px;font-weight:600;margin-top:12px;display:none;}
+  .choice-feedback.show{display:block;color:#9A4A3A;background:rgba(154,74,58,0.08);border-left:3px solid #9A4A3A;border-radius:0 8px 8px 0;padding:12px 16px;animation:fade .3s ease;}
+
+  /* ---------- Model bij open vragen (gecalibreerde lat) ---------- */
+  .model-btn{margin-top:14px;background:transparent;border:1.5px solid #d3bd92;color:#6b5536;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;border-radius:8px;padding:9px 16px;cursor:pointer;transition:all .15s ease;}
+  .model-btn:hover{background:#fffaf0;border-color:var(--accent);color:#3a2c1a;}
+  .model-box{margin-top:12px;padding:14px 16px;background:#eef3ee;border-left:3px solid #3D5C4A;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.6;color:#2c4536;display:none;}
+  .model-box.show{display:block;animation:fade .35s ease;}
+  .model-box strong{color:#284033;}
+
+  /* ---------- Open-vraag flow: kernwoorden, timer, beslissing ---------- */
+  .kw-hint{font-size:12.5px;color:#7a6038;margin:12px 0 8px;line-height:1.5;}
+  .kw-hint strong{color:#5a3c12;}
+  .reflect-feedback{display:none;font-size:13px;font-weight:600;margin:8px 0;color:#9A4A3A;}
+  .reflect-feedback.show{display:block;background:rgba(154,74,58,0.08);border-left:3px solid #9A4A3A;border-radius:0 8px 8px 0;padding:10px 14px;animation:fade .3s ease;}
+  .timer-line{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--ember-deep);font-weight:600;}
+  .decide-line{margin-top:14px;font-size:13.5px;color:#5a4322;font-weight:600;}
+  .decide-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .accept-btn{background:#3D5C4A;color:#fff;border:none;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;border-radius:8px;padding:9px 16px;cursor:pointer;transition:filter .12s ease;}
+  .accept-btn:hover{filter:brightness(1.1);}
+  .accept-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .accepted-line{margin-top:14px;font-size:13.5px;color:#3D5C4A;font-weight:600;}
+  .reflect-card textarea[readonly]{background:#f3ead7;color:#5a4732;cursor:default;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+    .embers,#flash{display:none;}
+    .fig-aura{animation:none!important;opacity:.45!important;}
+    .figure-holder,.lantern.lit .flame,.ubuntu-line,.finale-ubuntu{animation:none!important;}
+    .scene *{animation:none!important;}
+    .fig-fin{opacity:1!important;transform:none!important;}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <radialGradient id="auraGrad" cx="50%" cy="45%" r="60%">
+    <stop offset="0%" stop-color="#D89240" stop-opacity="0.9"/>
+    <stop offset="100%" stop-color="#D89240" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#FFF4D6" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#FFF4D6" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#FFCF7A" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#FFCF7A" stop-opacity="0"/>
+  </radialGradient>
+</defs></svg>
+<div class="embers" id="embers"></div>
+<div id="flash"></div>
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">Levensbeschouwing · klas 3 · Ubuntu &amp; apartheid</p>
+    <h1 class="title">Ik ben omdat wij zijn</h1>
+    <p class="title-sub">Drie wegen naar de Waarheidscommissie</p>
+  </div>
+
+  <div class="paths-progress" id="progress"></div>
+
+  <!-- ===================== INTRO ===================== -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-card">
+      <p class="lead">Zuid-Afrika, tijdens de apartheid. Drie mensen: een gevangene, zijn bewaker en een bisschop: wier levens samenkomen in één kamer: de <strong>Waarheids- en Verzoeningscommissie</strong>.</p>
+      <p>Je loopt alle drie hun wegen, één voor één. Niet als toeschouwer, maar door hún ogen.</p>
+
+      <p class="ubuntu-line">&ldquo;Mijn menselijkheid is verbonden met jouw menselijkheid.&rdquo;</p>
+
+      <p class="empathy-rule">Verplaats je in elk personage en kies steeds wat écht bij hém past. Een keuze die niet bij het personage past, rekenen we fout: dan moet je je beter inleven.</p>
+
+      <div class="note-block">
+        Een ingeleefd verhaal over echte geschiedenis. Nelson Mandela en Desmond Tutu zijn historische personen; hun woorden hier nodigen je uit je in hen te verplaatsen. De bewaker <em>Pieter</em> is een verzonnen, samengesteld personage dat staat voor de vele gewone mensen die het systeem uitvoerden.
+      </div>
+    </div>
+    <div class="beat-nav">
+      <button class="advance" style="--accent:var(--ember)" onclick="goHub()">Betreed het verhaal →</button>
+    </div>
+  </div>
+
+  <!-- ===================== HUB ===================== -->
+  <div class="screen" id="screen-hub">
+    <p class="hub-intro">Loop alle drie de wegen: in welke volgorde je wilt. De pagina onthoudt wat je al hebt gelopen. Pas als je alle drie hebt gevoeld, opent de Waarheidscommissie zich, waar de drie elkaar ontmoeten.</p>
+    <div class="path-cards" id="pathCards"></div>
+    <div class="gate-card" id="gateCard">
+      <div class="gc-lock" id="gcLock">🔒</div>
+      <p class="gc-title" id="gcTitle">De Waarheidscommissie</p>
+      <p class="gc-sub" id="gcSub">Loop eerst alle drie de wegen. Dan opent de kamer waar gevangene, bewaker en bisschop elkaar in de ogen kijken.</p>
+    </div>
+  </div>
+
+  <!-- ===================== STORY (gedeeld) ===================== -->
+  <div class="screen" id="screen-story">
+    <div class="story-head">
+      <div class="story-id">
+        <span class="story-dot" id="storyDot"></span>
+        <span class="story-who" id="storyWho"></span>
+      </div>
+      <div class="beat-dots" id="beatDots"></div>
+    </div>
+    <div class="beat" id="beatBox"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+      <button class="back-link" onclick="goHub()">← Terug naar de drie wegen</button>
+    </div>
+  </div>
+
+  <!-- ===================== FINALE ===================== -->
+  <div class="screen" id="screen-finale">
+    <div class="finale-card">
+      <div class="finale-figures" id="finaleFigures"></div>
+      <h2>De drie wegen komen samen</h2>
+      <p>In de stille commissiezaal zit Pieter tegenover de mensen die hij jarenlang bewaakte en kleineerde. Met trillende stem vertelt hij precies wat hij deed: alles, zonder iets te verbergen. Niemand juicht. Maar voor het eerst kijkt hij hen recht aan.</p>
+      <p>Bisschop Tutu zit ertussen en zorgt dat het gesprek menselijk blijft. En dit alles kan alleen gebeuren omdat Mandela koos voor verzoening in plaats van wraak.</p>
+      <p class="finale-ubuntu">&ldquo;Een mens is een mens door andere mensen.&rdquo;</p>
+      <p>Pieter wordt niet gestraft. Toch is dit geen makkelijke uitweg: hij moest zijn schuld hardop uitspreken, recht tegenover de slachtoffers, en met hun waarheid verder leven. Dat is Ubuntu, zelfs een dader kan weer mens worden, niet door te vergeten, maar door de waarheid onder ogen te zien.</p>
+      <button class="restart" onclick="resetAll()">↺ Opnieuw beginnen</button>
+    </div>
+  </div>
+
+  <footer class="note">
+    Een ingeleefd verhaal over echte geschiedenis · de bewaker Pieter is een fictief, samengesteld personage.
+  </footer>
+
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD: drie verhaallijnen + convergentie.
+   Beat-types: narrative | quote | choice | reflect
+   ========================================================================= */
+
+const STORYLINES = {
+  mandela: {
+    who: 'Nelson Mandela · de gevangene',
+    name: 'Nelson Mandela',
+    role: 'De gevangene',
+    tag: 'Wraak ligt voor de hand. Hij koos iets anders.',
+    color: 'var(--mandela)',
+    beats: [
+      { type:'narrative', title:'De steengroeve',
+        body:[
+          'Jij bent Nelson Mandela. Je vecht tegen de apartheid en daarvoor zit je inmiddels jaren vast op Robben Island, een gevangeniseiland voor de kust.',
+          'Elke dag breek je stenen in een verblindend witte kalkgroeve. Je cel is klein. Je post wordt weggehouden. De bewakers behandelen je als minder dan een mens: precies wat het systeem van je wil maken.',
+          'Hier zou de haat kunnen groeien. Veel mensen om je heen voelen die haat, en wie zou het ze kwalijk nemen?'
+        ]},
+      { type:'choice', prompt:'Hoe overleef je het, jaar na jaar, zonder hard en bitter te worden?',
+        options:[
+          { label:'Ik blijf mensen als mensen zien, ook mijn bewakers.', fit:true,
+            response:'Precies dit past bij Mandela. Het klinkt bijna onmogelijk, maar hij geloofde dat hij zijn tegenstander alleen kon verslaan als hij hem eerst echt begreep. En begrijpen begint met iemand als mens zien.' },
+          { label:'Ik leef voor de wraak die later komt. Dat houdt me overeind.', fit:false,
+            response:'Dit past niet bij Mandela. Hij zag juist het gevaar van wraak: wie leeft voor wraak, laat zijn vijand bepalen wie hij wordt. Hij wilde vrij zijn, ook van binnen. Kies een antwoord dat bij hém past.' },
+          { label:'Ik sluit me volledig af en laat niemand meer binnen.', fit:false,
+            response:'Dit past niet bij Mandela. Hij sloot zich niet af, maar bleef contact zoeken: juist met de mensen aan de andere kant. Probeer het opnieuw.' }
+        ]},
+      { type:'narrative', title:'De taal van de vijand',
+        body:[
+          'Je doet iets wat je medegevangenen niet begrijpen: je leert Afrikaans, de taal van je bewakers. Je leest hun geschiedenis, hun dichters, hun angsten.',
+          'Waarom zou je de moeite nemen om je onderdrukker te begrijpen? Omdat je weet: ooit moet dit land verder. En een vijand die je begrijpt, is een vijand met wie je ooit kunt práten.',
+          'Eén jonge bewaker valt je op. Je vraagt naar zijn familie, zijn kinderen. Hij weet niet goed wat hij ermee aan moet: hij is opgevoed met het idee dat jij de vijand bent.'
+        ]},
+      { type:'reflect', prompt:'Ubuntu zegt: &ldquo;Menselijkheid is een kwaliteit die we elkaar geven.&rdquo; Hoe geeft Mandela zijn bewaker hier menselijkheid, en wat hoopt hij daarmee te bereiken?',
+        hint:'Denk terug aan &ldquo;ke motho&rdquo; en &ldquo;ik ben omdat wij zijn.&rdquo;',
+        model:'Een sterk antwoord noemt een concreet gebaar (zijn taal leren, naar zijn familie en kinderen vragen, hem met respect behandelen) én legt uit wát Mandela daarmee hoopt: zijn tegenstander begrijpen en een brug bouwen naar verzoening. Het verbindt dit met Ubuntu: je wordt pas mens in relatie tot anderen. Je eigen woorden mogen anders zijn; het gaat om gebaar + bedoeling + link met Ubuntu.',
+        keywords:['taal','familie','kinderen','begrijp','verzoening','respect','ubuntu'], minKeywords:2 },
+      { type:'narrative', title:'Vrij, en nu?',
+        body:[
+          'Na 27 jaar kom je vrij. Even later word je de eerste zwarte president van Zuid-Afrika.',
+          'Het land balanceert op een mes. Miljoenen mensen zijn vernederd, mishandeld, beroofd van alles. Eén woord van jou over wraak, en het land kan in vlammen opgaan.',
+          'Iedereen kijkt naar jou.'
+        ]},
+      { type:'choice', prompt:'Wat kies je als president?',
+        options:[
+          { label:'Verzoening. We zoeken de waarheid, niet de wraak: samen verder.', fit:true,
+            response:'Dit was Mandela\u2019s keuze. Geen wraak, geen vergeten, maar verzoening: de waarheid op tafel, zodat het land kan helen. Daarvoor richt hij iets nieuws op: een commissie van waarheid en verzoening.' },
+          { label:'Strenge rechtszaken en straffen voor alle daders.', fit:false,
+            response:'Dit is een serieuze optie die sommigen wilden, maar het past niet bij Mandela\u2019s eigen keuze. Hij vreesde dat rechtszaken het land verder zouden splijten in winnaars en verliezers. Kies het antwoord dat bij hém past.' },
+          { label:'Alles vergeten en zwijgen, zodat niemand wordt opgeschrikt.', fit:false,
+            response:'Dit past niet bij Mandela. Hij wilde niet vergeten of verzwijgen: de waarheid moest juist op tafel. Verzoening is iets anders dan wegkijken. Probeer opnieuw.' }
+        ]},
+      { type:'quote', text:'Ubuntu betekent: mijn menselijkheid is verbonden met jouw menselijkheid. We kunnen alleen samen mens zijn.',
+        src:'Toegeschreven aan Nelson Mandela' },
+      { type:'narrative', title:'Wat je achterlaat',
+        body:[
+          'Je zult niet zelf de rechter zijn. Die rol geef je uit handen, aan een man die je vertrouwt: bisschop Desmond Tutu.',
+          'En ergens in het land zit een oud-bewaker die moet beslissen of hij naar die commissie durft te komen.',
+          'Jouw keuze: verzoening in plaats van wraak: is de reden dat die kamer straks bestaat.'
+        ]}
+    ]
+  },
+
+  guard: {
+    who: 'Pieter · de bewaker',
+    name: 'De bewaker',
+    role: 'Pieter (fictief)',
+    tag: 'Een gewone man die meedeed. Tot hij begon te zien.',
+    color: 'var(--guard)',
+    beats: [
+      { type:'narrative', title:'Een gewone baan',
+        body:[
+          'Jij bent Pieter. Je bent negentien. Je komt uit een klein dorp en je had werk nodig, dus je werd gevangenbewaker: op Robben Island, het eiland waar de tegenstanders van de apartheid worden opgesloten. Eén van de gevangenen die jij dag in dag uit moet bewaken, is Nelson Mandela.',
+          'Je ziet jezelf niet als een slecht mens. Je gaat naar de kerk. Je houdt van je moeder. Je bent opgevoed met het idee dat apartheid normaal is, zo hoort de wereld te zijn, dat hebben je ouders, je school en je dominee altijd gezegd.',
+          'Je doet gewoon je werk. Je voert orders uit. Dat het systeem wreed is, daar denk je liever niet over na.',
+          'Dit is het verhaal van hoe juist déze bewaker uiteindelijk spijt krijgt van zijn rol. Jouw vraag onderweg: hóe gebeurt zoiets: hoe gaat iemand die meedoet, langzaam anders kijken?'
+        ]},
+      { type:'reflect', prompt:'Hoe kan een gewoon mens: geen monster, maar iemand zoals Pieter: meedoen aan iets dat zo onrechtvaardig is?',
+        hint:'Schrijf kort op wat het makkelijk maakt om &ldquo;gewoon mee te doen&rdquo;.',
+        model:'Een sterk antwoord noemt redenen als: opgevoed met het idee dat het normaal is, bevelen opvolgen, er niet over nadenken, bang zijn je baan of je groep te verliezen, of jezelf wijsmaken dat je &ldquo;maar je werk doet&rdquo;. De kern: gewone mensen doen mee door gewoonte, angst en omstandigheden: niet omdat ze monsters zijn. Eén of twee goed uitgelegde redenen is genoeg; een antwoord dat Pieter simpelweg &ldquo;slecht&rdquo; noemt, mist het punt.',
+        keywords:['opgevoed','bevel','order','angst','gewoon','normaal','nadenk','groep'], minKeywords:2 },
+      { type:'narrative', title:'Hij kent jouw taal',
+        body:[
+          'Eén gevangene is anders dan je verwachtte: Nelson Mandela. Hij spreekt jouw taal, Afrikaans. Hij vraagt naar je familie. Naar je kinderen. Hij onthoudt hun namen.',
+          'Dat had je niet zien aankomen. Hij hoort de vijand te zijn: iemand om op neer te kijken. Maar hij behandelt jóu met een waardigheid die jij hém nooit hebt gegeven.',
+          'Het maakt je onrustig. Want als hij een mens is, met kinderen en een naam… wat doe jij hem dan eigenlijk aan?'
+        ]},
+      { type:'choice', prompt:'Wat doe je met dat onrustige gevoel?',
+        options:[
+          { label:'Ik begin te twijfelen. Misschien klopt er iets niet aan wat ik altijd geloofde.', fit:true,
+            response:'Dit past bij Pieter: hij is juist degene die niet kan blijven wegkijken. Twijfelen betekent toegeven dat je misschien fout zat, en dat je deel was van het onrecht. Dat is veel zwaarder dan het lijkt.' },
+          { label:'Ik duw het voorgoed weg en doe gewoon mijn werk verder.', fit:false,
+            response:'Dit gebeurt bij veel mensen: wegkijken is makkelijker. Maar Pieter raakt juist geraakt door wat hij ziet; uiteindelijk krijgt hij er spijt van. Kun je bedenken waarom het hem niet loslaat? Kies het antwoord dat daarbij past.' },
+          { label:'Ik word juist harder voor hem, om het gevoel te onderdrukken.', fit:false,
+            response:'Sommige mensen worden harder om hun schuldgevoel te smoren. Maar bij Pieter werkt het andersom: hoe meer hij ziet, hoe meer het hem raakt. Kun je je voorstellen waarom? Kies het antwoord dat daarbij past.' }
+        ]},
+      { type:'narrative', title:'Zien doet pijn',
+        body:[
+          'Over de jaren zie je steeds meer. De vernederingen. Het onrecht dat je zelf hebt uitgevoerd, in opdracht, &ldquo;omdat het nu eenmaal zo werkte&rdquo;.',
+          'Maar zien betekent toegeven. Toegeven dat de uniform die je droeg, deel was van iets verschrikkelijks. Dat is angstaanjagend, want dan moet je iets onder ogen zien over jezelf.'
+        ]},
+      { type:'reflect', prompt:'Waarom is het zó moeilijk om toe te geven dat je fout zat: veel moeilijker dan een fout van een ander zien?',
+        hint:'Wat ben je bang te verliezen als je het toegeeft?',
+        model:'Een sterk antwoord legt uit dat toegeven betekent dat je je eigen schuld onder ogen moet zien, je zelfbeeld moet bijstellen (&ldquo;ik ben dus niet zo goed als ik dacht&rdquo;) en misschien wordt afgewezen door je eigen groep. Wegkijken voelt veiliger dan jezelf als deel van het onrecht te zien. Verschillende formuleringen zijn prima, zolang het draait om schuld, zelfbeeld of de angst om je groep te verliezen.',
+        keywords:['schuld','zelfbeeld','toegeven','afgewezen','groep','wegkijken','onrecht'], minKeywords:2 },
+      { type:'narrative', title:'De commissie opent',
+        body:[
+          'De apartheid valt. Er komt een Waarheids- en Verzoeningscommissie. Het aanbod is ongekend: wie de hele waarheid vertelt over wat hij deed: openbaar, tegenover de slachtoffers: kan amnestie krijgen. Geen straf.',
+          'Niemand dwingt je. Je zou kunnen zwijgen en gewoon doorgaan met je leven. Veel oud-bewakers doen precies dat.',
+          'Maar er was iets wat bisschop Tutu zei en wat bleef hangen: dat je niet heel kunt worden zolang je je verstopt voor wat je hebt gedaan.'
+        ]},
+      { type:'choice', prompt:'Kom je naar voren?',
+        options:[
+          { label:'Ja. Ik vertel de hele waarheid, ook al is het beschamend.', fit:true,
+            response:'Dit past bij Pieter. Let op: dit is géén vrijspraak van zijn schuld: de waarheid vertellen maakt niet ongedaan wat hij deed. Maar het is iets anders dan straf: verantwoordelijkheid nemen, je gezicht laten zien aan de mensen die je hebt geraakt. Dat is wat Ubuntu van hem vraagt.' },
+          { label:'Nee, ik zwijg en draag het in stilte verder.', fit:false,
+            response:'Veel oud-bewakers zwegen inderdaad. Maar Pieter is juist iemand die uiteindelijk niet meer kón zwijgen: zijn spijt liet hem niet met rust. Kies het antwoord dat bij die spijt past.' },
+          { label:'Ik kom, maar vertel alleen de halve waarheid om mezelf te beschermen.', fit:false,
+            response:'Een halve bekentenis beschermt jezelf, maar de commissie vroeg juist de héle waarheid, en Pieter wil na al die jaren eindelijk eerlijk zijn. Probeer opnieuw.' }
+        ]},
+      { type:'narrative', title:'Was dit rechtvaardig?',
+        body:[
+          'Je besluit te getuigen. Niet om je schuld te ontlopen: die blijft, maar om de waarheid eindelijk uit te spreken.',
+          'Sommige slachtoffers vinden dit te makkelijk: een dader die bekent en vrijuit gaat. Was dat wel rechtvaardig? Daarover wordt in Zuid-Afrika nóg gediscussieerd.',
+          'In de commissiekamer zit een bisschop die jouw bekentenis zal aanhoren. En de hele commissie bestaat dankzij de keuze van een man die jij ooit bewaakte.'
+        ]}
+    ]
+  },
+
+  tutu: {
+    who: 'Desmond Tutu · de bisschop',
+    name: 'Desmond Tutu',
+    role: 'De bisschop',
+    tag: 'Hij hield de ruimte open waarin verzoening kon gebeuren.',
+    color: 'var(--tutu)',
+    beats: [
+      { type:'narrative', title:'Geloof én verzet',
+        body:[
+          'Jij bent Desmond Tutu, aartsbisschop en al jaren een luide stem tegen de apartheid. Voor jou is er geen tegenstelling tussen je christelijke geloof en Ubuntu: ze zeggen hetzelfde.',
+          'Allebei leren ze je: in ieder mens zit iets kostbaars, ook in je vijand. Niemand is voorgoed verloren. En tegelijk: geen waarheid mag begraven blijven.'
+        ]},
+      { type:'narrative', title:'De onmogelijke opdracht',
+        body:[
+          'President Mandela vraagt jou de Waarheids- en Verzoeningscommissie te leiden. Het land is één grote open wond.',
+          'De ene kant wil rechtszaken zoals na een oorlog: daders moeten boeten. De andere kant wil een streep eronder: vergeten en doorgaan. Jij kiest een derde weg: de waarheid in ruil voor amnestie, hardop, in het openbaar, oog in oog.'
+        ]},
+      { type:'choice', prompt:'Waarom is de wáárheid voor jou belangrijker dan straf?',
+        options:[
+          { label:'Omdat slachtoffers eerst gehoord en erkend moeten worden.', fit:true,
+            response:'Ja. Voor veel slachtoffers was het zwaarste niet eens de straf van de dader, maar dat niemand ooit erkende wat hun was aangedaan. De waarheid, hardop uitgesproken, geeft dat terug.' },
+          { label:'Omdat straf het land verder zou splijten: waarheid kan helen.', fit:true,
+            response:'Ook dit past bij Tutu. Hij gelooft dat een land niet geneest door wraak, maar door eerlijkheid. Niet vergeten, niet wegkijken, maar samen onder ogen zien wat er gebeurd is. Dat is Ubuntu, toegepast op een heel volk.' },
+          { label:'Omdat daders eigenlijk geen straf verdienen en het verleden niet uitmaakt.', fit:false,
+            response:'Dit past niet bij Tutu. Voor hém deed het verleden er juist enorm toe: daarom moest de waarheid hardop gezegd worden. Het ging hem niet om daders vrijpleiten, maar om eerlijkheid en heling. Kies een antwoord dat bij hém past.' }
+        ]},
+      { type:'narrative', title:'Aan de tafel',
+        body:[
+          'De hoorzittingen beginnen. Een moeder vertelt hoe haar zoon werd vermoord. De dader zit een paar meter verderop en moet alles bekennen.',
+          'Het is bijna niet te verdragen. Soms leg je je hoofd in je handen en huil je openlijk aan tafel: een bisschop die de tranen niet kan tegenhouden.',
+          'Want jij zit tussen het slachtoffer en de dader in. En jouw taak is niet om te veroordelen, maar om de ruimte open te houden waarin ze allebei mens kunnen blijven.'
+        ]},
+      { type:'quote', text:'Een mens is een mens door andere mensen. Wie een ander zijn menselijkheid afneemt, verliest ook zijn eigen menselijkheid, en kan die terugvinden door de waarheid onder ogen te zien.',
+        src:'De gedachte van Desmond Tutu over Ubuntu' },
+      { type:'reflect', prompt:'Is verzoening zónder straf échte gerechtigheid? Schrijf eerst op hoe Tutu het zou verdedigen, pas daarna of je het zelf eens of oneens bent.',
+        hint:'Empathie eerst: verwoord zijn standpunt zo sterk mogelijk voordat je je eigen mening geeft.',
+        model:'Een sterk antwoord verwoordt eerst Tutu\u2019s kant zo overtuigend mogelijk: waarheid en erkenning helen een land meer dan straf, en ook de dader blijft mens en kan hersteld worden door de waarheid onder ogen te zien. Pas dáárna komt een eigen mening: eens of oneens mag allebei, zolang je het onderbouwt. Een antwoord dat meteen je eigen oordeel geeft zonder eerst Tutu te verwoorden, mist de opdracht; een antwoord dat alleen Tutu napraat zonder eigen standpunt ook.',
+        keywords:['waarheid','verzoening','helen','erken','straf','mens'], minKeywords:2 },
+      { type:'narrative', title:'Wat je openhoudt',
+        body:[
+          'Aan het eind van een lange dag zit je nog na in de stille zaal. Vandaag bekende een politieagent hoe hij een jonge demonstrant doodschoot. Zijn moeder zat op de eerste rij. Je zag hoe zwaar het was: voor allebei.',
+          'Jij sprak geen vonnis uit. Je liet de dader zijn daad hardop benoemen, en de moeder haar verdriet vertellen: recht tegenover elkaar. Geen straf, wél de waarheid, oog in oog.',
+          'Straks komt er nog zo\u2019n zaak: een oud-bewaker die zijn schuld wil opbiechten. En het is jouw stem die hem en de mensen die hij kwetste, in dezelfde kamer bij elkaar houdt.'
+        ]}
+    ]
+  }
+};
+
+const ORDER = ['mandela','guard','tutu'];
+
+const STATE = {
+  done: {},          // { mandela:true, ... }
+  current: null,     // 'mandela' | 'guard' | 'tutu' | 'finale'
+  beat: 0,
+  choices: {},       // { 'mandela-1': 0 }  gekozen (passende) optie-index
+  notes: {},         // { 'guard-3': 'tekst' }  schrijfmomenten (binnen sessie)
+  modelShown: {},    // (verouderd) blijft voor compatibiliteit
+  reflect: {},       // { 'mandela-3': {phase:'writing'|'checking'|'decide'|'accepted', remaining} }
+  reflectTimer: null,// lopende 10-seconden timer
+  read: {},          // { 'mandela-0': true }  verteltekst al (verplicht) gelezen?
+  readTimer: null    // lopende leesvergrendeling
+};
+
+/* ---------- Progress lantaarns ---------- */
+function renderProgress(){
+  const wrap = document.getElementById('progress');
+  wrap.innerHTML = '';
+  ORDER.forEach((id, i) => {
+    const lit = !!STATE.done[id];
+    const node = document.createElement('div');
+    node.className = 'lantern ' + (lit ? 'lit' : 'dim');
+    node.innerHTML = `
+      <svg viewBox="0 0 24 32" aria-hidden="true">
+        <rect x="10" y="15" width="4" height="17" fill="#5C4A38"/>
+        <ellipse class="flame" cx="12" cy="11" rx="7" ry="11" fill="#D89240"/>
+        <ellipse class="flame" cx="12" cy="10" rx="4" ry="7" fill="#FFE6AC"/>
+      </svg>
+      <small>${STORYLINES[id].name}</small>`;
+    wrap.appendChild(node);
+    if (i < ORDER.length - 1){
+      const link = document.createElement('div');
+      link.className = 'prog-link' + (lit && STATE.done[ORDER[i+1]] ? ' lit' : (lit ? ' lit' : ''));
+      wrap.appendChild(link);
+    }
+  });
+}
+
+/* ---------- Screen switching ---------- */
+function show(screenId){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goHub(){
+  STATE.current = null;
+  renderHub();
+  show('screen-hub');
+}
+
+/* ---------- Hub ---------- */
+function renderHub(){
+  const cards = document.getElementById('pathCards');
+  cards.innerHTML = '';
+  ORDER.forEach(id => {
+    const s = STORYLINES[id];
+    const done = !!STATE.done[id];
+    const card = document.createElement('div');
+    card.className = 'path-card' + (done ? ' done' : '');
+    card.style.setProperty('--accent', s.color);
+    card.tabIndex = 0;
+    card.setAttribute('role','button');
+    card.innerHTML = `
+      <span class="pc-check">✓</span>
+      <div class="figure-holder">${figureSVG(id)}</div>
+      <div class="pc-role">${s.role}</div>
+      <p class="pc-name">${s.name}</p>
+      <p class="pc-tag">${s.tag}</p>
+      <span class="pc-status">${done ? 'Voltooid · opnieuw lopen' : 'Begin deze weg'}</span>`;
+    card.addEventListener('click', () => startStory(id));
+    card.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); startStory(id);} });
+    cards.appendChild(card);
+  });
+
+  const allDone = ORDER.every(id => STATE.done[id]);
+  const gate = document.getElementById('gateCard');
+  const lock = document.getElementById('gcLock');
+  const sub = document.getElementById('gcSub');
+  if (allDone){
+    gate.classList.add('open');
+    lock.textContent = '🕊️';
+    sub.textContent = 'De kamer is open. Gevangene, bewaker en bisschop komen samen.';
+    gate.onclick = () => startFinale();
+    gate.tabIndex = 0;
+    gate.setAttribute('role','button');
+    gate.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); startFinale(); } };
+  } else {
+    gate.classList.remove('open');
+    lock.textContent = '🔒';
+    const left = ORDER.filter(id => !STATE.done[id]).length;
+    sub.textContent = `Nog ${left} ${left===1?'weg':'wegen'} te gaan. Dan opent de kamer waar de drie elkaar in de ogen kijken.`;
+    gate.onclick = null;
+    gate.removeAttribute('role');
+    gate.tabIndex = -1;
+  }
+}
+
+/* ---------- Story engine ---------- */
+function startStory(id){
+  STATE.current = id;
+  STATE.beat = 0;
+  flashColor(STORYLINES[id].color);
+  show('screen-story');
+  renderBeat();
+}
+
+function flashColor(color){
+  const fl = document.getElementById('flash');
+  if (!fl) return;
+  fl.style.background = `radial-gradient(ellipse at 50% 38%, ${color}, transparent 70%)`;
+  fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+}
+
+function renderBeat(){
+  const id = STATE.current;
+  const s = STORYLINES[id];
+  const beats = s.beats;
+  const i = STATE.beat;
+  const beat = beats[i];
+
+  // stop een eventueel lopende open-vraag-timer (bv. bij navigeren)
+  if (STATE.reflectTimer){ clearInterval(STATE.reflectTimer); STATE.reflectTimer = null; }
+  // stop een eventueel lopende leesvergrendeling
+  if (STATE.readTimer){ clearInterval(STATE.readTimer); STATE.readTimer = null; }
+
+  document.getElementById('screen-story').style.setProperty('--accent', s.color);
+  document.getElementById('storyDot').style.background = s.color;
+  document.getElementById('storyDot').style.boxShadow = '0 0 12px -1px ' + s.color;
+  document.getElementById('storyWho').textContent = s.who;
+  document.getElementById('storyWho').style.color = s.color;
+
+  // beat dots
+  const dots = document.getElementById('beatDots');
+  dots.innerHTML = beats.map((_,k) => `<span class="${k<=i?'on':''}"></span>`).join('');
+
+  const box = document.getElementById('beatBox');
+  box.style.setProperty('--accent', s.color);
+  const key = id + '-' + i;
+  let html = '';
+
+  let readLock = null; // { secs } als deze tekst nog gelezen moet worden
+
+  if (beat.type === 'narrative'){
+    html = `<h3 class="beat-title">${beat.title}</h3><div class="beat-body">${beat.body.map(p=>`<p>${p}</p>`).join('')}</div>`;
+    const words = (beat.title + ' ' + beat.body.join(' ')).split(/\s+/).filter(Boolean).length;
+    const secs = Math.min(10, Math.max(3, Math.round(words / 6)));
+    const alreadyRead = !!STATE.read[key];
+    if (!alreadyRead) readLock = { secs };
+    html += navBtn('Verder →', alreadyRead);
+  }
+  else if (beat.type === 'quote'){
+    html = `<div class="quote-beat">&ldquo;${beat.text}&rdquo;<div class="quote-src">${beat.src}</div></div>`;
+    const words = (beat.text + ' ' + beat.src).split(/\s+/).filter(Boolean).length;
+    const secs = Math.min(10, Math.max(3, Math.round(words / 6)));
+    const alreadyRead = !!STATE.read[key];
+    if (!alreadyRead) readLock = { secs };
+    html += navBtn('Verder →', alreadyRead);
+  }
+  else if (beat.type === 'reflect'){
+    const saved = STATE.notes[key] || '';
+    const r = STATE.reflect[key] || { phase:'writing' };
+    const need = beat.minKeywords || 2;
+    const kwSuggest = (beat.keywords || []).slice(0,4).join(', ');
+    const editable = (r.phase === 'writing');
+    const modelVisible = (r.phase !== 'writing');
+
+    let tools = '';
+    if (r.phase === 'writing'){
+      tools = `
+        <p class="kw-hint">Gebruik in je antwoord minstens <strong>${need}</strong> van deze kernwoorden: <strong>${kwSuggest}</strong>.</p>
+        <div class="reflect-feedback" id="rfb-${key}"></div>
+        <button class="model-btn" onclick="checkReflect('${key}')">Controleer mijn antwoord →</button>`;
+    } else if (r.phase === 'checking'){
+      tools = `<p class="timer-line" id="rtimer-${key}">Lees het voorbeeld en vergelijk…</p>`;
+    } else if (r.phase === 'decide'){
+      tools = `<p class="decide-line">Vergelijk je eigen antwoord met dit voorbeeld. Wat vind je ervan?</p>
+        <div class="decide-row">
+          <button class="model-btn" onclick="redoReflect('${key}')">↺ Opnieuw doen</button>
+          <button class="accept-btn" onclick="acceptReflect('${key}')">✓ Mijn antwoord is goed</button>
+        </div>`;
+    } else {
+      tools = `<p class="accepted-line">✓ Je hebt je antwoord nagekeken en goedgekeurd.</p>`;
+    }
+
+    html = `<div class="reflect-card">
+        <div class="reflect-flag">✍️ Schrijfmoment: in je schrift én hieronder</div>
+        <p class="reflect-prompt">${beat.prompt}</p>
+        <p class="reflect-hint">${beat.hint||''}</p>
+        <textarea id="ta-${key}" ${editable?'':'readonly'} placeholder="Schrijf hier je antwoord (en in je schrift)…">${saved.replace(/</g,'&lt;')}</textarea>
+        ${tools}
+        <div class="model-box ${modelVisible?'show':''}" id="model-${key}"><strong>Een sterk antwoord:</strong> ${beat.model}</div>
+      </div>`;
+    html += navBtn('Verder →', r.phase === 'accepted');
+  }
+  else if (beat.type === 'choice'){
+    const chosen = STATE.choices[key]; // alleen gezet als een passende optie gekozen is
+    html = `<p class="choice-prompt">${beat.prompt}</p><p class="choice-hint">Kies wat écht bij dit personage past.</p><div class="choices">`;
+    beat.options.forEach((opt, oi) => {
+      let cls = 'choice-btn';
+      if (chosen !== undefined){ cls += (oi===chosen ? ' chosen' : ' dim'); }
+      const dis = (chosen !== undefined) ? 'disabled' : '';
+      html += `<button class="${cls}" data-oi="${oi}" ${dis} onclick="pickChoice(${oi})">${opt.label}</button>`;
+    });
+    html += `</div>`;
+    html += `<div class="choice-feedback" id="cfb-${key}"></div>`;
+    html += `<div class="choice-response ${chosen!==undefined?'show':''}" id="resp-${key}">${chosen!==undefined?beat.options[chosen].response:''}</div>`;
+    html += navBtn('Verder →', chosen!==undefined);
+  }
+
+  const scene = (SCENES[id] && SCENES[id][i]) || 'flame';
+  box.innerHTML = `<div class="scene-band sc-enter">${sceneSVG(scene)}</div>` + html;
+  // overgangsanimatie opnieuw starten
+  box.classList.remove('beat-in'); void box.offsetWidth; box.classList.add('beat-in');
+
+  // textarea persist (alleen wanneer bewerkbaar) + open-vraag timer hervatten
+  if (beat.type === 'reflect'){
+    const ta = document.getElementById('ta-'+key);
+    if (ta && !ta.readOnly){
+      ta.addEventListener('input', () => { STATE.notes[key] = ta.value; });
+    }
+    const r = STATE.reflect[key];
+    if (r && r.phase === 'checking'){ startReflectTimer(key); }
+  }
+
+  // leesvergrendeling: Verder pas vrij na een paar seconden lezen
+  if (readLock){ startReadTimer(key, readLock.secs); }
+}
+
+function navBtn(label, enabled){
+  const id = STATE.current;
+  const last = STATE.beat === STORYLINES[id].beats.length - 1;
+  const text = last ? 'Voltooi deze weg ✓' : label;
+  const back = STATE.beat > 0
+    ? `<button class="ghost-back" onclick="goBack()">← Vorige</button>`
+    : `<span></span>`;
+  return `<div class="beat-nav">${back}<button class="advance" id="advBtn" data-label="${text}" ${enabled?'':'disabled'} onclick="advance()">${text}</button></div>`;
+}
+
+function pickChoice(oi){
+  const id = STATE.current;
+  const key = id + '-' + STATE.beat;
+  const beat = STORYLINES[id].beats[STATE.beat];
+  const opt = beat.options[oi];
+  const btns = document.querySelectorAll('#beatBox .choice-btn');
+  const thisBtn = [...btns].find(b => parseInt(b.dataset.oi,10) === oi);
+  const fb = document.getElementById('cfb-' + key);
+  const resp = document.getElementById('resp-' + key);
+
+  if (opt.fit){
+    // Past bij het personage → goed
+    STATE.choices[key] = oi;
+    btns.forEach(b => {
+      const bi = parseInt(b.dataset.oi,10);
+      b.disabled = true;
+      b.classList.remove('wrong');
+      b.classList.toggle('chosen', bi===oi);
+      b.classList.toggle('dim', bi!==oi);
+    });
+    if (fb){ fb.className = 'choice-feedback'; fb.innerHTML = ''; }
+    resp.innerHTML = opt.response;
+    resp.classList.add('show');
+    const adv = document.getElementById('advBtn');
+    if (adv) adv.disabled = false;
+  } else {
+    // Past niet bij het personage → fout, opnieuw proberen
+    if (thisBtn){
+      thisBtn.classList.add('wrong');
+      setTimeout(() => thisBtn.classList.remove('wrong'), 480);
+    }
+    if (fb){ fb.innerHTML = '✗ ' + opt.response; fb.className = 'choice-feedback show'; }
+    // Verder blijft uitgeschakeld; de leerling moet een passend antwoord kiezen.
+  }
+}
+
+function countKeywords(text, keywords){
+  const t = (text || '').toLowerCase();
+  let n = 0;
+  (keywords || []).forEach(kw => { if (t.includes(String(kw).toLowerCase())) n++; });
+  return n;
+}
+
+function checkReflect(key){
+  const parts = key.split('-');
+  const id = parts[0];
+  const i = parseInt(parts[1], 10);
+  const beat = STORYLINES[id].beats[i];
+  const ta = document.getElementById('ta-' + key);
+  const val = ta ? ta.value : (STATE.notes[key] || '');
+  STATE.notes[key] = val;
+  const need = beat.minKeywords || 2;
+  const found = countKeywords(val, beat.keywords);
+  const fb = document.getElementById('rfb-' + key);
+
+  if (val.trim().length < 15){
+    if (fb){ fb.className = 'reflect-feedback show'; fb.textContent = 'Schrijf eerst je eigen antwoord op voordat je het laat controleren.'; }
+    return;
+  }
+  if (found < need){
+    if (fb){
+      fb.className = 'reflect-feedback show';
+      fb.innerHTML = `Gebruik nog minstens ${need - found} kernwoord(en) in je antwoord. Denk aan: ${(beat.keywords||[]).slice(0,4).join(', ')}.`;
+    }
+    return;
+  }
+  // genoeg kernwoorden → model verplicht tonen + 10 sec nakijken
+  STATE.reflect[key] = { phase:'checking', remaining:10 };
+  renderBeat();
+}
+
+function startReflectTimer(key){
+  if (STATE.reflectTimer){ clearInterval(STATE.reflectTimer); }
+  const tick = () => {
+    const r = STATE.reflect[key];
+    if (!r || r.phase !== 'checking'){ clearInterval(STATE.reflectTimer); STATE.reflectTimer = null; return; }
+    const t = document.getElementById('rtimer-' + key);
+    if (t) t.textContent = `Lees het voorbeeld en vergelijk het met je eigen antwoord… nog ${r.remaining} sec`;
+    if (r.remaining <= 0){
+      clearInterval(STATE.reflectTimer); STATE.reflectTimer = null;
+      r.phase = 'decide';
+      renderBeat();
+      return;
+    }
+    r.remaining--;
+  };
+  tick();
+  STATE.reflectTimer = setInterval(tick, 1000);
+}
+
+function redoReflect(key){
+  STATE.reflect[key] = { phase:'writing' };
+  renderBeat();
+}
+
+function startReadTimer(key, secs){
+  if (STATE.readTimer){ clearInterval(STATE.readTimer); }
+  let rem = secs;
+  const adv = document.getElementById('advBtn');
+  if (!adv) return;
+  const label = adv.dataset.label;
+  adv.disabled = true;
+  const tick = () => {
+    const a = document.getElementById('advBtn');
+    if (!a){ clearInterval(STATE.readTimer); STATE.readTimer = null; return; }
+    if (rem <= 0){
+      clearInterval(STATE.readTimer); STATE.readTimer = null;
+      STATE.read[key] = true;
+      a.disabled = false;
+      a.textContent = label;
+      return;
+    }
+    a.textContent = 'Lees eerst… ' + rem;
+    rem--;
+  };
+  tick();
+  STATE.readTimer = setInterval(tick, 1000);
+}
+
+function acceptReflect(key){
+  STATE.reflect[key] = { phase:'accepted' };
+  renderBeat();
+}
+
+function advance(){
+  const id = STATE.current;
+  const beats = STORYLINES[id].beats;
+  if (STATE.beat < beats.length - 1){
+    STATE.beat++;
+    renderBeat();
+  } else {
+    // weg voltooid
+    STATE.done[id] = true;
+    renderProgress();
+    goHub();
+  }
+}
+
+function goBack(){
+  if (STATE.beat > 0){
+    STATE.beat--;
+    renderBeat();
+  }
+}
+
+/* ---------- Finale ---------- */
+function startFinale(){
+  STATE.current = 'finale';
+  document.getElementById('finaleFigures').innerHTML =
+    ORDER.map(id => `<div class="fig-fin">${figureSVG(id)}</div>`).join('');
+  show('screen-finale');
+}
+
+/* ---------- Reset ---------- */
+function resetAll(){
+  if (STATE.reflectTimer){ clearInterval(STATE.reflectTimer); STATE.reflectTimer = null; }
+  if (STATE.readTimer){ clearInterval(STATE.readTimer); STATE.readTimer = null; }
+  STATE.done = {}; STATE.current = null; STATE.beat = 0; STATE.choices = {}; STATE.notes = {}; STATE.modelShown = {}; STATE.reflect = {}; STATE.read = {};
+  renderProgress();
+  show('screen-intro');
+}
+
+/* ---------- Scènes per beat (geanimeerde illustraties) ---------- */
+const SCENES = {
+  mandela: ['quarry','cell','bond','flame','door','path','flame','table'],
+  guard:   ['cell','crowd','bond','flame','cell','flame','door','table','table'],
+  tutu:    ['flame','path','table','table','flame','path','door']
+};
+
+function sceneSVG(type){
+  const open = '<svg class="scene" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid slice">';
+  const dark = '#0d0905';
+  let inner = '';
+  if (type === 'cell'){
+    inner = `
+      <polygon class="sc-beam" points="150,-12 232,-12 182,142 100,142" fill="url(#beamGrad)"/>
+      <g fill="${dark}">
+        <rect x="48" y="-2" width="13" height="134"/><rect x="108" y="-2" width="13" height="134"/>
+        <rect x="168" y="-2" width="13" height="134"/><rect x="228" y="-2" width="13" height="134"/>
+        <rect x="288" y="-2" width="13" height="134"/><rect x="348" y="-2" width="13" height="134"/>
+      </g>`;
+  } else if (type === 'quarry'){
+    inner = `
+      <circle class="sc-glow" cx="200" cy="30" r="74" fill="url(#flameGlow)"/>
+      <circle cx="200" cy="30" r="22" fill="#FFE3A8"/>
+      <g fill="${dark}">
+        <polygon points="-5,132 95,98 165,132"/><polygon points="150,132 255,90 345,132"/>
+        <polygon points="300,132 372,104 405,132"/>
+      </g>
+      <circle class="sc-rise" cx="150" cy="104" r="2.6" fill="#FFCF7A"/>
+      <circle class="sc-rise" cx="225" cy="104" r="2" fill="#FFCF7A" style="animation-delay:2.2s"/>
+      <circle class="sc-rise" cx="282" cy="104" r="2.6" fill="#FFCF7A" style="animation-delay:4.1s"/>`;
+  } else if (type === 'flame'){
+    inner = `
+      <circle class="sc-glow" cx="200" cy="66" r="66" fill="url(#flameGlow)"/>
+      <rect x="193" y="82" width="14" height="46" rx="3" fill="${dark}"/>
+      <path class="sc-flicker" d="M200,24 C217,52 211,76 200,82 C189,76 183,52 200,24 Z" fill="#FFD27A"/>
+      <path class="sc-flicker2" d="M200,42 C209,58 206,74 200,80 C194,74 191,58 200,42 Z" fill="#FFF3D0"/>`;
+  } else if (type === 'door'){
+    inner = `
+      <rect x="186" y="-2" width="28" height="134" fill="#FFE9BF"/>
+      <polygon class="sc-glow" points="150,-2 250,-2 240,132 160,132" fill="url(#beamGrad)"/>
+      <g fill="${dark}"><rect x="14" y="-2" width="172" height="134"/><rect x="214" y="-2" width="172" height="134"/></g>
+      <g fill="none" stroke="#2a1d10" stroke-width="2">
+        <rect x="44" y="16" width="56" height="98"/><rect x="116" y="16" width="56" height="98"/>
+        <rect x="228" y="16" width="56" height="98"/><rect x="300" y="16" width="56" height="98"/>
+      </g>
+      <circle class="sc-glow" cx="200" cy="64" r="40" fill="url(#flameGlow)" style="animation-delay:.6s"/>`;
+  } else if (type === 'bond'){
+    inner = `
+      <line x1="122" y1="68" x2="278" y2="68" stroke="#5a4322" stroke-width="2" stroke-dasharray="6 8"/>
+      <circle class="sc-glow" cx="200" cy="68" r="34" fill="url(#flameGlow)"/>
+      <g fill="${dark}"><circle cx="96" cy="50" r="16"/><path d="M70,132 Q72,84 96,78 Q120,84 122,132 Z"/></g>
+      <g fill="${dark}"><circle cx="304" cy="50" r="16"/><path d="M278,132 Q280,84 304,78 Q328,84 330,132 Z"/></g>
+      <circle class="sc-dot" cx="122" cy="68" r="5" fill="#FFE3A8"/>`;
+  } else if (type === 'table'){
+    inner = `
+      <circle class="sc-sway" cx="200" cy="16" r="26" fill="url(#flameGlow)"/>
+      <line x1="58" y1="94" x2="342" y2="94" stroke="#2a1d10" stroke-width="7"/>
+      <g fill="${dark}">
+        <circle cx="112" cy="64" r="15"/><path d="M88,94 Q90,74 112,70 Q134,74 136,94 Z"/>
+        <circle cx="288" cy="64" r="15"/><path d="M264,94 Q266,74 288,70 Q310,74 312,94 Z"/>
+      </g>`;
+  } else if (type === 'path'){
+    inner = `
+      <circle class="sc-glow" cx="200" cy="30" r="48" fill="url(#flameGlow)"/>
+      <polygon points="148,132 252,132 215,38 185,38" fill="#1a120a"/>
+      <g class="sc-dash" fill="#FFD27A">
+        <rect x="197" y="44" width="6" height="10"/><rect x="196" y="66" width="8" height="13"/>
+        <rect x="193" y="94" width="14" height="18"/>
+      </g>`;
+  } else { // crowd
+    inner = `
+      <circle class="sc-glow" cx="200" cy="34" r="86" fill="url(#flameGlow)"/>
+      <g fill="${dark}">
+        <circle cx="60" cy="92" r="7"/><circle cx="115" cy="88" r="7"/><circle cx="175" cy="92" r="7"/>
+        <circle cx="235" cy="88" r="7"/><circle cx="300" cy="92" r="7"/><circle cx="355" cy="88" r="7"/>
+        <path d="M0,132 L0,108 Q60,99 110,107 Q170,97 220,107 Q290,97 340,107 Q380,101 400,108 L400,132 Z"/>
+      </g>`;
+  }
+  return open + inner + '</svg>';
+}
+
+/* ---------- Figuren (poppetjes): waardige silhouetten met gedeelde gloed ---------- */
+function figureSVG(id){
+  const accent = { mandela:'#C8941E', guard:'#6E7E86', tutu:'#B0492F' }[id];
+  const delay  = { mandela:'0s', guard:'1.6s', tutu:'3.2s' }[id];
+  const aura = `<ellipse class="fig-aura" cx="40" cy="56" rx="33" ry="40" fill="url(#auraGrad)" style="animation-delay:${delay}"/>`;
+  const body = `<path class="fig-body" d="M14,96 Q15,64 33,58 L47,58 Q65,64 66,96 Z" fill="${accent}"/>`;
+  const neck = `<rect x="35" y="48" width="10" height="13" rx="3" fill="${accent}"/>`;
+  const head = `<circle class="fig-head" cx="40" cy="38" r="14" fill="${accent}"/>`;
+  let mark = '';
+  if (id === 'guard'){
+    // gevangenbewaker: pet met klep
+    mark = `<path class="fig-mark" d="M27,32 Q27,21 40,21 Q53,21 53,32 Z" fill="#46535a"/>
+            <rect x="26" y="31" width="28" height="5" rx="2" fill="#3a454b"/>
+            <rect x="23" y="35.5" width="34" height="3" rx="1.5" fill="#2e3940"/>`;
+  } else if (id === 'tutu'){
+    // bisschop: witte boord + borstkruis
+    mark = `<rect class="fig-mark" x="33" y="55" width="14" height="6" rx="2" fill="#F2E9D8"/>
+            <rect x="38.3" y="64" width="3.4" height="13" rx="1" fill="#F2E9D8"/>
+            <rect x="35" y="68" width="10" height="3.2" rx="1" fill="#F2E9D8"/>`;
+  } else {
+    // Mandela: blootshoofds, subtiel haar: geen hoofddeksel
+    mark = `<path class="fig-mark" d="M27,33 Q40,22 53,33 Q53,28 40,25 Q27,28 27,33 Z" fill="#7a5a12"/>`;
+  }
+  return `<svg class="figure" viewBox="0 0 80 100" aria-hidden="true">${aura}${body}${neck}${head}${mark}</svg>`;
+}
+
+/* ---------- Zwevende sintels ---------- */
+function makeEmbers(){
+  const c = document.getElementById('embers');
+  if (!c) return;
+  let h = '';
+  for (let i = 0; i < 24; i++){
+    const left  = (Math.random()*100).toFixed(1);
+    const dur   = (9 + Math.random()*12).toFixed(1);
+    const delay = (-Math.random()*dur).toFixed(1);
+    const drift = (Math.random()*60 - 30).toFixed(0) + 'px';
+    const size  = (3 + Math.random()*4).toFixed(1);
+    h += `<div class="ember" style="left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;--drift:${drift}"></div>`;
+  }
+  c.innerHTML = h;
+}
+
+/* ---------- Init: de pagina start bij het intro ---------- */
+makeEmbers();
+renderProgress();
+renderHub();
+</script>
+</body>
+</html>

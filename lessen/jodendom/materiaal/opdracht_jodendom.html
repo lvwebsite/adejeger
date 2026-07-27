@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opdracht Jodendom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE1C4;--paper-edge:#E2CFA6;--card:#F7EFD9;--card-hi:#FCF6E6;
+    --ink:#43301C;--muted:#8A7556;--route:#C06A3F;--line:rgba(67,48,28,.16);
+    --phase:#8B5E3C;
+    --display:'Fraunces',Georgia,serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background:radial-gradient(130% 90% at 50% -5%,#F3E7CD 0%,var(--paper) 45%,var(--paper-edge) 100%) fixed;
+    min-height:100vh;
+  }
+  .wrap{max-width:740px;margin:0 auto;padding:48px 26px 80px;}
+  .back{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;color:var(--route);text-decoration:none;letter-spacing:.02em;margin-bottom:32px;}
+  .back:hover{text-decoration:underline;}
+  .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--phase);margin:0 0 10px;}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(1.8rem,5vw,2.5rem);letter-spacing:-.01em;margin:0 0 36px;line-height:1.1;}
+
+  /* ─── Vragen sectie ─── */
+  .vragen-block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;box-shadow:0 8px 24px -18px rgba(67,48,28,.6);margin-bottom:32px;}
+  .vragen-block h2{font-family:var(--display);font-weight:500;font-size:1.2rem;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+  .vragen-block h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--phase);flex-shrink:0;}
+  .schrift-note{font-size:.85rem;color:var(--muted);margin:0 0 22px;font-style:italic;}
+  .vraag{margin-bottom:16px;display:flex;gap:12px;align-items:baseline;}
+  .vraag span.nr{font-family:var(--display);font-style:italic;color:var(--phase);font-size:1rem;flex-shrink:0;min-width:1.6ch;}
+  .vraag p{margin:0;font-weight:500;line-height:1.5;}
+
+  /* ─── Feestdagen sectie ─── */
+  .feestdagen-block{margin-bottom:16px;}
+  .feestdagen-block h2{font-family:var(--display);font-weight:500;font-size:1.2rem;margin:0 0 16px;display:flex;align-items:center;gap:10px;}
+  .feestdagen-block h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--phase);flex-shrink:0;}
+  .feestdag{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:14px;box-shadow:0 6px 18px -16px rgba(67,48,28,.55);}
+  .feestdag .naam{font-family:var(--display);font-weight:600;font-size:1.1rem;color:var(--phase);margin:0 0 12px;display:flex;align-items:baseline;gap:10px;}
+  .feestdag .naam .heb{font-family:var(--display);font-style:italic;font-size:.9rem;color:var(--muted);font-weight:400;}
+  .feestdag dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 16px;}
+  .feestdag dt{font-weight:600;font-size:.88rem;color:var(--phase);white-space:nowrap;padding-top:2px;}
+  .feestdag dd{margin:0;font-size:.93rem;color:var(--ink);padding-top:2px;}
+  .feestdag .bijzonder{margin-top:12px;font-size:.88rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;font-style:italic;}
+
+  @media print{
+    body{background:white;}
+    .back{display:none;}
+    .vraag .lijn{border-bottom:1px solid #bbb;}
+    .vraag .lijn-lang{border:1px solid #bbb;background:white;}
+    .feestdag,.vragen-block{box-shadow:none;border:1px solid #ccc;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../14_jodendom.html" onclick="if(history.length>1){history.back();return false;}">← Terug naar de les</a>
+  <p class="eyebrow">Religie · Jodendom</p>
+  <h1>Opdracht</h1>
+
+  <div class="vragen-block">
+    <h2><span class="dot"></span>Vragen</h2>
+    <p class="schrift-note">Maak deze opdracht in je schrift.</p>
+
+    <div class="vraag"><span class="nr">1.</span><p>Hoe heet het heilige boek van het Jodendom?</p></div>
+    <div class="vraag"><span class="nr">2.</span><p>Wat is een verbond, en met wie sloot God zijn verbond aan het begin van het Jodendom?</p></div>
+    <div class="vraag"><span class="nr">3.</span><p>Joden geloven in één God. Hoe heet dit principe?</p></div>
+    <div class="vraag"><span class="nr">4.</span><p>Welke feestdag wordt gevierd van vrijdagavond tot zaterdagavond?</p></div>
+    <div class="vraag"><span class="nr">5.</span><p>Met welk Nederlands feest kun je Pesach het best vergelijken?</p></div>
+    <div class="vraag"><span class="nr">6.</span><p>Waarom denk je dat Chanoeka vergeleken wordt met Kerstmis? Is dat een goede vergelijking?</p></div>
+    <div class="vraag"><span class="nr">7.</span><p>Wat is het verschil tussen de Tenach en de Torah?</p></div>
+    <div class="vraag"><span class="nr">8.</span><p>Waarom vinden Joodse mensen wetten zo belangrijk?</p></div>
+    <div class="vraag"><span class="nr">9.</span><p>Welk joods feest lijkt jou het leukst? Leg uit waarom.</p></div>
+  </div>
+
+  <!-- ─── Joodse feestdagen ─── -->
+  <div class="feestdagen-block">
+    <h2><span class="dot"></span>Joodse feestdagen</h2>
+
+    <div class="feestdag">
+      <p class="naam">Sjabbat <span class="heb">שַׁבָּת</span></p>
+      <dl>
+        <dt>Wanneer</dt><dd>Elke week, van vrijdagavond (zonsondergang) tot zaterdagavond.</dd>
+        <dt>Wat is het</dt><dd>De rustdag. Net zoals God rustte na de schepping, rusten joden op sjabbat. Er wordt niet gewerkt, niet gereden en geen elektronica gebruikt.</dd>
+        <dt>Waarom</dt><dd>Volgens de Torah nam God rust na het maken van de wereld. Door te rusten tonen joden respect voor God en de schepping.</dd>
+        <dt>Hoe gevierd</dt><dd>De moeder steekt twee sjabbatkaarsen aan. Het gezin eet samen een speciaal diner, er wordt gebeden en gezongen. De volgende dag wordt de synagoge bezocht.</dd>
+      </dl>
+      <p class="bijzonder">Op tafel liggen twee gevlochten broden (challa), die herinneren aan het dubbele manna in de woestijn.</p>
+    </div>
+
+    <div class="feestdag">
+      <p class="naam">Chanoeka <span class="heb">חֲנֻכָּה</span></p>
+      <dl>
+        <dt>Wanneer</dt><dd>In de winter (november/december), duurt 8 dagen.</dd>
+        <dt>Wat is het</dt><dd>Het lichtjesfeest. Herdenking van het wonder van de olie: na een militaire overwinning was er slechts olie voor 1 dag, maar de menora brandde 8 dagen.</dd>
+        <dt>Waarom</dt><dd>Volgens de Tenach werd Gods volk bezet en werden mensen slecht behandeld in de Tempel. Op Chanoeka wordt gevierd dat de Tempel werd hersteld.</dd>
+        <dt>Hoe gevierd</dt><dd>Elke avond wordt een extra kaarsje aangestoken op de chanoekia (9-armige kandelaar). Er worden spelletjes gespeeld (dreidel), cadeautjes gegeven en oliebollen gegeten.</dd>
+      </dl>
+      <p class="bijzonder">Vaak vergeleken met Kerstmis, maar is eigenlijk een minder groot joods feest.</p>
+    </div>
+
+    <div class="feestdag">
+      <p class="naam">Pesach <span class="heb">פֶּסַח</span></p>
+      <dl>
+        <dt>Wanneer</dt><dd>In de lente (maart/april), duurt 7 tot 8 dagen.</dd>
+        <dt>Wat is het</dt><dd>Het bevrijdingsfeest. Herdenking van de uittocht uit Egypte, toen Mozes het joodse volk bevrijdde uit de slavernij.</dd>
+        <dt>Waarom</dt><dd>Op Pesach wordt de vrijheid en bevrijding van het joodse volk gevierd.</dd>
+        <dt>Hoe gevierd</dt><dd>De sederavond: een feestmaaltijd met speciale symbolische gerechten en het vertellen van het bevrijdingsverhaal (Haggadah). Er wordt geen gerezen brood gegeten, alleen matse (ongerezen, plat brood).</dd>
+      </dl>
+      <p class="bijzonder">Kinderen spelen een grote rol: zij stellen aan tafel de vier vragen die het verhaal inleiden. Daarna vertelt vader het verhaal.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De geloofskern · Levensbeschouwing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE1C4;--paper-edge:#E2CFA6;--card:#F7EFD9;--card-hi:#FCF6E6;
+    --ink:#43301C;--muted:#8A7556;--route:#C06A3F;--line:rgba(67,48,28,.16);
+    --phase:#B45B33;
+    --display:'Fraunces',Georgia,serif;--body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background:radial-gradient(130% 90% at 50% -5%,#F3E7CD 0%,var(--paper) 45%,var(--paper-edge) 100%) fixed;
+    min-height:100vh;
+  }
+  .wrap{max-width:740px;margin:0 auto;padding:56px 26px 90px;}
+
+  .back{
+    display:inline-flex;align-items:center;gap:8px;font-size:.84rem;font-weight:600;
+    color:var(--route);text-decoration:none;letter-spacing:.02em;margin-bottom:34px;
+  }
+  .back:hover{text-decoration:underline;}
+
+  .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--phase);margin:0 0 14px;}
+  h1{font-family:var(--display);font-weight:500;font-size:clamp(2rem,5.6vw,2.85rem);letter-spacing:-.01em;margin:0 0 8px;line-height:1.1;}
+  .lesnum{font-family:var(--display);font-style:italic;color:var(--muted);font-size:1.02rem;margin:0 0 44px;}
+
+  section.block{margin-bottom:30px;}
+  section.block h2{
+    font-family:var(--display);font-weight:500;font-size:1.18rem;color:var(--ink);
+    margin:0 0 12px;display:flex;align-items:center;gap:10px;
+  }
+  section.block h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--phase);flex-shrink:0;}
+  section.block .content{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;box-shadow:0 8px 22px -18px rgba(67,48,28,.6);
+  }
+  section.block .content p{margin:0 0 10px;}
+  section.block .content p:last-child{margin-bottom:0;}
+
+  /* Leerdoelen list */
+  .leerdoelen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .leerdoelen li{display:flex;gap:10px;align-items:baseline;}
+  .leerdoelen li::before{content:"○";color:var(--phase);font-size:.7rem;flex-shrink:0;position:relative;top:-1px;}
+
+  /* Wat gaan we doen: activity card */
+  .activiteit{
+    display:flex;align-items:flex-start;gap:14px;
+  }
+  .activiteit .icon{
+    flex-shrink:0;width:38px;height:38px;border-radius:10px;background:var(--paper);
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--phase);
+  }
+  .activiteit .icon svg{width:19px;height:19px;}
+  .opdracht-link{
+    display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+    font-weight:600;color:var(--phase);text-decoration:none;font-size:.95rem;
+    border-bottom:1.5px solid var(--phase);padding-bottom:2px;
+  }
+  .opdracht-link:hover{opacity:.75;}
+
+  /* Gemist: collapsible */
+  details.gemist{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  }
+  details.gemist summary{
+    display:flex;align-items:center;gap:12px;padding:18px 22px;cursor:pointer;list-style:none;
+  }
+  details.gemist summary::-webkit-details-marker{display:none;}
+  details.gemist summary:focus-visible{outline:2px solid var(--route);outline-offset:-2px;}
+  details.gemist .q-icon{
+    flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--paper);
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);
+    font-family:var(--display);font-style:italic;font-size:1rem;
+  }
+  details.gemist summary .label{flex:1;font-family:var(--display);font-weight:500;font-size:1.05rem;}
+  details.gemist .chev{color:var(--muted);transition:transform .25s;flex-shrink:0;}
+  details.gemist[open] .chev{transform:rotate(180deg);}
+  details.gemist .content{border-radius:0;border:none;border-top:1px solid var(--line);box-shadow:none;background:var(--card-hi);}
+  details.gemist[open] .content{animation:drop .25s ease;}
+  @keyframes drop{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../../index.html" onclick="if(history.length>1){history.back();return false;}">&larr; Terug naar de route</a>
+  <p class="eyebrow">De drie tradities · Les 16</p>
+  <h1>De geloofskern</h1>
+  <p class="lesnum">Tawhid: God is één</p>
+
+  <section class="block">
+    <h2><span class="dot"></span>Waar gaat deze les over?</h2>
+    <div class="content">
+      <p>We verdiepen ons in de kern van de islam: tawhid, het geloof dat God volledig één is, en de vijf zuilen die het islamitische geloof en de praktijk vormgeven.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="dot"></span>Leerdoelen</h2>
+    <div class="content">
+      <ul class="leerdoelen">
+        <li>Ik kan het begrip 'tawhid' correct uitleggen.</li>
+        <li>Ik kan de vijf zuilen van de islam benoemen.</li>
+        <li>Ik kan uitleggen waarom God in de islam geen zoon heeft.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="dot"></span>Wat gaan we in de les doen?</h2>
+    <div class="content activiteit">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </span>
+      <div>
+        <p>We spelen een kaartspel over de vijf zuilen waarin je steeds met een klasgenoot moet overleggen om de juiste combinaties te vinden.</p>
+      </div>
+    </div>
+  </section>
+
+  <details class="gemist">
+    <summary>
+      <span class="q-icon" aria-hidden="true">?</span>
+      <span class="label">Als je deze les gemist hebt</span>
+      <span class="chev" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </summary>
+    <div class="content">
+      <p>Je hebt de uitleg over tawhid en de vijf zuilen gemist. Bekijk deze begrippen goed, want ze vormen de basis voor de volgende lessen over de islam.</p>
+    </div>
+  </details>
+
+</div>
+</body>
+</html>

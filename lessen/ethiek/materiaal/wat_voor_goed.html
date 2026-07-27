@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wat voor 'goed'? · Ethiek klas 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFE1C4;--paper-edge:#E2CFA6;--card:#F7EFD9;--card-hi:#FCF6E6;
+  --ink:#43301C;--muted:#8A7556;--line:rgba(67,48,28,.16);
+  --moreel:#B8732A;--ander:#3D5A8C;--goed:#4A7A52;--fout:#B0483C;
+  --display:'Fraunces',Georgia,serif;--body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--body);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(130% 90% at 50% -5%,#F3E7CD 0%,var(--paper) 45%,var(--paper-edge) 100%) fixed;
+  min-height:100vh;
+}
+.screen{display:none;max-width:720px;margin:0 auto;padding:48px 24px 80px;}
+.screen.active{display:block;}
+.eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:.72rem;font-weight:600;color:var(--moreel);margin:0 0 12px;}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(1.9rem,6vw,2.6rem);margin:0 0 14px;line-height:1.1;letter-spacing:-.01em;}
+.lede{font-size:1.02rem;color:#5a4a35;max-width:56ch;margin:0 0 30px;}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--card-hi);border:none;border-radius:12px;padding:14px 22px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .1s,background .15s;}
+.btn:hover{background:#5a4226;}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:var(--moreel);}
+.btn.primary:hover{background:#9c5f22;}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line);}
+.btn.ghost:hover{border-color:var(--ink);}
+
+.hoe{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:28px;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+.hoe h2{font-family:var(--display);font-weight:500;font-size:1.1rem;margin:0 0 10px;}
+.hoe ul{margin:0;padding-left:1.2em;}
+.hoe li{margin-bottom:6px;}
+.progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.progress-row .p{font-size:.85rem;font-weight:600;color:var(--muted);}
+.progressbar{height:6px;border-radius:3px;background:var(--card);overflow:hidden;margin-bottom:26px;}
+.progressbar .fill{height:100%;background:var(--moreel);border-radius:3px;transition:width .3s ease;}
+.kaart{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 26px;box-shadow:0 12px 30px -20px rgba(67,48,28,.75);text-align:center;}
+.kaart .num{font-family:var(--display);font-style:italic;color:var(--muted);font-size:.9rem;margin:0 0 14px;}
+.kaart .zin{font-size:1.25rem;line-height:1.5;margin:0 0 30px;font-family:var(--display);}
+.keuzes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.keuze{flex:1;min-width:200px;max-width:260px;border:2px solid var(--line);border-radius:14px;padding:18px 16px;cursor:pointer;font-family:inherit;font-size:.98rem;font-weight:600;background:var(--card-hi);color:var(--ink);transition:border-color .15s,transform .1s;}
+.keuze:hover{transform:translateY(-2px);}
+.keuze.moreel{border-color:var(--moreel);}
+.keuze.ander{border-color:var(--ander);}
+.keuze small{display:block;font-weight:400;font-size:.8rem;color:var(--muted);margin-top:4px;}
+.feedback{margin-top:20px;font-weight:600;font-size:.98rem;min-height:1.4em;}
+.feedback.goed{color:var(--goed);}
+.feedback.fout{color:var(--fout);}
+.hint{text-align:center;color:var(--muted);font-size:.85rem;margin-top:20px;}
+
+.score-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 26px;margin:26px 0;text-align:center;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+.score-box .cijfer{font-family:var(--display);font-size:3rem;font-weight:600;color:var(--moreel);margin:0;}
+.score-box .van{font-size:1rem;color:var(--muted);}
+.uitleg{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:20px;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+.uitleg h2{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 10px;}
+.uitleg p{margin:0 0 10px;}
+.uitleg p:last-child{margin-bottom:0;}
+.acties{display:flex;gap:12px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: INTRO -->
+<div class="screen active" id="screen-intro">
+  <p class="eyebrow">Ethiek · klas 1 · werkvorm</p>
+  <h1>Wat voor "goed"?</h1>
+  <p class="lede">Je gebruikt het woord "goed" de hele dag door — maar niet elke "goed" is hetzelfde. Bij tien korte zinnen bepaal jij: gaat dit over <b>moreel goed</b> (ethiek), of over een ander soort "goed"?</p>
+
+  <div class="hoe">
+    <h2>Zo werkt het</h2>
+    <ul>
+      <li>Je krijgt tien korte zinnen, één voor één.</li>
+      <li>Kies steeds: <b>moreel goed/fout</b> of <b>ander soort "goed"</b>.</li>
+      <li>Je ziet meteen of je het goed had, met een korte uitleg.</li>
+    </ul>
+  </div>
+
+  <button class="btn primary" onclick="startGame()">Begin →</button>
+</div>
+
+<!-- SCREEN 2: GAME -->
+<div class="screen" id="screen-game">
+  <p class="eyebrow">Wat voor "goed"?</p>
+  <div class="progress-row">
+    <span class="p" id="progress-label">Zin 1 van 10</span>
+  </div>
+  <div class="progressbar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="kaart">
+    <p class="num" id="zin-num"></p>
+    <p class="zin" id="zin-tekst"></p>
+    <div class="keuzes">
+      <button class="keuze moreel" onclick="kies('moreel')">Moreel goed / fout<small>gaat over hoe je hoort te handelen</small></button>
+      <button class="keuze ander" onclick="kies('ander')">Ander soort "goed"<small>correct, lekker, knap, prettig...</small></button>
+    </div>
+    <p class="feedback" id="feedback"></p>
+  </div>
+  <p class="hint">Denk aan het onderscheid: gaat dit over hoe je je tegenover een ander hoort te gedragen?</p>
+</div>
+
+<!-- SCREEN 3: RESULT -->
+<div class="screen" id="screen-result">
+  <p class="eyebrow">Klaar!</p>
+  <h1>Jouw resultaat</h1>
+  <div class="score-box">
+    <p class="cijfer" id="score-cijfer">0</p>
+    <p class="van">van de 10 goed</p>
+  </div>
+
+  <div class="uitleg">
+    <h2>Het verschil</h2>
+    <p>We gebruiken het woordje "goed" op heel veel manieren: voor een <b>correct</b> antwoord, een <b>fijn</b> land, een <b>vaardige</b> voetballer. Maar geen van die drie gaat over ethiek.</p>
+    <p><b>Ethiek gaat alleen over moreel goed en kwaad</b>: over hoe je je hoort te gedragen tegenover anderen. Dát is waar we dit blok mee aan de slag gaan.</p>
+  </div>
+
+  <div class="acties">
+    <button class="btn ghost" onclick="restart()">Opnieuw spelen</button>
+  </div>
+</div>
+
+<script>
+const ZINNEN = [
+  { t:"Dit was een goed antwoord op de toetsvraag.", type:"ander", uitleg:"Dit gaat over correct zijn, niet over moreel handelen." },
+  { t:"Het is goed om geld te geven aan mensen die het nodig hebben.", type:"moreel", uitleg:"Dit gaat over hoe je je hoort te gedragen tegenover een ander: moreel goed." },
+  { t:"Hij kan heel goed voetballen.", type:"ander", uitleg:"Dit gaat over vaardigheid, niet over ethiek." },
+  { t:"Het is goed om eerlijk te zijn tegen je vrienden.", type:"moreel", uitleg:"Eerlijkheid gaat over hoe je met een ander omgaat: moreel goed." },
+  { t:"Dit is een heerlijk restaurant, het eten is heel goed.", type:"ander", uitleg:"Dit gaat over smaak of kwaliteit, niet over moreel handelen." },
+  { t:"Het is fout om te liegen om jezelf te redden, ten koste van een ander.", type:"moreel", uitleg:"Dit gaat over hoe je je gedraagt tegenover een ander: moreel fout." },
+  { t:"Mijn nieuwe telefoon werkt supergoed.", type:"ander", uitleg:"Dit gaat over kwaliteit of functioneren, niet over ethiek." },
+  { t:"Het is goed om iemand te helpen die gepest wordt.", type:"moreel", uitleg:"Dit gaat over hoe je je hoort te gedragen tegenover een ander: moreel goed." },
+  { t:"Zij is heel goed in tekenen.", type:"ander", uitleg:"Dit gaat over talent of vaardigheid, niet over ethiek." },
+  { t:"Het is goed om je excuses aan te bieden als je iemand pijn hebt gedaan.", type:"moreel", uitleg:"Dit gaat over hoe je je gedraagt tegenover een ander: moreel goed." },
+];
+
+let idx = 0;
+let score = 0;
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startGame(){
+  idx = 0;
+  score = 0;
+  showScreen("screen-game");
+  renderZin();
+}
+
+function renderZin(){
+  const z = ZINNEN[idx];
+  document.getElementById("progress-label").textContent = `Zin ${idx+1} van ${ZINNEN.length}`;
+  document.getElementById("progress-fill").style.width = (idx/ZINNEN.length*100)+"%";
+  document.getElementById("zin-num").textContent = `Zin ${idx+1}`;
+  document.getElementById("zin-tekst").textContent = `"${z.t}"`;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("feedback").className = "feedback";
+  document.querySelectorAll(".keuze").forEach(k=>k.disabled=false);
+}
+
+function kies(type){
+  const z = ZINNEN[idx];
+  const juist = (type === z.type);
+  if(juist) score++;
+  const fb = document.getElementById("feedback");
+  fb.textContent = (juist ? "Goed! " : "Net niet. ") + z.uitleg;
+  fb.className = "feedback " + (juist ? "goed" : "fout");
+  document.querySelectorAll(".keuze").forEach(k=>k.disabled=true);
+  setTimeout(()=>{
+    idx++;
+    if(idx < ZINNEN.length){
+      renderZin();
+    }else{
+      document.getElementById("progress-fill").style.width = "100%";
+      showResult();
+    }
+  }, 1400);
+}
+
+function showResult(){
+  document.getElementById("score-cijfer").textContent = score;
+  showScreen("screen-result");
+}
+
+function restart(){
+  showScreen("screen-intro");
+}
+</script>
+</body>
+</html>

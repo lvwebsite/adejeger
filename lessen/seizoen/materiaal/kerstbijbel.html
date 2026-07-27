@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas 1 & 2: Het kerstverhaal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FDF6EC;
+    --ink: #2C1A0E;
+    --muted: #7A5C42;
+    --rule: #C4A97A;
+    --gold: #A07830;
+    --verse-col: #B8956A;
+    --head-bg: #2C1A0E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #E8DCC8; }
+  body {
+    max-width: 740px;
+    margin: 32px auto;
+    padding: 56px 64px 80px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IM Fell English', 'Times New Roman', serif;
+    font-size: 15.5px;
+    line-height: 1.85;
+    box-shadow: 0 4px 40px rgba(0,0,0,.18);
+    border-top: 5px solid var(--gold);
+  }
+
+  /* Header */
+  .doc-header {
+    text-align: center;
+    margin-bottom: 42px;
+    padding-bottom: 26px;
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .doc-eyebrow {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .doc-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-size: 2.2rem;
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .doc-sub {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* Section headers */
+  h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.05rem;
+    color: var(--gold);
+    margin: 38px 0 14px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--rule);
+    letter-spacing: .03em;
+  }
+  h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--muted);
+    margin: 28px 0 8px;
+  }
+
+  /* Chapter label */
+  .chapter {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 44px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .chapter::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* Verse text */
+  p { margin-bottom: 10px; text-align: justify; }
+  .v { color: var(--verse-col); font-size: 10.5px; font-style: normal; vertical-align: super; line-height: 0; margin-right: 1px; font-family: 'Fraunces', serif; font-weight: 500; }
+
+  /* Poetic lines */
+  .poem { margin: 14px 0 14px 28px; font-style: italic; }
+  .poem p { margin-bottom: 3px; text-align: left; }
+
+  /* Opdracht box */
+  .opdracht {
+    background: #F0E4CC;
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 22px;
+    margin: 32px 0;
+    font-family: 'Fraunces', Georgia, serif;
+  }
+  .opdracht strong {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .opdracht p { font-size: 14px; color: var(--ink); font-style: italic; text-align: left; }
+
+  /* Print rules */
+  @media print {
+    html { background: white; }
+    body { max-width: 100%; margin: 0; padding: 14mm 18mm; box-shadow: none; border-top: 3px solid #A07830; font-size: 11pt; line-height: 1.7; }
+    .opdracht { background: #f5f0e8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { break-after: avoid; }
+    h3 { break-after: avoid; }
+    .chapter { break-before: auto; }
+    @page { margin: 20mm 18mm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-eyebrow">Levensbeschouwing · Klas 1 · Les 6</div>
+  <h1 class="doc-title">Het kerstverhaal</h1>
+  <div class="doc-sub">Lucas 1:26–56 &amp; 2:1–21 · Nieuwe Bijbelvertaling</div>
+</div>
+
+<div class="opdracht">
+  <strong>Opdracht</strong>
+  <p>De leraar nummert de plaatjes op het bord. Zoek voor elk plaatje de passende tekst hieronder en schrijf het versnummer erbij.</p>
+</div>
+
+<!-- ══ LUCAS 1 ══════════════════════════════════════════════ -->
+<div class="chapter">Lucas 1</div>
+
+<h2>Aankondiging van de geboorte van Jezus</h2>
+<p><span class="v">26</span> In de zesde maand zond God de engel Gabriël naar de stad Nazaret in Galilea, <span class="v">27</span> naar een meisje dat was uitgehuwelijkt aan een man die Jozef heette, een afstammeling van David. Ze heette Maria en ze was nog maagd. <span class="v">28</span> Gabriël ging haar huis binnen en zei: 'Gegroet Maria, je bent begenadigd, de Heer is met je.' <span class="v">29</span> Ze schrok hevig bij het horen van zijn woorden en vroeg zich af wat die begroeting te betekenen had. <span class="v">30</span> Maar de engel zei tegen haar: 'Wees niet bang, Maria, God heeft je zijn gunst geschonken. <span class="v">31</span> Luister, je zult zwanger worden en een zoon baren, en je moet Hem Jezus noemen. <span class="v">32</span> Hij zal een groot man worden en Zoon van de Allerhoogste worden genoemd, en God, de Heer, zal Hem de troon van zijn vader David geven. <span class="v">33</span> Tot in eeuwigheid zal Hij koning zijn over het volk van Jakob, en aan zijn koningschap zal geen einde komen.'</p>
+<p><span class="v">34</span> Maria vroeg aan de engel: 'Hoe zal dat gebeuren? Ik heb immers nog geen gemeenschap met een man.' <span class="v">35</span> De engel antwoordde: 'De heilige Geest zal over je komen en de kracht van de Allerhoogste zal je als een schaduw overdekken. Daarom zal het kind dat geboren wordt, heilig worden genoemd en Zoon van God. <span class="v">36</span> Luister, ook je familielid Elisabet is zwanger van een zoon, ondanks haar hoge leeftijd. Ze is nu, ook al hield men haar voor onvruchtbaar, in de zesde maand van haar zwangerschap, <span class="v">37</span> want voor God is niets onmogelijk.' <span class="v">38</span> Maria zei: 'De Heer wil ik dienen: laat er met mij gebeuren wat u hebt gezegd.' Daarna liet de engel haar weer alleen.</p>
+
+<h2>Maria en Elisabet</h2>
+<p><span class="v">39</span> Kort daarop reisde Maria in grote haast naar het bergland, naar een stad in Juda, <span class="v">40</span> waar ze het huis van Zacharias binnenging en Elisabet begroette. <span class="v">41</span> Toen Elisabet de groet van Maria hoorde, sprong het kind op in haar schoot; ze werd vervuld van de heilige Geest <span class="v">42</span> en riep luid: 'De meest gezegende ben je van alle vrouwen, en gezegend is de vrucht van je schoot! <span class="v">43</span> Wie ben ik dat de moeder van mijn Heer naar mij toe komt? <span class="v">44</span> Toen ik je groet hoorde, sprong het kind van vreugde op in mijn schoot. <span class="v">45</span> Gelukkig is zij die geloofd heeft dat de woorden van de Heer in vervulling zullen gaan.'</p>
+
+<h3>Het lied van Maria (Magnificat)</h3>
+<div class="poem">
+  <p><span class="v">46</span> Maria zei:</p>
+  <p>'Mijn ziel prijst en looft de Heer,</p>
+  <p><span class="v">47</span> mijn hart juicht om God, mijn redder:</p>
+  <p><span class="v">48</span> Hij heeft oog gehad voor mij, zijn minste dienares.</p>
+  <p>Alle geslachten zullen mij voortaan gelukkig prijzen,</p>
+  <p><span class="v">49</span> ja, grote dingen heeft de Machtige voor mij gedaan,</p>
+  <p>heilig is zijn naam.</p>
+  <p><span class="v">50</span> Barmhartig is Hij, van geslacht op geslacht,</p>
+  <p>voor al wie Hem vereert.</p>
+  <p><span class="v">51</span> Hij toont zijn macht en de kracht van zijn arm</p>
+  <p>en drijft uiteen wie zich verheven wanen,</p>
+  <p><span class="v">52</span> heersers stoot Hij van hun troon</p>
+  <p>en wie gering is geeft Hij aanzien.</p>
+  <p><span class="v">53</span> Wie honger heeft overlaadt Hij met gaven,</p>
+  <p>maar rijken stuurt Hij weg met lege handen.</p>
+  <p><span class="v">54–55</span> Hij trekt zich het lot aan van Israël, zijn dienaar,</p>
+  <p>zoals Hij aan onze voorouders heeft beloofd:</p>
+  <p>Hij herinnert zich zijn barmhartigheid</p>
+  <p>jegens Abraham en zijn nageslacht, tot in eeuwigheid.'</p>
+</div>
+<p><span class="v">56</span> Maria bleef ongeveer drie maanden bij haar, en ging toen terug naar huis.</p>
+
+<!-- ══ LUCAS 2 ══════════════════════════════════════════════ -->
+<div class="chapter">Lucas 2</div>
+
+<h2>De geboorte van Jezus</h2>
+<p><span class="v">1</span> In die tijd kondigde keizer Augustus een decreet af dat alle inwoners van het rijk zich moesten laten inschrijven. <span class="v">2</span> Deze eerste volkstelling vond plaats tijdens het bewind van Quirinius over Syrië. <span class="v">3</span> Iedereen ging op weg om zich te laten inschrijven, ieder naar de plaats waar hij vandaan kwam. <span class="v">4–5</span> Ook Jozef ging op weg om zich te laten inschrijven. Samen met Maria, zijn aanstaande vrouw, die zwanger was, reisde hij van de stad Nazaret in Galilea naar Judea, naar de stad van David die Betlehem heet, aangezien hij van David afstamde. <span class="v">6</span> Terwijl ze daar waren, brak de dag van haar bevalling aan, <span class="v">7</span> en ze bracht een zoon ter wereld, haar eerstgeborene. Ze wikkelde Hem in doeken en legde Hem in een voederbak, omdat er voor hen geen plaats was in het gastenverblijf.</p>
+
+<h2>De herders</h2>
+<p><span class="v">8</span> Niet ver daarvandaan brachten herders de nacht door in het veld, ze hielden de wacht bij hun kudde. <span class="v">9</span> Opeens stond er een engel van de Heer bij hen en werden ze omgeven door de stralende luister van de Heer, zodat ze hevig schrokken. <span class="v">10</span> De engel zei tegen hen: 'Wees niet bang, want ik kom jullie goed nieuws brengen dat grote vreugde betekent voor heel het volk: <span class="v">11</span> vandaag is in de stad van David jullie redder geboren. Hij is de messias, de Heer. <span class="v">12</span> Dit zal voor jullie het teken zijn: jullie zullen een pasgeboren kind vinden dat in doeken gewikkeld in een voederbak ligt.' <span class="v">13</span> En plotseling voegde zich bij de engel een groot hemels leger dat God prees met de woorden:</p>
+<div class="poem">
+  <p><span class="v">14</span> 'Eer aan God in de hoogste hemel</p>
+  <p>en vrede op aarde voor de mensen die Hij liefheeft.'</p>
+</div>
+<p><span class="v">15</span> Toen de engelen waren teruggegaan naar de hemel, zeiden de herders tegen elkaar: 'Laten we naar Betlehem gaan om met eigen ogen te zien wat er gebeurd is en wat de Heer ons bekend heeft gemaakt.' <span class="v">16</span> Ze gingen meteen op weg, en troffen Maria aan en Jozef en het kind dat in de voederbak lag. <span class="v">17</span> Toen ze het zagen, vertelden ze wat hun over het kind was gezegd. <span class="v">18</span> Allen die het hoorden stonden verbaasd over wat de herders tegen hen zeiden, <span class="v">19</span> maar Maria bewaarde al deze woorden in haar hart en bleef erover nadenken. <span class="v">20</span> De herders gingen terug, terwijl ze God loofden en prezen om alles wat ze gehoord en gezien hadden, precies zoals het hun was gezegd.</p>
+
+<h2>De besnijdenis en naamgeving</h2>
+<p><span class="v">21</span> Toen er acht dagen verstreken waren en Hij besneden zou worden, kreeg Hij de naam Jezus, die de engel had genoemd nog voordat Hij in de schoot van zijn moeder was ontvangen.</p>
+
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Een week in het leven van Ibrahim en Fatima</title>
+<style>
+  :root {
+    --shahada: #c0392b;
+    --salat: #2980b9;
+    --zakat: #27ae60;
+    --sawm: #8e44ad;
+    --hadj: #d68910;
+    --bg: #faf6ee;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 20px;
+    color: #2c2c2c;
+  }
+  header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+  }
+  header h1 { margin-bottom: 4px; font-size: 1.8em; }
+  header p { color: #555; margin-top: 0; }
+  #status-bar {
+    max-width: 1100px;
+    margin: 0 auto 16px auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-weight: bold;
+  }
+  #zones {
+    max-width: 1100px;
+    margin: 0 auto 24px auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    #zones { grid-template-columns: repeat(2, 1fr); }
+  }
+  .zone {
+    border-radius: 12px;
+    padding: 10px;
+    min-height: 220px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .zone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .zone h3 { margin: 0 0 2px 0; font-size: 1.05em; }
+  .zone .arabic { font-size: 0.8em; opacity: 0.85; margin-bottom: 6px; }
+  .info-btn {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.75);
+    color: #fff;
+    font-size: 0.78em;
+    font-weight: bold;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .info-btn:hover { background: rgba(255,255,255,0.45); }
+  .zone .dropspace {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    border: 2px dashed rgba(255,255,255,0.6);
+    border-radius: 8px;
+    padding: 6px;
+    min-height: 150px;
+  }
+  .zone.dragover .dropspace { background: rgba(255,255,255,0.35); }
+  .zone[data-zone="shahada"] { background: var(--shahada); }
+  .zone[data-zone="salat"] { background: var(--salat); }
+  .zone[data-zone="zakat"] { background: var(--zakat); }
+  .zone[data-zone="sawm"] { background: var(--sawm); }
+  .zone[data-zone="hadj"] { background: var(--hadj); }
+
+  #pool {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 90px;
+  }
+  .card {
+    background: #fffdf8;
+    color: #2c2c2c;
+    border: 2px solid #ddd0b8;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.88em;
+    line-height: 1.3;
+    width: 200px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:active { cursor: grabbing; }
+  .card.selected {
+    border-color: #333;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+    transform: scale(1.02);
+  }
+  .card.placed-correct { border-color: #1e8449; }
+  .card.placed-wrong { border-color: #b03a2e; background: #fdecea; }
+  .card .num {
+    font-weight: bold;
+    font-size: 0.8em;
+    color: #999;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  #controls {
+    max-width: 1100px;
+    margin: 20px auto 0 auto;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: inherit;
+    font-size: 1em;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #check-btn { background: #2c3e50; color: #fff; }
+  #reset-btn { background: #bbb; color: #222; }
+
+  #feedback {
+    max-width: 1100px;
+    margin: 14px auto 0 auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.05em;
+    min-height: 24px;
+  }
+
+  #instructions {
+    max-width: 900px;
+    margin: 0 auto 18px auto;
+    background: #fff3d6;
+    border: 1px solid #e8c97a;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.92em;
+  }
+
+  #info-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  #info-overlay.open { display: flex; }
+  #info-card {
+    background: #fff;
+    color: #2c2c2c;
+    border-radius: 12px;
+    border-top: 8px solid #333;
+    max-width: 420px;
+    width: 100%;
+    padding: 22px 20px 20px 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  #info-card h4 { margin: 0 0 2px 0; font-size: 1.25em; color: #2c2c2c; }
+  #info-card .info-arabic { font-size: 0.85em; color: #777; margin-bottom: 12px; }
+  #info-card p { margin: 0; line-height: 1.45; color: #2c2c2c; }
+  #info-close {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: #eee;
+    color: #555;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0;
+  }
+  #info-close:hover { background: #ddd; color: #222; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Een week in het leven van Ibrahim en Fatima</h1>
+  <p>Sleep elke anekdote naar de zuil van de Islam waar hij bij hoort.</p>
+</header>
+
+<div id="instructions">
+  <strong>Hoe werkt het?</strong> Sleep een kaartje naar de juiste kleur, of tik/klik eerst op een kaartje en daarna op een zuil.
+  Klik op het rondje met de <em>i</em> bij een zuil voor een korte uitleg. Er zijn 15 anekdotes en 5 zuilen, dus elke zuil krijgt er 3.
+  Klik op "Controleer" als je klaar bent.
+</div>
+
+<div id="status-bar">
+  <span id="progress-text">Geplaatst: 0 / 15</span>
+  <span id="score-text"></span>
+</div>
+
+<div id="zones">
+  <div class="zone" data-zone="shahada">
+    <div class="zone-header">
+      <h3>Shahada</h3>
+      <button class="info-btn" data-zone="shahada" aria-label="Info over Shahada" title="Info over Shahada">i</button>
+    </div>
+    <div class="arabic">Geloofsbelijdenis</div>
+    <div class="dropspace"></div>
+  </div>
+  <div class="zone" data-zone="salat">
+    <div class="zone-header">
+      <h3>Salat</h3>
+      <button class="info-btn" data-zone="salat" aria-label="Info over Salat" title="Info over Salat">i</button>
+    </div>
+    <div class="arabic">Gebed</div>
+    <div class="dropspace"></div>
+  </div>
+  <div class="zone" data-zone="zakat">
+    <div class="zone-header">
+      <h3>Zakat</h3>
+      <button class="info-btn" data-zone="zakat" aria-label="Info over Zakat" title="Info over Zakat">i</button>
+    </div>
+    <div class="arabic">Aalmoezen</div>
+    <div class="dropspace"></div>
+  </div>
+  <div class="zone" data-zone="sawm">
+    <div class="zone-header">
+      <h3>Sawm</h3>
+      <button class="info-btn" data-zone="sawm" aria-label="Info over Sawm" title="Info over Sawm">i</button>
+    </div>
+    <div class="arabic">Vasten</div>
+    <div class="dropspace"></div>
+  </div>
+  <div class="zone" data-zone="hadj">
+    <div class="zone-header">
+      <h3>Hadj</h3>
+      <button class="info-btn" data-zone="hadj" aria-label="Info over Hadj" title="Info over Hadj">i</button>
+    </div>
+    <div class="arabic">Bedevaart</div>
+    <div class="dropspace"></div>
+  </div>
+</div>
+
+<div id="pool"></div>
+
+<div id="controls">
+  <button id="check-btn">Controleer</button>
+  <button id="reset-btn">Opnieuw</button>
+</div>
+
+<div id="feedback"></div>
+
+<div id="info-overlay">
+  <div id="info-card">
+    <button id="info-close" aria-label="Sluiten">&#10005;</button>
+    <h4 id="info-title"></h4>
+    <div class="info-arabic" id="info-arabic"></div>
+    <p id="info-text"></p>
+  </div>
+</div>
+
+<script>
+const anecdotes = [
+  { id: 1, zone: "shahada", text: "Ibrahim fluistert elke ochtend zachtjes een zin in zijn oor voordat hij opstaat: “Er is geen god dan Allah en Mohammed is Zijn boodschapper.” Hij doet dit al zolang hij zich kan herinneren." },
+  { id: 2, zone: "shahada", text: "Fatima legt aan een nieuwe klasgenoot uit dat je pas echt moslim wordt als je één bepaalde zin uit je hart uitspreekt, in het bijzijn van getuigen." },
+  { id: 3, zone: "shahada", text: "Op het schoolplein vraagt iemand aan Ibrahim: “Wat geloof jij eigenlijk?” Hij antwoordt kort en zelfverzekerd met dezelfde zin die hij als klein kind al leerde." },
+  { id: 4, zone: "salat", text: "Fatima zet vijf keer per dag een wekker: ’s ochtends vroeg, rond het middaguur, in de namiddag, bij zonsondergang en ’s avonds laat." },
+  { id: 5, zone: "salat", text: "Tijdens de pauze op school rolt Ibrahim een klein tapijtje uit in een rustig hoekje en richt zich even in dezelfde richting als altijd." },
+  { id: 6, zone: "salat", text: "Voor het eten controleert Fatima’s moeder of iedereen zijn handen, gezicht en voeten heeft gewassen, want dat moet altijd eerst, vijf keer per dag." },
+  { id: 7, zone: "zakat", text: "Aan het einde van het jaar telt Fatima’s vader zorgvuldig zijn spaargeld en geeft daarna een vast percentage weg aan mensen die het nodig hebben." },
+  { id: 8, zone: "zakat", text: "Ibrahim helpt mee met het inpakken van voedselpakketten die naar arme gezinnen in de buurt gaan, want dat hoort erbij in zijn familie." },
+  { id: 9, zone: "zakat", text: "Fatima krijgt zakgeld en legt elke maand een deel apart. “Ook ik moet leren delen met wie minder heeft dan ik”, zegt ze tegen haar broer." },
+  { id: 10, zone: "sawm", text: "Een hele maand lang staat Ibrahim voor zonsopgang op om nog snel iets te eten en te drinken, want daarna mag dat de hele dag niet meer." },
+  { id: 11, zone: "sawm", text: "Fatima’s oma is ziek en hoeft deze maand niet mee te doen met het overdag onthouden van eten en drinken. Dat mag ze later inhalen als ze beter is." },
+  { id: 12, zone: "sawm", text: "Bij zonsondergang breekt de hele familie van Ibrahim samen met een paar dadels en een glas water, voordat het echte avondeten begint." },
+  { id: 13, zone: "hadj", text: "Fatima’s opa spaart al jaren voor de grote reis naar Mekka die hij minstens één keer in zijn leven wil maken." },
+  { id: 14, zone: "hadj", text: "Ibrahims oom vertelt trots over de witte, naadloze doeken die mannen dragen tijdens de grote bedevaart, zodat rijk en arm er precies hetzelfde uitzien." },
+  { id: 15, zone: "hadj", text: "Fatima leert dat je deze verplichting alleen hoeft te vervullen als je gezond genoeg bent en het je financieel ook lukt." },
+];
+
+const zoneInfo = {
+  shahada: {
+    name: "Shahada",
+    arabic: "Geloofsbelijdenis",
+    text: "De uitspraak dat er geen god is dan Allah en dat Mohammed Zijn boodschapper is. Je spreekt dit uit met je hart, in het bijzijn van getuigen. Het is de basis van alle andere zuilen."
+  },
+  salat: {
+    name: "Salat",
+    arabic: "Gebed",
+    text: "Het rituele gebed, vijf keer per dag op vaste tijden. Je wast eerst je handen, gezicht en voeten, en je richt je tijdens het bidden naar Mekka."
+  },
+  zakat: {
+    name: "Zakat",
+    arabic: "Aalmoezen",
+    text: "Een vast deel van je spaargeld of bezit weggeven aan mensen die het nodig hebben. Dit wordt meestal één keer per jaar berekend en gegeven."
+  },
+  sawm: {
+    name: "Sawm",
+    arabic: "Vasten",
+    text: "Een hele maand lang (Ramadan) van zonsopgang tot zonsondergang niet eten of drinken. Wie ziek is, zwanger of op reis, mag dit later inhalen."
+  },
+  hadj: {
+    name: "Hadj",
+    arabic: "Bedevaart",
+    text: "De reis naar Mekka die je minstens één keer in je leven hoort te maken, als je gezond genoeg bent en het je financieel ook lukt."
+  },
+};
+
+let selectedCard = null;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function createCard(item) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.id = item.id;
+  card.dataset.zone = item.zone;
+  card.innerHTML = `<span class="num">#${item.id}</span>${item.text}`;
+
+  card.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", item.id);
+    setTimeout(() => card.classList.add("dragging"), 0);
+  });
+  card.addEventListener("dragend", () => card.classList.remove("dragging"));
+
+  card.addEventListener("click", () => {
+    if (selectedCard === card) {
+      card.classList.remove("selected");
+      selectedCard = null;
+      return;
+    }
+    if (selectedCard) selectedCard.classList.remove("selected");
+    selectedCard = card;
+    card.classList.add("selected");
+  });
+
+  return card;
+}
+
+function buildBoard() {
+  const pool = document.getElementById("pool");
+  pool.innerHTML = "";
+  document.querySelectorAll(".dropspace").forEach(ds => ds.innerHTML = "");
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("score-text").textContent = "";
+
+  shuffle(anecdotes).forEach(item => {
+    pool.appendChild(createCard(item));
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const placed = document.querySelectorAll(".zone .card").length;
+  document.getElementById("progress-text").textContent = `Geplaatst: ${placed} / 15`;
+}
+
+function placeCardInZone(card, zoneEl) {
+  card.classList.remove("placed-correct", "placed-wrong", "selected");
+  zoneEl.querySelector(".dropspace").appendChild(card);
+  updateProgress();
+}
+
+document.querySelectorAll(".zone").forEach(zone => {
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.classList.add("dragover");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("dragover");
+    const id = e.dataTransfer.getData("text/plain");
+    const card = document.querySelector(`.card[data-id="${id}"]`);
+    if (card) placeCardInZone(card, zone);
+  });
+  zone.addEventListener("click", () => {
+    if (selectedCard) {
+      placeCardInZone(selectedCard, zone);
+      selectedCard = null;
+    }
+  });
+});
+
+document.getElementById("pool").addEventListener("dragover", (e) => e.preventDefault());
+document.getElementById("pool").addEventListener("drop", (e) => {
+  e.preventDefault();
+  const id = e.dataTransfer.getData("text/plain");
+  const card = document.querySelector(`.card[data-id="${id}"]`);
+  if (card) {
+    card.classList.remove("placed-correct", "placed-wrong", "selected");
+    document.getElementById("pool").appendChild(card);
+    updateProgress();
+  }
+});
+
+document.getElementById("check-btn").addEventListener("click", () => {
+  let correct = 0;
+  let placedTotal = 0;
+  document.querySelectorAll(".zone").forEach(zone => {
+    const zoneName = zone.dataset.zone;
+    zone.querySelectorAll(".card").forEach(card => {
+      placedTotal++;
+      if (card.dataset.zone === zoneName) {
+        card.classList.remove("placed-wrong");
+        card.classList.add("placed-correct");
+        correct++;
+      } else {
+        card.classList.remove("placed-correct");
+        card.classList.add("placed-wrong");
+      }
+    });
+  });
+  const feedback = document.getElementById("feedback");
+  const scoreText = document.getElementById("score-text");
+  scoreText.textContent = `Score: ${correct} / 15 goed`;
+  if (placedTotal < 15) {
+    feedback.textContent = `Nog ${15 - placedTotal} kaartje(s) niet geplaatst.`;
+    feedback.style.color = "#8a6d00";
+  } else if (correct === 15) {
+    feedback.textContent = "Perfect! Alle 15 anekdotes staan bij de juiste zuil.";
+    feedback.style.color = "#1e8449";
+  } else {
+    feedback.textContent = "Niet alle kaartjes staan goed. Rode rand = fout, groene rand = goed. Sleep de foute kaartjes opnieuw.";
+    feedback.style.color = "#b03a2e";
+  }
+});
+
+document.getElementById("reset-btn").addEventListener("click", buildBoard);
+
+// Info-knopjes per zuil
+function openInfo(zoneKey) {
+  const info = zoneInfo[zoneKey];
+  if (!info) return;
+  document.getElementById("info-title").textContent = info.name;
+  document.getElementById("info-arabic").textContent = info.arabic;
+  document.getElementById("info-text").textContent = info.text;
+  const zoneEl = document.querySelector(`.zone[data-zone="${zoneKey}"]`);
+  document.getElementById("info-card").style.borderTopColor = getComputedStyle(zoneEl).backgroundColor;
+  document.getElementById("info-overlay").classList.add("open");
+}
+function closeInfo() {
+  document.getElementById("info-overlay").classList.remove("open");
+}
+document.querySelectorAll(".info-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openInfo(btn.dataset.zone);
+  });
+});
+document.getElementById("info-close").addEventListener("click", closeInfo);
+document.getElementById("info-overlay").addEventListener("click", (e) => {
+  if (e.target.id === "info-overlay") closeInfo();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeInfo();
+});
+
+buildBoard();
+</script>
+
+</body>
+</html>

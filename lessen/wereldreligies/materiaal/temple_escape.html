@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Tempelpoort: Ontdekkingsreis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --ink:#241509;
+    --shadow:#2B1810;
+    --stone:#5C4A38;
+    --sandstone:#E8D5B5;
+    --parchment:#F4ECD8;
+    --copper:#B8722E;
+    --copper-light:#D89B4F;
+    --temple-green:#3D5C4A;
+    --temple-green-light:#557060;
+    --ok:#3D5C4A;
+    --err:#9A4A3A;
+    --gold-glow: rgba(216,155,79,0.55);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% 0%, #3a2615 0%, var(--shadow) 55%, #190f08 100%);
+    color:var(--parchment);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 16px 64px;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:880px;margin:0 auto;}
+
+  /* ---------- Header / Corridor progress ---------- */
+  .masthead{
+    text-align:center;
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--copper-light);
+    margin:0 0 6px;
+  }
+  h1.title{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:clamp(34px,6vw,54px);
+    margin:0 0 4px;
+    color:var(--sandstone);
+    text-shadow:0 0 30px var(--gold-glow);
+    letter-spacing:0.01em;
+  }
+  .subtitle{
+    font-size:14.5px;
+    color:#cdb993;
+    max-width:560px;
+    margin:0 auto 28px;
+    line-height:1.6;
+  }
+
+  .corridor{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+    margin:0 auto 30px;
+    max-width:620px;
+  }
+  .torch-node{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    width:74px;
+    flex-shrink:0;
+  }
+  .torch-node svg{width:34px;height:46px;display:block;}
+  .torch-flame{transition:opacity .5s ease;}
+  .torch-node.unlit .torch-flame{opacity:0;}
+  .torch-node.lit .torch-flame{opacity:1;
+    filter:drop-shadow(0 0 8px var(--gold-glow));
+  }
+  .torch-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.05em;
+    color:#a98e66;
+  }
+  .torch-node.lit .torch-label{color:var(--copper-light);}
+  .corridor-link{
+    flex:1;
+    height:2px;
+    background:linear-gradient(90deg,#4a3722,#4a3722);
+    margin-top:-22px;
+    position:relative;
+    min-width:24px;
+  }
+  .corridor-link.lit{background:linear-gradient(90deg,var(--copper),var(--copper-light));
+    box-shadow:0 0 8px var(--gold-glow);
+  }
+
+  /* ---------- Timer & controls bar ---------- */
+  .control-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.25);
+    border:1px solid #4a3722;
+    border-radius:10px;
+    padding:14px 18px;
+    margin-bottom:36px;
+  }
+  .timer-display{
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px;
+    font-weight:600;
+    color:var(--sandstone);
+    letter-spacing:0.04em;
+    min-width:88px;
+    text-align:center;
+    transition:color .25s ease;
+  }
+  .timer-display.warn{color:#e3a05a;}
+  .timer-display.crit{color:#d9685a; animation:pulse 1s infinite;}
+  @keyframes pulse{50%{opacity:0.45;}}
+
+  .penalty-toast{
+    position:fixed;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%) translateY(-12px);
+    background:var(--err);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:13px;
+    padding:8px 16px;
+    border-radius:20px;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    z-index:50;
+    white-space:nowrap;
+  }
+  .penalty-toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+  .timer-bump{
+    animation:bump .4s ease;
+  }
+  @keyframes bump{
+    0%{transform:scale(1);}
+    30%{transform:scale(1.18);}
+    100%{transform:scale(1);}
+  }
+
+  button{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    border-radius:7px;
+    padding:9px 16px;
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  button:hover{filter:brightness(1.08);}
+  button:active{transform:scale(0.97);}
+  button:focus-visible{outline:2px solid var(--copper-light);outline-offset:2px;}
+  .btn-primary{background:var(--copper);color:#1c1108;}
+  .btn-ghost{background:transparent;color:var(--sandstone);border:1px solid #5C4A38;}
+  .btn-ghost:hover{background:rgba(255,255,255,0.06);}
+
+  /* ---------- Rooms ---------- */
+  .room{
+    background:linear-gradient(160deg,var(--parchment) 0%, #e9dcc0 100%);
+    color:var(--ink);
+    border-radius:14px;
+    padding:30px 28px 32px;
+    margin-bottom:26px;
+    position:relative;
+    box-shadow:0 18px 40px -14px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.08) inset;
+    border-top:5px solid var(--stone);
+    transition:opacity .4s ease, filter .4s ease;
+  }
+  .room.solved{border-top-color:var(--temple-green);}
+
+  .room-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:6px;
+  }
+  .room-number{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    color:var(--copper);
+    font-weight:600;
+    text-transform:uppercase;
+  }
+  .room-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:28px;
+    font-weight:700;
+    margin:2px 0 0;
+    color:var(--shadow);
+  }
+  .room-status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+    margin-top:4px;
+  }
+  .room-status.open{background:#e3d4b1;color:#5C4A38;}
+  .room-status.done{background:#d9e6dd;color:var(--temple-green);}
+
+  .room-flavor{
+    font-size:14px;
+    line-height:1.65;
+    color:#4a3722;
+    margin:10px 0 20px;
+    padding:12px 16px;
+    background:rgba(184,114,46,0.08);
+    border-left:3px solid var(--copper);
+    border-radius:0 8px 8px 0;
+  }
+
+  .puzzle-block{
+    margin-bottom:24px;
+    padding-bottom:22px;
+    border-bottom:1px dashed #c9b48a;
+  }
+  .puzzle-block:last-of-type{border-bottom:none;margin-bottom:8px;}
+
+  .puzzle-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--stone);
+    margin-bottom:6px;
+  }
+  .puzzle-q{
+    font-size:15.5px;
+    font-weight:600;
+    color:var(--shadow);
+    margin:0 0 12px;
+    line-height:1.5;
+  }
+  .placeholder-flag{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    background:#9A4A3A;
+    color:#fff;
+    padding:2px 7px;
+    border-radius:4px;
+    margin-bottom:8px;
+    letter-spacing:0.05em;
+  }
+
+  .option-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+  .option-btn{
+    background:#fff;
+    border:1.5px solid #c9b48a;
+    color:var(--ink);
+    font-weight:600;
+    font-size:13.5px;
+    padding:10px 16px;
+  }
+  .option-btn:hover{border-color:var(--copper);background:#fffaf0;}
+  .option-btn.correct-flash{background:var(--temple-green);color:#fff;border-color:var(--temple-green);}
+  .option-btn.wrong-flash{background:var(--err);color:#fff;border-color:var(--err);animation:shake .35s;}
+  @keyframes shake{25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+  .text-input-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .text-input{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    padding:10px 14px;
+    border:1.5px solid #c9b48a;
+    border-radius:7px;
+    background:#fff;
+    color:var(--ink);
+    min-width:200px;
+    flex:1;
+  }
+  .text-input:focus{outline:none;border-color:var(--copper);box-shadow:0 0 0 3px rgba(184,114,46,0.18);}
+  .text-input.wrong{border-color:var(--err);animation:shake .35s;}
+  .text-input.correct{border-color:var(--temple-green);}
+
+  .matching-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:520px){.matching-grid{grid-template-columns:1fr;}}
+  .match-col-title{font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--stone);margin-bottom:8px;}
+  .match-item{
+    background:#fff;border:1.5px solid #c9b48a;border-radius:7px;
+    padding:9px 12px;margin-bottom:8px;font-size:13.5px;font-weight:600;cursor:pointer;
+    user-select:none;
+  }
+  .match-item.selected{border-color:var(--copper);background:#fff6e8;}
+  .match-item.matched-correct{background:#d9e6dd;border-color:var(--temple-green);color:var(--temple-green);cursor:default;}
+  .match-item.target{cursor:pointer;}
+
+  .feedback{
+    font-size:13.5px;
+    margin-top:10px;
+    font-weight:600;
+    min-height:20px;
+  }
+  .feedback.err{color:var(--err);}
+  .feedback.ok{color:var(--temple-green);}
+  .retry-note{
+    font-size:12px;
+    color:#8a6f4a;
+    font-style:italic;
+    margin-top:4px;
+  }
+
+  .reveal{
+    margin-top:14px;
+    padding:14px 16px;
+    background:#eef3ee;
+    border-left:3px solid var(--temple-green);
+    border-radius:0 8px 8px 0;
+    font-size:13.5px;
+    line-height:1.6;
+    color:#2c4536;
+    display:none;
+  }
+  .reveal.show{display:block; animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  .key-banner{
+    margin-top:18px;
+    padding:14px 18px;
+    background:var(--shadow);
+    color:var(--sandstone);
+    border-radius:9px;
+    display:none;
+    align-items:center;
+    gap:12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+  }
+  .key-banner.show{display:flex; animation:fadeIn .4s ease;}
+  .key-icon{font-size:18px;}
+
+  .room-lock-msg{
+    font-size:13.5px;
+    color:#7a6448;
+    font-style:italic;
+  }
+
+  /* ---------- Final door ---------- */
+  .final-gate{
+    text-align:center;
+    padding:40px 20px;
+    background:linear-gradient(160deg,#1c1108,var(--shadow));
+    border-radius:16px;
+    border:1px solid #4a3722;
+  }
+  .final-gate svg{width:100%;max-width:360px;height:auto;}
+  .final-title{
+    font-family:'Cormorant Garamond',serif;
+    font-size:30px;
+    color:var(--sandstone);
+    margin:18px 0 8px;
+  }
+  .final-sub{font-size:13.5px;color:#cdb993;max-width:480px;margin:0 auto;}
+
+  .door-slab{transition:transform 1.4s cubic-bezier(.65,0,.35,1);}
+  .door-light{opacity:0;transition:opacity 1.4s ease 0.4s;}
+  .gate-opened .door-slab.left{transform:translateX(-92px);}
+  .gate-opened .door-slab.right{transform:translateX(92px);}
+  .gate-opened .door-light{opacity:1;}
+  .key-slot{transition:opacity .5s ease;}
+  .key-slot.filled .key-slot-empty{opacity:0;}
+  .key-slot .key-slot-glow{opacity:0;transition:opacity .5s ease;}
+  .key-slot.filled .key-slot-glow{opacity:1;}
+
+  /* ---------- Score block ---------- */
+  .score-block{
+    margin-top:26px;
+    padding-top:24px;
+    border-top:1px solid #4a3722;
+    display:none;
+  }
+  .score-block.show{display:block; animation:fadeIn .6s ease;}
+  .score-time{
+    font-family:'JetBrains Mono',monospace;
+    font-size:46px;
+    font-weight:600;
+    color:var(--copper-light);
+    text-shadow:0 0 26px var(--gold-glow);
+    margin:6px 0 2px;
+    letter-spacing:0.03em;
+  }
+  .score-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#a98e66;
+  }
+  .score-verdict{
+    font-size:14px;
+    color:var(--sandstone);
+    margin:14px auto 4px;
+    max-width:440px;
+    line-height:1.6;
+  }
+  .score-mistakes{font-size:12.5px;color:#a98e66;margin:0 0 20px;}
+  .btn-replay{
+    background:var(--copper);
+    color:#1c1108;
+    font-size:14px;
+    padding:12px 26px;
+    border-radius:8px;
+  }
+  .btn-replay small{
+    display:block;
+    font-weight:500;
+    font-size:11px;
+    opacity:0.75;
+    margin-top:2px;
+  }
+
+  /* ---------- Room reveal transition ---------- */
+  @keyframes roomReveal{
+    0%{opacity:0; transform:translateY(34px) scale(0.97); box-shadow:0 0 0 0 var(--gold-glow);}
+    55%{box-shadow:0 0 38px 6px var(--gold-glow);}
+    100%{opacity:1; transform:translateY(0) scale(1); box-shadow:0 18px 40px -14px rgba(0,0,0,0.55);}
+  }
+  .room.room-entering{animation:roomReveal 0.9s cubic-bezier(.16,.8,.3,1) both;}
+
+  /* light wipe that sweeps down when a new room is unsealed */
+  .light-wipe{
+    position:fixed;
+    left:0; right:0; top:0;
+    height:140px;
+    pointer-events:none;
+    z-index:40;
+    background:linear-gradient(180deg, rgba(255,230,172,0) 0%, rgba(255,230,172,0.55) 50%, rgba(255,230,172,0) 100%);
+    opacity:0;
+  }
+  .light-wipe.sweep{animation:wipeDown 0.85s ease-out;}
+  @keyframes wipeDown{
+    0%{opacity:0; transform:translateY(-160px);}
+    20%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0; transform:translateY(100vh);}
+  }
+
+  /* ---------- Story overlay ---------- */
+  .story-overlay{
+    position:fixed;
+    inset:0;
+    z-index:60;
+    background:radial-gradient(ellipse at 50% 40%, rgba(43,24,16,0.86) 0%, rgba(12,7,3,0.96) 100%);
+    backdrop-filter:blur(3px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .5s ease;
+  }
+  .story-overlay.show{opacity:1; pointer-events:auto;}
+  .story-card{
+    max-width:520px;
+    text-align:center;
+    transform:translateY(16px);
+    transition:transform .55s cubic-bezier(.16,.8,.3,1);
+  }
+  .story-overlay.show .story-card{transform:translateY(0);}
+  .story-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--copper-light);
+    margin-bottom:14px;
+  }
+  .story-key{font-size:34px; margin-bottom:10px; filter:drop-shadow(0 0 14px var(--gold-glow));}
+  .story-text{
+    font-family:'Cormorant Garamond',serif;
+    font-size:23px;
+    line-height:1.5;
+    color:var(--sandstone);
+    margin:0 auto 28px;
+    font-weight:500;
+  }
+  .btn-continue{
+    background:var(--copper);
+    color:#1c1108;
+    font-size:14px;
+    padding:12px 30px;
+    border-radius:8px;
+  }
+
+  footer.note{
+    text-align:center;
+    font-size:11.5px;
+    color:#6e5a3e;
+    margin-top:30px;
+    line-height:1.7;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">Een ontdekkingsreis · 4 kamers</p>
+    <h1 class="title">De Tempelpoort</h1>
+    <p class="subtitle">Verdwaald in een oud woud stuiten jullie op een vergeten tempel. Vier verzegelde kamers bewaken kennis die al duizenden jaren wordt doorgegeven. Elke kamer die jullie ontgrendelen, brengt jullie dieper naar binnen: naar de verborgen tuin achter de poort. De klok loopt al. Hoe sneller jullie de tempel doorgronden, hoe beter je tijd.</p>
+  </div>
+
+  <div class="corridor" id="corridor"></div>
+
+  <div class="control-bar">
+    <button class="btn-ghost" id="startBtn">⏸ Pauzeer</button>
+    <span class="timer-display" id="timerDisplay">00:00</span>
+    <button class="btn-ghost" id="resetBtn">↺ Reset</button>
+  </div>
+
+  <div class="penalty-toast" id="penaltyToast">+15 sec tijdstraf</div>
+
+  <div id="rooms"></div>
+
+  <div class="final-gate" id="finalGate">
+    <svg viewBox="0 0 360 220" id="gateSvg">
+      <!-- frame -->
+      <rect x="10" y="10" width="340" height="200" rx="6" fill="none" stroke="#7a5c38" stroke-width="3"/>
+      <!-- light behind door -->
+      <radialGradient id="glow" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#ffe6ac" stop-opacity="0.95"/>
+        <stop offset="100%" stop-color="#ffe6ac" stop-opacity="0"/>
+      </radialGradient>
+      <circle class="door-light" cx="180" cy="110" r="95" fill="url(#glow)"/>
+      <!-- left slab -->
+      <g class="door-slab left">
+        <rect x="20" y="20" width="160" height="180" fill="#3a2a18" stroke="#6b4e2e" stroke-width="2"/>
+        <rect x="35" y="35" width="30" height="150" fill="none" stroke="#8a6a40" stroke-width="1.5"/>
+        <rect x="115" y="35" width="30" height="150" fill="none" stroke="#8a6a40" stroke-width="1.5"/>
+        <circle cx="170" cy="110" r="6" fill="#B8722E"/>
+      </g>
+      <!-- right slab -->
+      <g class="door-slab right">
+        <rect x="180" y="20" width="160" height="180" fill="#3a2a18" stroke="#6b4e2e" stroke-width="2"/>
+        <rect x="195" y="35" width="30" height="150" fill="none" stroke="#8a6a40" stroke-width="1.5"/>
+        <rect x="275" y="35" width="30" height="150" fill="none" stroke="#8a6a40" stroke-width="1.5"/>
+        <circle cx="190" cy="110" r="6" fill="#B8722E"/>
+      </g>
+      <!-- four key slots along the bottom -->
+      <g id="keySlots"></g>
+    </svg>
+    <h2 class="final-title" id="finalTitle">De poort wacht op vier sleutels</h2>
+    <p class="final-sub" id="finalSub">Los elke kamer op om een sleutel te verdienen. Zodra alle vier de sleutels gevonden zijn, opent de tempelpoort zich naar de verborgen tuin.</p>
+
+    <div class="score-block" id="scoreBlock">
+      <p class="score-label">Jullie eindtijd</p>
+      <div class="score-time" id="scoreTime">00:00</div>
+      <p class="score-verdict" id="scoreVerdict"></p>
+      <p class="score-mistakes" id="scoreMistakes"></p>
+      <button class="btn-replay" id="replayBtn" onclick="playAgain()">
+        Opnieuw proberen
+        <small id="replaySub"></small>
+      </button>
+    </div>
+  </div>
+
+  <footer class="note">
+    Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit Wereldreligies: eindversie.<br>
+    De klok telt op vanaf 00:00; elk fout antwoord geeft 15 seconden tijdstraf. Geen hints tijdens het spel; alleen "Probeer opnieuw" bij een fout antwoord, uitleg pas na een juist antwoord.
+  </footer>
+
+</div>
+
+<div class="light-wipe" id="lightWipe"></div>
+
+<div class="story-overlay" id="storyOverlay">
+  <div class="story-card">
+    <div class="story-key">🗝️</div>
+    <p class="story-eyebrow" id="storyEyebrow"></p>
+    <p class="story-text" id="storyText"></p>
+    <button class="btn-continue" id="storyContinueBtn">Ga verder</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   DATA LAYER: alle puzzle-inhoud staat hier gebundeld.
+   Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit "Wereldreligies: eindversie".
+   Structuur per kamer: id, titel, flavor-tekst, puzzles[], keyLabel
+   ========================================================================= */
+
+const ROOMS = [
+  {
+    id: 'r1',
+    num: 'Kamer I',
+    title: 'De Gravures van het Voorportaal',
+    flavor: 'Bij de ingang van de tempel vinden de avonturiers vier stenen platen met ingekerfde spreuken. De letters zijn versleten door de tijd, maar de betekenis is nog te ontcijferen: als je weet waar je moet zoeken.',
+    keyLabel: 'Sleutel der Stilte',
+    puzzles: [
+      {
+        type: 'riddle',
+        tag: 'Raadsel 1 van 4',
+        q: '"Bevrijding uit de eeuwige kringloop, eenwording met het goddelijke."',
+        answer: 'moksha',
+        explain: 'Volgens het hindoeïsme is moksha het uiteindelijke doel voor een hindoe: bevrijding uit samsara, waarbij de ziel één wordt met het goddelijke, Brahman. Dit is geen "hemel" zoals in sommige andere religies, maar een toestand van volmaakte rust, vrijheid en eenwording met de bron van alles.'
+      },
+      {
+        type: 'riddle',
+        tag: 'Raadsel 2 van 4',
+        q: '"Wat in jou blijft doorgaan, leven na leven, gevormd door wat je deed."',
+        answer: 'atman',
+        explain: 'Volgens het hindoeïsme is atman de ziel, die de eeuwige cyclus van geboorte, dood en wedergeboorte (samsara) doorloopt: telkens in een nieuw leven, in menselijke of dierlijke vorm. Hoe dat volgende leven eruitziet, hangt af van karma: de optelsom van goede en slechte daden, woorden en gedachten.'
+      },
+      {
+        type: 'riddle',
+        tag: 'Raadsel 3 van 4',
+        q: '"De eindeloze rondgang van geboorte, dood en geboorte opnieuw."',
+        answer: 'samsara',
+        explain: 'Volgens het hindoeïsme is samsara de eeuwige cyclus van geboorte, dood en wedergeboorte. De ziel (atman) doorloopt steeds nieuwe levens, in menselijke of dierlijke vorm.'
+      },
+      {
+        type: 'riddle',
+        tag: 'Raadsel 4 van 4',
+        q: '"De optelsom van al je daden, woorden en gedachten, die jouw volgende leven vormt."',
+        answer: 'karma',
+        explain: 'Volgens het hindoeïsme hangt het af van karma hoe een volgend leven eruitziet: de optelsom van al je goede en slechte daden, woorden en gedachten. Een leven vol geweld, oneerlijkheid of hebzucht kan leiden tot een minder gunstige wedergeboorte, terwijl een leven vol mededogen, eerlijkheid en toewijding juist een beter bestaan kan opleveren.'
+      }
+    ]
+  },
+  {
+    id: 'r2',
+    num: 'Kamer II',
+    title: 'De Zaal der Verbindingen',
+    flavor: 'Op de muren hangen oude symbolen, elk gekoppeld aan drie mogelijke namen. Slechts één naam per symbool is juist: de andere zijn vervalsingen die latere reizigers achterlieten om indringers te misleiden.',
+    keyLabel: 'Sleutel der Verbinding',
+    puzzles: [
+      {
+        type: 'choice',
+        tag: 'Associatie 1 van 4',
+        q: '"Beschermer en onderhouder van de kosmos"',
+        options: ['Vishnu', 'Shiva', 'Brahma'],
+        answer: 'Vishnu',
+        explain: 'Volgens het hindoeïsme spelen drie goden een bijzondere rol in veel verhalen: Brahma (schepper), Vishnu (beschermer en onderhouder van de kosmos) en Shiva (vernietiger en vernieuwer).'
+      },
+      {
+        type: 'choice',
+        tag: 'Associatie 2 van 4',
+        q: '"De oudste heilige teksten, met hymnen, rituelen en filosofie"',
+        options: ["Veda's", 'Upanishads', 'Bhagavad Gita'],
+        answer: "Veda's",
+        explain: "Volgens de tekst zijn de oudste teksten van het hindoeïsme de Veda's, die hymnen, rituelen en filosofie bevatten. De Upanishads verdiepen zich in de spirituele kern van het geloof, en de Bhagavad Gita vertelt het verhaal van prins Arjuna en zijn gesprek met de god Krishna."
+      },
+      {
+        type: 'choice',
+        tag: 'Associatie 3 van 4',
+        q: '"Plicht en sociale orde, met wortels in het hindoeïstische denken over het kastensysteem"',
+        options: ['dharma', 'karma', 'moksha'],
+        answer: 'dharma',
+        explain: 'Volgens de tekst heeft het kastensysteem, hoewel tegenwoordig officieel afgeschaft in India, zijn wortels in het hindoeïstische denken over dharma (plicht) en sociale orde. Karma is de optelsom van daden die het volgende leven bepaalt, en moksha is de bevrijding uit samsara: andere begrippen, met een andere betekenis.'
+      },
+      {
+        type: 'choice',
+        tag: 'Associatie 4 van 4',
+        q: '"De moedergodin, vereerd in vele vormen zoals Durga, Lakshmi en Parvati"',
+        options: ['Devi (Shakti)', 'Brahman', 'Vishnu'],
+        answer: 'Devi (Shakti)',
+        explain: 'Volgens de tekst is er naast Brahma, Vishnu en Shiva ook Devi of Shakti, de moedergodin, die in vele vormen wordt vereerd, zoals Durga, Lakshmi of Parvati. Brahman is de hoogste werkelijkheid waarmee alle goden volgens gelovigen verbonden zijn, en Vishnu is de beschermer van de kosmos: geen van beide is de moedergodin.'
+      }
+    ]
+  },
+  {
+    id: 'r3',
+    num: 'Kamer III',
+    title: 'De Wachtkamer van de Vier',
+    flavor: 'In deze kamer staan steeds vier voorwerpen op een rij. Drie horen bij elkaar, één hoort er niet bij. De tempel laat je pas door als je precies kunt uitleggen waarom.',
+    keyLabel: 'Sleutel der Onderscheiding',
+    puzzles: [
+      {
+        type: 'oddoneout',
+        tag: 'Ronde 1 van 4: wie hoort er niet bij?',
+        q: "Brahma · Vishnu · Shiva · Veda's",
+        options: ['Brahma', 'Vishnu', 'Shiva', "Veda's"],
+        answer: "Veda's",
+        explain: "Brahma, Vishnu en Shiva zijn drie goden die volgens de tekst een bijzondere rol spelen in veel verhalen (schepper, beschermer, vernietiger). De Veda's zijn geen god, maar de oudste heilige teksten van het hindoeïsme, met hymnen, rituelen en filosofie."
+      },
+      {
+        type: 'oddoneout',
+        tag: 'Ronde 2 van 4: wie hoort er niet bij?',
+        q: 'Puja · Diwali · Holi · Brahman',
+        options: ['Puja', 'Diwali', 'Holi', 'Brahman'],
+        answer: 'Brahman',
+        explain: 'Puja, Diwali en Holi zijn rituelen en feesten uit het dagelijks leven van hindoes. Brahman is geen ritueel of feest, maar de hoogste werkelijkheid waarmee de ziel volgens het hindoeïsme één wordt bij het bereiken van moksha.'
+      },
+      {
+        type: 'oddoneout',
+        tag: 'Ronde 3 van 4: wie hoort er niet bij?',
+        q: 'Vaishnavisme · Shaivisme · Shaktisme · Dharma',
+        options: ['Vaishnavisme', 'Shaivisme', 'Shaktisme', 'Dharma'],
+        answer: 'Dharma',
+        explain: 'Vaishnavisme, shaivisme en shaktisme zijn volgens de tekst stromingen binnen het hindoeïsme: de aanbidding van respectievelijk Vishnu, Shiva en de godin in haar vele vormen. Dharma is geen stroming, maar het begrip plicht, dat aan de basis ligt van het hindoeïstische denken over sociale orde.'
+      },
+      {
+        type: 'oddoneout',
+        tag: 'Ronde 4 van 4: wie hoort er niet bij?',
+        q: 'Ahimsa · Karma · Respect voor het leven · Spirituele kennis',
+        options: ['Ahimsa', 'Karma', 'Respect voor het leven', 'Spirituele kennis'],
+        answer: 'Karma',
+        explain: 'Volgens de tekst zijn ahimsa (geweldloosheid), respect voor het leven en de natuur, en de zoektocht naar spirituele kennis de belangrijke algemene waarden van het hindoeïsme. Karma is geen waarde om naar te leven, maar de optelsom van daden die bepaalt hoe een volgend leven eruitziet.'
+      }
+    ]
+  },
+  {
+    id: 'r4',
+    num: 'Kamer IV',
+    title: 'De Tuin van het Licht',
+    flavor: 'De laatste kamer toont vijf stenen tegels met beschrijvingen. Slechts twee daarvan horen bij een naam die hier in de tuin te vinden is: de andere drie zijn vervalste tegels, achtergelaten om je op het verkeerde pad te zetten. Koppel alleen de twee juiste om de laatste sleutel te verdienen.',
+    keyLabel: 'Sleutel van het Licht',
+    puzzles: [
+      {
+        type: 'match',
+        tag: 'Koppel de juiste beschrijvingen aan de juiste feestdag: let op, niet elke tegel past',
+        items: [
+          { id: 'd1', text: '"Lichtjesfeest dat de overwinning van het goede op het kwade viert"', answer: 'Diwali' },
+          { id: 'd2', text: '"Vrolijk lentefeest waarbij mensen elkaar met gekleurd poeder bestrooien"', answer: 'Holi' }
+        ],
+        decoys: [
+          { id: 'x1', text: '"Dagelijks gebruik waarbij offers zoals bloemen, fruit of wierook worden gebracht, thuis of in de tempel"' },
+          { id: 'x2', text: '"Feest waarbij hindoes samenkomen om gebeden uit te spreken, zonder verdere viering"' },
+          { id: 'x3', text: '"Lentefeest waarbij families een groot vuur ontsteken om het einde van de winter te vieren"' }
+        ],
+        targets: ['Diwali', 'Holi'],
+        explain: 'Volgens de tekst zijn Diwali en Holi de grote feesten van het hindoeïsme: Diwali is het lichtjesfeest dat de overwinning van het goede op het kwade viert, en Holi het vrolijke lentefeest waarbij mensen elkaar met gekleurd poeder bestrooien. De andere drie tegels pasten niet: de eerste beschrijft puja (een dagelijks ritueel, geen jaarlijks feest), en de andere twee beschrijven dingen die niet in de tekst over Diwali of Holi worden genoemd.'
+      }
+    ]
+  }
+];
+
+/* Verhaalbeats: verschijnen NA het oplossen van een kamer, vóór de volgende verschijnt.
+   Index 0 hoort bij het oplossen van Kamer I, enz. De laatste is de finale. */
+const STORY_BEATS = [
+  {
+    eyebrow: 'Kamer I voltooid · Sleutel der Stilte',
+    text: 'De versleten letters lichten één voor één op. Met een diepe trilling schuift de eerste steen opzij: de tempel heeft jullie woorden gehoord. Achter het voorportaal gloeit een nieuwe doorgang.'
+  },
+  {
+    eyebrow: 'Kamer II voltooid · Sleutel der Verbinding',
+    text: 'De juiste namen klikken op hun plaats, als sleutels in een eeuwenoud slot. Stof dwarrelt naar beneden terwijl een muur langzaam wegdraait. Dieper in de tempel wacht de volgende beproeving.'
+  },
+  {
+    eyebrow: 'Kamer III voltooid · Sleutel der Onderscheiding',
+    text: 'Jullie hebben laten zien dat je weet wat bij elkaar hoort en wat niet. Het binnenste mechanisme valt stil, en voor jullie verschijnt de laatste kamer, vlak voor de poort naar de verborgen tuin.'
+  },
+  {
+    eyebrow: 'Kamer IV voltooid · Sleutel van het Licht',
+    text: 'De laatste tegels gloeien op. Met een diep gerommel schuiven de zware deuren uiteen en stroomt warm licht naar binnen. Jullie staan op de drempel van de verborgen tuin: de reis door de tempel is voltooid.'
+  }
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let bestTimeSeconds = null;  // beste tijd tot nu toe, blijft bewaard tussen pogingen (binnen deze sessie)
+
+let state = {
+  unlocked: 0,        // hoeveel kamers volledig opgelost zijn
+  roomProgress: {},    // per room: hoeveel puzzles in die kamer al opgelost
+  timerSeconds: 0,     // klok telt OP vanaf 00:00: hoe lager, hoe beter
+  timerRunning: false,
+  timerInterval: null,
+  mistakes: 0,          // totaal aantal foute antwoorden, voor evt. nabespreking
+  finished: false,      // hele tempel opgelost?
+  justRevealed: null,   // id van de kamer die zojuist met animatie verscheen
+  storyPending: false,  // staat er een verhaalbeat open (timer pauze)?
+  PENALTY_SECONDS: 15   // tijdstraf per fout antwoord
+};
+
+function applyPenalty(){
+  state.timerSeconds += state.PENALTY_SECONDS;
+  state.mistakes++;
+  updateTimerDisplay();
+  showPenaltyToast();
+}
+
+function showPenaltyToast(){
+  const toast = document.getElementById('penaltyToast');
+  const display = document.getElementById('timerDisplay');
+  toast.classList.add('show');
+  display.classList.add('timer-bump');
+  clearTimeout(showPenaltyToast._t);
+  showPenaltyToast._t = setTimeout(() => toast.classList.remove('show'), 1100);
+  setTimeout(() => display.classList.remove('timer-bump'), 420);
+}
+
+function normalize(str){
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // strip accenten
+    .replace(/[^a-z0-9]/g,'');
+}
+
+/* =========================================================================
+   RENDER: corridor / torches
+   ========================================================================= */
+function renderCorridor(){
+  const corridor = document.getElementById('corridor');
+  corridor.innerHTML = '';
+  ROOMS.forEach((room, i) => {
+    const lit = i < state.unlocked;
+    const node = document.createElement('div');
+    node.className = 'torch-node ' + (lit ? 'lit' : 'unlit');
+    node.innerHTML = `
+      <svg viewBox="0 0 24 32">
+        <rect x="10" y="14" width="4" height="18" fill="#5C4A38"/>
+        <ellipse class="torch-flame" cx="12" cy="10" rx="7" ry="11" fill="#D89B4F"/>
+        <ellipse class="torch-flame" cx="12" cy="9" rx="4" ry="7" fill="#FFE6AC"/>
+      </svg>
+      <span class="torch-label">${room.num}</span>
+    `;
+    corridor.appendChild(node);
+    if (i < ROOMS.length - 1) {
+      const link = document.createElement('div');
+      link.className = 'corridor-link' + (i < state.unlocked ? ' lit' : '');
+      corridor.appendChild(link);
+    }
+  });
+}
+
+/* =========================================================================
+   RENDER: rooms
+   ========================================================================= */
+function renderRooms(){
+  const container = document.getElementById('rooms');
+  container.innerHTML = '';
+
+  ROOMS.forEach((room, idx) => {
+    // Alleen kamers tonen die al ontgrendeld zijn (0 t/m state.unlocked).
+    // Toekomstige kamers verschijnen pas na een verhaalbeat.
+    if (idx > state.unlocked) return;
+
+    const isSolved = idx < state.unlocked;
+    const totalPuzzles = room.puzzles.length;
+    const solvedCount = (state.roomProgress[room.id] || []).length;
+
+    const roomEl = document.createElement('div');
+    let cls = 'room' + (isSolved ? ' solved' : '');
+    if (room.id === state.justRevealed) cls += ' room-entering';
+    roomEl.className = cls;
+    roomEl.id = 'room-' + room.id;
+
+    let statusHtml = '';
+    if (isSolved) statusHtml = `<span class="room-status done">✓ Opgelost</span>`;
+    else statusHtml = `<span class="room-status open">${solvedCount}/${totalPuzzles} puzzels</span>`;
+
+    let bodyHtml = `<p class="room-flavor">${room.flavor}</p>`;
+    room.puzzles.forEach((p, pIdx) => {
+      bodyHtml += renderPuzzle(room, p, pIdx, isSolved);
+    });
+    bodyHtml += `
+      <div class="key-banner ${isSolved ? 'show' : ''}" id="keybanner-${room.id}">
+        <span class="key-icon">🗝️</span>
+        <span>${room.keyLabel} verkregen: de poort onthoudt deze kamer.</span>
+      </div>
+    `;
+
+    roomEl.innerHTML = `
+      <div class="room-header">
+        <div>
+          <p class="room-number">${room.num}</p>
+          <h2 class="room-title">${room.title}</h2>
+        </div>
+        ${statusHtml}
+      </div>
+      ${bodyHtml}
+    `;
+    container.appendChild(roomEl);
+  });
+
+  renderFinalGate();
+}
+
+function renderPuzzle(room, p, pIdx, roomAlreadySolved){
+  const puzzleKey = room.id + '-' + pIdx;
+  const alreadyDone = roomAlreadySolved || (state.roomProgress[room.id] || []).includes(pIdx);
+
+  let inner = '';
+  if (p.type === 'riddle') {
+    inner = `
+      <div class="text-input-row">
+        <input type="text" class="text-input" id="input-${puzzleKey}" placeholder="Typ je antwoord…" ${alreadyDone?'disabled':''} autocomplete="off">
+        <button class="btn-primary" onclick="checkRiddle('${room.id}', ${pIdx})" ${alreadyDone?'disabled':''}>Bevestig</button>
+      </div>
+      <div class="feedback" id="feedback-${puzzleKey}"></div>
+    `;
+  } else if (p.type === 'choice') {
+    inner = `
+      <div class="option-row" id="options-${puzzleKey}">
+        ${p.options.map(opt => `<button class="option-btn" onclick="checkChoice('${room.id}', ${pIdx}, this, '${escapeAttr(opt)}')" ${alreadyDone?'disabled':''}>${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback-${puzzleKey}"></div>
+    `;
+  } else if (p.type === 'oddoneout') {
+    inner = `
+      <div class="option-row" id="options-${puzzleKey}">
+        ${p.options.map(opt => `<button class="option-btn" onclick="checkChoice('${room.id}', ${pIdx}, this, '${escapeAttr(opt)}')" ${alreadyDone?'disabled':''}>${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback-${puzzleKey}"></div>
+    `;
+  } else if (p.type === 'match') {
+    inner = renderMatchPuzzle(room, p, pIdx, alreadyDone);
+  }
+
+  return `
+    <div class="puzzle-block" id="puzzleblock-${puzzleKey}">
+      <p class="puzzle-tag">${p.tag}</p>
+      ${p.q ? `<p class="puzzle-q">${p.q}</p>` : ''}
+      ${inner}
+      <div class="reveal ${alreadyDone ? 'show' : ''}" id="reveal-${puzzleKey}">${p.explain || (p.items ? p.explain : '')}</div>
+    </div>
+  `;
+}
+
+function renderMatchPuzzle(room, p, pIdx, alreadyDone){
+  const puzzleKey = room.id + '-' + pIdx;
+  // shuffle targets visually but keep deterministic-ish order (simple shuffle)
+  const shuffledTargets = [...p.targets].sort(() => Math.random() - 0.5);
+  const decoys = p.decoys || [];
+  // alle linkse kaarten (echte items + decoys) samen shufflen, zodat decoys niet altijd onderaan staan
+  const allSourceCards = [...p.items, ...decoys].sort(() => Math.random() - 0.5);
+  return `
+    <div class="matching-grid" id="match-${puzzleKey}" data-selected="" data-matched="">
+      <div>
+        <p class="match-col-title">Beschrijving</p>
+        ${allSourceCards.map(it => `<div class="match-item" data-role="source" data-id="${it.id}" data-answer="${escapeAttr(it.answer || '__none__')}" onclick="selectMatchSource('${room.id}', ${pIdx}, this)" ${alreadyDone?'style="pointer-events:none;background:#d9e6dd;border-color:#3D5C4A;color:#3D5C4A;"':''}>${it.text}</div>`).join('')}
+      </div>
+      <div>
+        <p class="match-col-title">Naam</p>
+        ${shuffledTargets.map(t => `<div class="match-item target" data-role="target" data-value="${escapeAttr(t)}" onclick="selectMatchTarget('${room.id}', ${pIdx}, this)" ${alreadyDone?'style="pointer-events:none;background:#d9e6dd;border-color:#3D5C4A;color:#3D5C4A;"':''}>${t}</div>`).join('')}
+      </div>
+    </div>
+    <div class="feedback" id="feedback-${puzzleKey}"></div>
+  `;
+}
+
+function escapeAttr(s){ return String(s).replace(/'/g, "\\'").replace(/"/g,'&quot;'); }
+
+/* =========================================================================
+   PUZZLE LOGIC
+   ========================================================================= */
+function markPuzzleSolved(roomId, pIdx){
+  if (!state.roomProgress[roomId]) state.roomProgress[roomId] = [];
+  if (!state.roomProgress[roomId].includes(pIdx)) state.roomProgress[roomId].push(pIdx);
+
+  const room = ROOMS.find(r => r.id === roomId);
+  const roomIdx = ROOMS.findIndex(r => r.id === roomId);
+  const allSolved = room.puzzles.every((_, i) => state.roomProgress[roomId].includes(i));
+
+  // Per opgeloste puzzel de teller in de kamer-header bijwerken (zonder de hele kamer opnieuw op te bouwen)
+  refreshRoomStatus(roomId);
+
+  if (allSolved && roomIdx === state.unlocked) {
+    // Kamer volledig opgelost: klok pauzeert, verhaalbeat verschijnt.
+    // De volgende kamer onthult pas nadat de speler "Ga verder" klikt.
+    pauseTimer();
+    state.storyPending = true;
+    showStoryBeat(roomIdx);
+  }
+}
+
+/* Werk alleen de status-badge + key-banner van één kamer bij (geen volledige re-render,
+   anders verspringt de focus van een invoerveld of knop tijdens het spelen). */
+function refreshRoomStatus(roomId){
+  const room = ROOMS.find(r => r.id === roomId);
+  const solvedCount = (state.roomProgress[roomId] || []).length;
+  const total = room.puzzles.length;
+  const roomEl = document.getElementById('room-' + roomId);
+  if (!roomEl) return;
+  const badge = roomEl.querySelector('.room-status');
+  if (badge && !badge.classList.contains('done')) {
+    badge.textContent = `${solvedCount}/${total} puzzels`;
+  }
+}
+
+/* =========================================================================
+   STORY BEATS + KAMER-ONTHULLING
+   ========================================================================= */
+function showStoryBeat(roomIdx){
+  const beat = STORY_BEATS[roomIdx];
+  if (!beat){ advanceAfterStory(roomIdx); return; }
+  document.getElementById('storyEyebrow').textContent = beat.eyebrow;
+  document.getElementById('storyText').textContent = beat.text;
+  const overlay = document.getElementById('storyOverlay');
+  // markeer de zojuist opgeloste kamer als 'opgelost' in de UI vóór de overlay
+  markRoomVisuallySolved(roomIdx);
+  requestAnimationFrame(() => overlay.classList.add('show'));
+}
+
+function markRoomVisuallySolved(roomIdx){
+  const room = ROOMS[roomIdx];
+  const roomEl = document.getElementById('room-' + room.id);
+  if (!roomEl) return;
+  roomEl.classList.add('solved');
+  const badge = roomEl.querySelector('.room-status');
+  if (badge){ badge.className = 'room-status done'; badge.textContent = '✓ Opgelost'; }
+  const banner = document.getElementById('keybanner-' + room.id);
+  if (banner) banner.classList.add('show');
+  // alle invoer in deze kamer blokkeren
+  roomEl.querySelectorAll('input, button.option-btn, .match-item, .btn-primary')
+    .forEach(el => { el.disabled = true; el.style.pointerEvents = 'none'; });
+}
+
+function advanceAfterStory(roomIdx){
+  const overlay = document.getElementById('storyOverlay');
+  overlay.classList.remove('show');
+  state.storyPending = false;
+
+  const isLastRoom = (roomIdx === ROOMS.length - 1);
+
+  // korte vertraging zodat de overlay netjes uitfadet vóór de onthulling
+  setTimeout(() => {
+    state.unlocked = roomIdx + 1;
+    renderCorridor();
+
+    // lichtveeg-effect over het scherm
+    triggerLightWipe();
+
+    if (isLastRoom){
+      state.finished = true;
+      renderRooms();           // toont alle kamers als opgelost
+      revealFinale();
+    } else {
+      state.justRevealed = ROOMS[state.unlocked].id;
+      renderRooms();           // de nieuwe kamer verschijnt met reveal-animatie
+      state.justRevealed = null;
+      // klok loopt automatisch weer verder
+      startTimer();
+      setTimeout(() => {
+        const el = document.getElementById('room-' + ROOMS[roomIdx + 1].id);
+        if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 250);
+    }
+  }, 480);
+}
+
+function triggerLightWipe(){
+  const wipe = document.getElementById('lightWipe');
+  wipe.classList.remove('sweep');
+  void wipe.offsetWidth; // force reflow zodat de animatie opnieuw start
+  wipe.classList.add('sweep');
+}
+
+/* =========================================================================
+   FINALE + SCORE
+   ========================================================================= */
+function revealFinale(){
+  // klok staat al gepauzeerd sinds de laatste kamer opgelost werd → dat is de eindtijd
+  const finalTime = state.timerSeconds;
+  const previousBest = bestTimeSeconds;
+
+  const gate = document.getElementById('finalGate');
+  gate.scrollIntoView({behavior:'smooth', block:'center'});
+
+  document.getElementById('scoreTime').textContent = formatTime(finalTime);
+
+  let verdict = '';
+  if (previousBest === null){
+    verdict = 'Dit is jullie eerste voltooiing. Onthoud deze tijd: bij een nieuwe poging kun je proberen sneller te zijn.';
+  } else if (finalTime < previousBest){
+    verdict = `Nieuw record! Jullie waren sneller dan de vorige tijd van ${formatTime(previousBest)}.`;
+  } else if (finalTime === previousBest){
+    verdict = `Precies gelijk aan jullie vorige tijd van ${formatTime(previousBest)}.`;
+  } else {
+    verdict = `De vorige tijd van ${formatTime(previousBest)} was sneller. Lukt het de volgende keer wél?`;
+  }
+  document.getElementById('scoreVerdict').textContent = verdict;
+
+  const mEl = document.getElementById('scoreMistakes');
+  if (state.mistakes === 0){
+    mEl.textContent = 'Foutloos gespeeld: geen enkele tijdstraf.';
+  } else {
+    const penalty = state.mistakes * state.PENALTY_SECONDS;
+    mEl.textContent = `${state.mistakes} fout${state.mistakes===1?'':'e'} ${state.mistakes===1?'antwoord':'antwoorden'} · ${penalty} sec tijdstraf inbegrepen.`;
+  }
+
+  // beste tijd bijwerken voor de volgende poging
+  bestTimeSeconds = (previousBest === null) ? finalTime : Math.min(previousBest, finalTime);
+  document.getElementById('replaySub').textContent = 'Te verslaan tijd: ' + formatTime(bestTimeSeconds);
+
+  document.getElementById('scoreBlock').classList.add('show');
+}
+
+function playAgain(){
+  // zachte herstart: voortgang en klok terug naar nul, beste tijd blijft bewaard
+  pauseTimer();
+  document.getElementById('scoreBlock').classList.remove('show');
+  state.unlocked = 0;
+  state.roomProgress = {};
+  state.timerSeconds = 0;
+  state.mistakes = 0;
+  state.finished = false;
+  state.justRevealed = null;
+  state.storyPending = false;
+  updateTimerDisplay();
+  renderCorridor();
+  renderRooms();
+  startTimer();
+  document.querySelector('.masthead').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* =========================================================================
+   FINAL GATE (key-slots als doel-indicator + deur-opening)
+   ========================================================================= */
+function renderFinalGate(){
+  const slotsG = document.getElementById('keySlots');
+  slotsG.innerHTML = '';
+  const total = ROOMS.length;
+  const slotWidth = 280 / total;
+  for (let i=0;i<total;i++){
+    const cx = 40 + slotWidth*i + slotWidth/2;
+    const filled = i < state.unlocked;
+    slotsG.innerHTML += `
+      <g class="key-slot ${filled?'filled':''}">
+        <circle class="key-slot-empty" cx="${cx}" cy="205" r="6" fill="none" stroke="#7a5c38" stroke-width="2"/>
+        <circle class="key-slot-glow" cx="${cx}" cy="205" r="6" fill="#FFE6AC"/>
+      </g>
+    `;
+  }
+
+  const gate = document.getElementById('finalGate');
+  const title = document.getElementById('finalTitle');
+  const sub = document.getElementById('finalSub');
+
+  if (state.unlocked >= ROOMS.length) {
+    gate.classList.add('gate-opened');
+    title.textContent = 'De tempelpoort opent zich';
+    sub.textContent = 'Alle vier de sleutels zijn gevonden. Het licht van de verborgen tuin valt over de drempel.';
+  } else {
+    gate.classList.remove('gate-opened');
+    const remaining = ROOMS.length - state.unlocked;
+    title.textContent = `De poort wacht op ${remaining} sleutel${remaining===1?'':'s'}`;
+    sub.textContent = 'Elke opgeloste kamer levert een sleutel. Verzamel ze alle vier om de poort te openen.';
+  }
+}
+
+function checkRiddle(roomId, pIdx){
+  const room = ROOMS.find(r => r.id === roomId);
+  const p = room.puzzles[pIdx];
+  const puzzleKey = roomId + '-' + pIdx;
+  const input = document.getElementById('input-' + puzzleKey);
+  const feedback = document.getElementById('feedback-' + puzzleKey);
+  const val = input.value.trim();
+
+  if (!val) return;
+
+  if (normalize(val) === normalize(p.answer)) {
+    input.classList.remove('wrong');
+    input.classList.add('correct');
+    input.disabled = true;
+    feedback.textContent = '✓ Correct.';
+    feedback.className = 'feedback ok';
+    document.getElementById('reveal-' + puzzleKey).classList.add('show');
+    document.querySelector(`#puzzleblock-${puzzleKey} button`).disabled = true;
+    markPuzzleSolved(roomId, pIdx);
+  } else {
+    input.classList.add('wrong');
+    feedback.textContent = 'Probeer opnieuw. (+15 sec)';
+    feedback.className = 'feedback err';
+    setTimeout(() => input.classList.remove('wrong'), 400);
+    applyPenalty();
+  }
+}
+
+function checkChoice(roomId, pIdx, btnEl, chosen){
+  const room = ROOMS.find(r => r.id === roomId);
+  const p = room.puzzles[pIdx];
+  const puzzleKey = roomId + '-' + pIdx;
+  const feedback = document.getElementById('feedback-' + puzzleKey);
+  const allBtns = document.querySelectorAll(`#options-${puzzleKey} button`);
+
+  if (chosen === p.answer) {
+    btnEl.classList.add('correct-flash');
+    allBtns.forEach(b => b.disabled = true);
+    feedback.textContent = '✓ Correct.';
+    feedback.className = 'feedback ok';
+    document.getElementById('reveal-' + puzzleKey).classList.add('show');
+    markPuzzleSolved(roomId, pIdx);
+  } else {
+    btnEl.classList.add('wrong-flash');
+    feedback.textContent = 'Probeer opnieuw. (+15 sec)';
+    feedback.className = 'feedback err';
+    setTimeout(() => btnEl.classList.remove('wrong-flash'), 400);
+    applyPenalty();
+  }
+}
+
+/* matching puzzle: click a source, then click a target to attempt a match */
+function selectMatchSource(roomId, pIdx, el){
+  if (el.classList.contains('matched-correct')) return;
+  const puzzleKey = roomId + '-' + pIdx;
+  const container = document.getElementById('match-' + puzzleKey);
+  container.querySelectorAll('[data-role="source"]').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  container.dataset.selected = el.dataset.id;
+}
+
+function selectMatchTarget(roomId, pIdx, el){
+  const puzzleKey = roomId + '-' + pIdx;
+  const container = document.getElementById('match-' + puzzleKey);
+  const feedback = document.getElementById('feedback-' + puzzleKey);
+  const selectedSourceId = container.dataset.selected;
+
+  if (!selectedSourceId) {
+    feedback.textContent = 'Kies eerst een beschrijving aan de linkerkant.';
+    feedback.className = 'feedback err';
+    return;
+  }
+  if (el.classList.contains('matched-correct')) return;
+
+  const sourceEl = container.querySelector(`[data-role="source"][data-id="${selectedSourceId}"]`);
+  const correctAnswer = sourceEl.dataset.answer;
+  const chosenValue = el.dataset.value;
+
+  if (chosenValue === correctAnswer) {
+    sourceEl.classList.add('matched-correct');
+    sourceEl.classList.remove('selected');
+    sourceEl.style.pointerEvents = 'none';
+    el.classList.add('matched-correct');
+    el.style.pointerEvents = 'none';
+    container.dataset.selected = '';
+    feedback.textContent = '✓ Juiste koppeling.';
+    feedback.className = 'feedback ok';
+
+    const room = ROOMS.find(r => r.id === roomId);
+    const p = room.puzzles[pIdx];
+    const allMatched = p.items.every(it => container.querySelector(`[data-id="${it.id}"]`).classList.contains('matched-correct'));
+    if (allMatched) {
+      document.getElementById('reveal-' + puzzleKey).classList.add('show');
+      markPuzzleSolved(roomId, pIdx);
+    }
+  } else {
+    el.classList.add('wrong-flash');
+    feedback.textContent = 'Probeer opnieuw. (+15 sec)';
+    feedback.className = 'feedback err';
+    setTimeout(() => el.classList.remove('wrong-flash'), 400);
+    applyPenalty();
+  }
+}
+
+/* =========================================================================
+   TIMER: telt OP vanaf 00:00. Tijdstraf bij fout antwoord telt erbij op.
+   ========================================================================= */
+function formatTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function updateTimerDisplay(){
+  const el = document.getElementById('timerDisplay');
+  el.textContent = formatTime(state.timerSeconds);
+  el.classList.remove('warn','crit');
+  // Kleur is hier een signaal van verstreken tijd, geen aftelgevaar:
+  // na 10 min oranje, na 15 min rood: puur als zachte tijdsindicatie voor de docent.
+  if (state.timerSeconds >= 900) el.classList.add('crit');
+  else if (state.timerSeconds >= 600) el.classList.add('warn');
+}
+
+function startTimer(){
+  if (state.timerRunning) return;
+  state.timerRunning = true;
+  document.getElementById('startBtn').textContent = '⏸ Pauzeer';
+  state.timerInterval = setInterval(() => {
+    state.timerSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function pauseTimer(){
+  state.timerRunning = false;
+  clearInterval(state.timerInterval);
+  document.getElementById('startBtn').textContent = '▶ Start de klok';
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  // Tijdens een verhaalbeat (of na afloop) staat de klok bewust stil; niet handmatig hervatten.
+  if (state.storyPending || state.finished) return;
+  if (state.timerRunning) pauseTimer();
+  else startTimer();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset alle voortgang en de klok? (Je beste tijd blijft wel bewaard.)')) return;
+  pauseTimer();
+  document.getElementById('storyOverlay').classList.remove('show');
+  document.getElementById('scoreBlock').classList.remove('show');
+  state = {
+    unlocked:0, roomProgress:{}, timerSeconds:0, timerRunning:false, timerInterval:null,
+    mistakes:0, finished:false, justRevealed:null, storyPending:false, PENALTY_SECONDS:15
+  };
+  updateTimerDisplay();
+  renderCorridor();
+  renderRooms();
+  startTimer();
+});
+
+document.getElementById('storyContinueBtn').addEventListener('click', () => {
+  // bepaal welke kamer net is opgelost (= state.unlocked, want die is nog niet opgehoogd)
+  advanceAfterStory(state.unlocked);
+});
+
+/* =========================================================================
+   INIT: de klok start automatisch
+   ========================================================================= */
+updateTimerDisplay();
+renderCorridor();
+renderRooms();
+startTimer();
+</script>
+</body>
+</html>

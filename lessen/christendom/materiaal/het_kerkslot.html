@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Het Kerkslot – Escape Room over het Christendom</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Georgia',serif;background:#080814;color:#e8d5a3;min-height:100vh;overflow-x:hidden}
+    @keyframes flicker{0%,100%{opacity:1;text-shadow:0 0 8px #f5c518}40%{opacity:.85;text-shadow:0 0 4px #f5c518}70%{opacity:.95;text-shadow:0 0 12px #f5c518}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+    @keyframes popIn{0%{transform:scale(.7);opacity:0}80%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+    @keyframes glow{0%,100%{box-shadow:0 0 6px #c9a84c}50%{box-shadow:0 0 20px #c9a84c,0 0 40px #c9a84c44}}
+    #hdr{background:linear-gradient(135deg,#12122a,#1a1a38);border-bottom:2px solid #c9a84c;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;display:none}
+    #hdr h1{font-size:1.1em;color:#c9a84c;letter-spacing:1px}
+    #stats{display:flex;gap:18px;font-size:.88em}
+    .stat{color:#b0a080}.stat span{color:#f0d078;font-weight:bold}
+    #progbar{height:4px;background:#12122a;display:none}
+    #progfill{height:100%;background:linear-gradient(90deg,#c9a84c,#f0d078);transition:width .6s ease;width:0%}
+    #gc{max-width:820px;margin:0 auto;padding:20px}
+    .screen{display:none;animation:fadeIn .5s ease}.screen.active{display:block}
+    #intro{text-align:center;padding:40px 15px}
+    .big-cross{font-size:4.5em;animation:flicker 2.5s infinite}
+    #intro h1{font-size:2.4em;color:#c9a84c;text-shadow:0 0 20px #c9a84c88;margin:10px 0 6px}
+    #intro h2{font-size:1.1em;color:#807060;margin-bottom:28px}
+    .story{background:rgba(201,168,76,.08);border:1px solid #c9a84c55;border-radius:10px;padding:24px 28px;text-align:left;line-height:1.85;margin-bottom:28px}
+    .story p{margin-bottom:14px}.story p:last-child{margin-bottom:0}.story em{color:#c9a84c}
+    .rules{background:rgba(96,144,176,.08);border:1px solid #6090b055;border-radius:10px;padding:16px 22px;text-align:left;margin-bottom:28px;font-size:.92em;line-height:1.7}
+    .rules h3{color:#6090b0;margin-bottom:8px}.rules li{margin-left:18px;margin-bottom:4px}
+    .btn{background:linear-gradient(135deg,#c9a84c,#f0d078);color:#12122a;border:none;padding:12px 32px;font-size:1.05em;font-family:'Georgia',serif;border-radius:25px;cursor:pointer;transition:all .25s;font-weight:bold}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 5px 20px #c9a84c55}.btn:active{transform:translateY(0)}
+    .rhead{text-align:center;margin-bottom:22px}
+    .remoji{font-size:3em;margin-bottom:8px}
+    .rname{font-size:1.75em;color:#c9a84c;text-shadow:0 0 10px #c9a84c44}
+    .rnum{color:#807060;font-size:.85em;margin-top:4px}
+    .ratmo{background:rgba(8,8,20,.85);border-left:3px solid #c9a84c;padding:18px 20px;margin-bottom:20px;border-radius:0 10px 10px 0;line-height:1.8;font-style:italic;color:#c8b87a}
+    .rimg-wrap{margin-bottom:22px;border-radius:12px;overflow:hidden;border:2px solid #c9a84c33;position:relative;background:#08080f}
+    .rimg-wrap img{width:100%;max-height:420px;object-fit:contain;display:block}
+    .rimg-cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(8,8,20,.85));padding:28px 16px 10px;text-align:right}
+    .rimg-cap span{font-size:.75em;color:#a09070;font-style:italic}
+    .rprog{background:rgba(20,20,40,.9);border-radius:10px;padding:12px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
+    .rprog-label{color:#807060;font-size:.85em;white-space:nowrap}
+    .rprog-bar{flex:1;height:7px;background:#12122a;border-radius:4px}
+    .rprog-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#f0d078);border-radius:4px;transition:width .5s ease}
+    .rprog-count{color:#c9a84c;font-weight:bold;font-size:.88em}
+    .qcard{background:rgba(20,20,40,.9);border:1px solid #303050;border-radius:10px;padding:18px 20px;margin-bottom:16px;transition:border-color .3s}
+    .qcard.ok{border-color:#4caf50;background:rgba(76,175,80,.07)}
+    .qcard.bad{animation:shake .45s ease}
+    .qcard.shown{border-color:#707030;background:rgba(112,112,48,.07)}
+    .qnum{color:#605040;font-size:.78em;margin-bottom:4px}
+    .qtxt{color:#e8d5a3;line-height:1.65;margin-bottom:14px;font-size:1.02em}
+    .arow{display:flex;gap:9px;align-items:center}
+    .ainput{flex:1;background:rgba(8,8,20,.9);border:1px solid #303050;color:#e8d5a3;padding:9px 16px;border-radius:20px;font-size:.97em;font-family:'Georgia',serif;transition:border-color .3s;outline:none}
+    .ainput:focus{border-color:#c9a84c}.ainput:disabled{opacity:.65;cursor:not-allowed}
+    .chkbtn{background:#c9a84c;color:#12122a;border:none;padding:9px 18px;border-radius:20px;cursor:pointer;font-family:'Georgia',serif;font-weight:bold;font-size:.92em;transition:all .25s;white-space:nowrap}
+    .chkbtn:hover{background:#f0d078}.chkbtn:disabled{opacity:.45;cursor:not-allowed}
+    .fb{margin-top:8px;font-size:.87em;min-height:18px}
+    .fb.ok{color:#5cb85c}.fb.bad{color:#e05050}.fb.shown{color:#a09040}
+
+    #unlock-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:300;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px}
+    #unlock-ov.show{display:flex;animation:fadeIn .3s ease}
+    .uo-emoji{font-size:5em;margin-bottom:16px;animation:popIn .5s ease}
+    .uo-title{font-size:1.9em;color:#c9a84c;margin-bottom:8px;animation:glow 2s infinite}
+    .uo-sub{color:#e8d5a3;margin-bottom:8px;font-size:1.05em}
+    .uo-lesson{color:#a0b880;font-size:.9em;line-height:1.6;max-width:520px;margin:0 auto 24px;background:rgba(160,184,128,.08);border-radius:8px;padding:12px 18px}
+    #end{text-align:center;padding:36px 15px}
+    #end h1{font-size:2.3em;color:#c9a84c;margin-bottom:10px}
+    #end h2{color:#a09070;font-size:1em;margin-bottom:26px}
+    .fstats{display:flex;justify-content:center;gap:22px;margin:26px 0;flex-wrap:wrap}
+    .fstat{background:rgba(201,168,76,.08);border:1px solid #c9a84c55;border-radius:10px;padding:18px 26px}
+    .fstat-n{font-size:2.1em;color:#c9a84c;font-weight:bold}.fstat-l{color:#807060;font-size:.85em;margin-top:2px}
+    .summary{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;text-align:left}
+    @media(max-width:580px){.summary{grid-template-columns:1fr}.fstats{gap:14px}}
+    .sitem{background:rgba(20,20,40,.9);border-radius:8px;padding:14px}
+    .sitem h4{color:#c9a84c;margin-bottom:5px;font-size:.95em}
+    .sitem p{color:#807060;font-size:.82em;line-height:1.55}
+    .candles{display:flex;justify-content:center;gap:26px;margin:16px 0}
+    .candle{font-size:2em;animation:flicker 2s infinite}.candle:nth-child(2){animation-delay:.6s}.candle:nth-child(3){animation-delay:1.2s}
+    @media(max-width:600px){#hdr h1{font-size:.9em}#intro h1{font-size:1.75em}.rname{font-size:1.35em}.btn{padding:10px 24px}}
+  </style>
+</head>
+<body>
+
+<div id="hdr">
+  <h1>✝ Het Kerkslot</h1>
+  <div id="stats">
+    <div class="stat">⏱ <span id="timer">00:00</span></div>
+    <div class="stat">✅ <span id="score">0</span> goed</div>
+  </div>
+</div>
+<div id="progbar"><div id="progfill"></div></div>
+
+<div id="gc">
+
+<div id="intro" class="screen active">
+  <div class="big-cross">✝</div>
+  <h1>Het Kerkslot</h1>
+  <h2>Een escape room over het christendom</h2>
+  <div class="candles"><span class="candle">🕯️</span><span class="candle">🕯️</span><span class="candle">🕯️</span></div>
+  <div class="story">
+    <p>Het is een stormachtige avond. Je bekijkt een oude kerk, maar opeens valt de deur dicht achter je. De sleutel is verdwenen!</p>
+    <p>Op het bord bij de deur staat:</p>
+    <p style="text-align:center;color:#c9a84c;font-style:italic;font-size:1.1em">"Alleen wie het verhaal kent, vindt de weg naar buiten. Los de raadsels op in alle zeven kamers."</p>
+    <p>Elke kamer gaat over een stukje van het christendom. Lees de informatie goed en beantwoord de vragen om verder te komen!</p>
+  </div>
+  <div class="rules">
+    <h3>📜 Spelregels</h3>
+    <ul>
+      <li>Typ je antwoord en druk op <strong>Controleer</strong> of Enter.</li>
+      <li>Na 3 foute pogingen krijg je het antwoord te zien.</li>
+      <li>Werk samen met je groepje!</li>
+    </ul>
+  </div>
+  <button class="btn" onclick="startGame()">🗝️ Start!</button>
+</div>
+
+<div id="room-screen" class="screen"><div id="room-content"></div></div>
+
+<div id="end" class="screen">
+  <div style="font-size:4em;margin-bottom:16px">🎉✝️🎉</div>
+  <h1>Je bent ontsnapt!</h1>
+  <h2>Alle zeven kamers gehaald!</h2>
+  <div class="fstats">
+    <div class="fstat"><div class="fstat-n" id="end-time">–</div><div class="fstat-l">Tijd</div></div>
+    <div class="fstat"><div class="fstat-n" id="end-score">–</div><div class="fstat-l">Goed</div></div>
+  </div>
+  <div class="summary" id="end-summary"></div>
+  <div class="story" style="margin-top:20px">
+    <p style="text-align:center;color:#c9a84c;font-size:1.1em;margin-bottom:10px">✝ Het hele verhaal in het kort ✝</p>
+    <p>De Bijbel vertelt een lang verhaal. In het eerste deel (het Oude Testament) schrijven profeten over iemand die ooit zal komen: de Messias. Christenen geloven dat Jezus die Messias is. Hij werd geboren in Bethlehem, groeide op in Nazareth, en trok rond als leraar. Hij werd gekruisigd in Jeruzalem, maar christenen geloven dat hij na drie dagen opstond uit de dood. Dat noemen zij het <em>evangelie</em>: de blijde boodschap.</p>
+  </div>
+  <button class="btn" onclick="restartGame()" style="margin-top:20px">🔄 Opnieuw spelen</button>
+</div>
+</div>
+
+<div id="unlock-ov">
+  <div class="uo-emoji" id="uo-emoji">🗝️</div>
+  <div class="uo-title" id="uo-title">Kamer open!</div>
+  <div class="uo-sub" id="uo-sub"></div>
+  <div class="uo-lesson" id="uo-lesson"></div>
+  <button class="btn" onclick="proceedAfterUnlock()">➡️ Volgende kamer</button>
+</div>
+
+<script>
+const rooms = [
+  // ──── KAMER 1: DE BIJBEL ────
+  {
+    id:1, name:"Kamer 1 – De Bibliotheek", emoji:"📚",
+    atmo:"Je staat in een grote bibliotheek. Overal staan oude boeken. Op een tafel ligt een dik boek open: <em>de Bijbel</em>. Ernaast hangt een slot met vijf sleutelgaten.",
+    image:"https://upload.wikimedia.org/wikipedia/commons/b/be/Codex_Sinaiticus_Matthew_6%2C4-32.JPG",
+    imageCaption:"Codex Sinaiticus (4e eeuw): een van de oudste bijbelhandschriften ter wereld",
+    unlockLesson:"De Bijbel bestaat uit twee delen: het Oude Testament (vóór Jezus) en het Nieuwe Testament (over Jezus). Het is een bundel van veel verschillende boeken.",
+    questions:[
+      {
+        text:"Het woord 'Bijbel' komt uit het Grieks. Wat betekent het?",
+        answers:["boeken","de boeken"],
+        explain:"'Bijbel' betekent 'boeken'. Het is dus eigenlijk een hele bibliotheek in één kaft!"
+      },
+      {
+        text:"Hoe heet het <strong>eerste deel</strong> van de Bijbel: het deel dat gaat over de tijd vóór Jezus?",
+        answers:["oude testament","het oude testament"],
+        explain:"Het Oude Testament gaat over de schepping, het volk Israël en de profeten."
+      },
+      {
+        text:"Hoe heet het <strong>tweede deel</strong>: het deel over Jezus?",
+        answers:["nieuwe testament","het nieuwe testament"],
+        explain:"Het Nieuwe Testament vertelt het verhaal van Jezus en de eerste christenen."
+      },
+      {
+        text:"De vier boeken die het leven van Jezus vertellen, hebben een speciale naam. Hoe noemen we die boeken?",
+        answers:["evangelien","evangeliën","de evangelien","de evangeliën"],
+        explain:"De evangeliën zijn geschreven door Matteüs, Marcus, Lucas en Johannes. Ze vertellen elk op hun eigen manier het verhaal van Jezus."
+      },
+      {
+        text:"Het allereerste boek van de Bijbel vertelt over de schepping van de wereld. Hoe heet dat boek?",
+        answers:["genesis"],
+        explain:"Genesis betekent 'begin'. Het beschrijft hoe volgens de Bijbel de wereld, de mens en het leven zijn ontstaan."
+      }
+    ]
+  },
+
+  // ──── KAMER 2: DE PROFETEN ────
+  {
+    id:2, name:"Kamer 2 – De Profetenkamer", emoji:"🔮",
+    atmo:"Een ronde kamer met schilderingen van oude mannen met baarden en lange gewaden. Op een tafel liggen opgerolde brieven. Op één brief staat: <em>'Er komt iemand...'</em>",
+    image:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/%27Sistine_Chapel_ceiling%27_by_Michelangelo_JBU21.JPG/1280px-%27Sistine_Chapel_ceiling%27_by_Michelangelo_JBU21.JPG",
+    imageCaption:"Michelangelo, plafond van de Sixtijnse Kapel (1508-1512): met profeten uit het Oude Testament",
+    unlockLesson:"Profeten voorspelden de komst van de Messias ('de Gezalfde'). Christenen geloven dat Jezus die Messias is. In het Grieks heet dat: Christus.",
+    questions:[
+      {
+        text:"Wat is een profeet?",
+        answers:["iemand die namens god spreekt","iemand die spreekt namens god","iemand die namens god sprak","iemand die sprak namens god","een boodschapper van god","iemand die gods boodschap doorgeeft","boodschapper van god","iemand die voor god spreekt","iemand die voor god sprak","iemand die een boodschap van god doorgeeft","iemand die de boodschap van god doorgeeft","iemand die boodschappen van god doorgeeft","iemand die een boodschap doorgeeft van god","iemand die gods boodschappen doorgeeft","iemand die een boodschap van god doorgaf","iemand die de boodschap van god doorgaf","iemand die boodschappen doorgeeft van god"],
+        explain:"Een profeet spreekt namens God. Profeten waarschuwden het volk én vertelden over de toekomst."
+      },
+      {
+        text:"De profeten voorspelden dat er een redder zou komen. Hoe noemen we die figuur?",
+        answers:["de messias","messias"],
+        explain:"De Messias ('de Gezalfde') is de redder die volgens het Oude Testament door God gestuurd zou worden."
+      },
+      {
+        text:"Wat betekent het woord 'Messias'?",
+        answers:["de gezalfde","gezalfde"],
+        explain:"Messias = 'de Gezalfde'. Koningen werden gezalfd met olie als teken dat God hen had uitgekozen."
+      },
+      {
+        text:"'Messias' in het Grieks is een woord dat je vast kent. Het zit in de naam 'Jezus ___'. Welk woord?",
+        answers:["christus"],
+        explain:"Christus is de Griekse vertaling van Messias. 'Jezus Christus' = 'Jezus de Gezalfde'."
+      },
+      {
+        text:"De profeet Micha voorspelde dat de Messias geboren zou worden in een klein stadje. Welk stadje?",
+        answers:["bethlehem","betlehem"],
+        explain:"Micha schreef dat de Messias uit Bethlehem zou komen. Christenen geloven dat dit uitkwam toen Jezus daar werd geboren."
+      }
+    ]
+  },
+
+  // ──── KAMER 3: MARIA ────
+  {
+    id:3, name:"Kamer 3 – Maria's Kapel", emoji:"🕊️",
+    atmo:"Een kleine, stille ruimte. Kaarsen branden bij een schilderij van een jonge vrouw in blauw gewaad. Het ruikt naar wierook. Op een tafeltje ligt een boek open bij het verhaal van de engel.",
+    image:"https://upload.wikimedia.org/wikipedia/commons/f/fa/Angelico_-_Annunciation_-_San_Marco_north_corridor.jpg",
+    imageCaption:"Fra Angelico, De Annunciatie (ca. 1440): de engel Gabriël verschijnt aan Maria",
+    unlockLesson:"Maria was een jonge vrouw uit Nazareth. De engel Gabriël vertelde haar dat ze de moeder zou worden van Jezus. Ze vertrouwde op God en zei ja.",
+    questions:[
+      {
+        text:"In welk dorpje woonde Maria?",
+        answers:["nazareth","nazaret"],
+        explain:"Maria woonde in Nazareth, een klein dorp in het noorden van Israël."
+      },
+      {
+        text:"Hoe heette de engel die Maria het nieuws bracht?",
+        answers:["gabriel","gabriël"],
+        explain:"De engel Gabriël vertelde Maria dat ze een bijzonder kind zou krijgen."
+      },
+      {
+        text:"Met wie was Maria verloofd?",
+        answers:["jozef","joseph"],
+        explain:"Jozef was timmerman. Jezus groeide bij hem op en werd soms 'de zoon van de timmerman' genoemd."
+      },
+      {
+        text:"Hoe heette de zwangere nicht van Maria, die ze ging opzoeken?",
+        answers:["elisabeth","elizabeth"],
+        explain:"Elisabeth was zwanger van Johannes (later: Johannes de Doper). Bij haar bezoek zong Maria het Magnificat."
+      },
+      {
+        text:"Maria zong een lied van blijdschap. Hoe heet dat lied?",
+        answers:["magnificat","het magnificat"],
+        explain:"Het Magnificat begint met: 'Mijn ziel prijst de Heer.' Het wordt nog steeds in kerken gezongen."
+      }
+    ]
+  },
+
+  // ──── KAMER 4: DE GEBOORTE ────
+  {
+    id:4, name:"Kamer 4 – De Stal", emoji:"⭐",
+    atmo:"Je stapt een kamer in die eruitziet als een stal. Stro op de grond, een houten voederbak in het midden. Op de muur is een grote gouden ster geschilderd. Je hoort zachtjes koorgesang.",
+    image:"https://upload.wikimedia.org/wikipedia/commons/f/f7/Gerard_van_Honthorst_-_Adoration_of_the_Child_-_WGA11655.jpg",
+    imageCaption:"Gerard van Honthorst, Aanbidding van het Kind (1620): Jezus in de kribbe",
+    unlockLesson:"Jezus werd geboren in Bethlehem, in een stal. Herders en wijzen kwamen op bezoek, maar de familie moest vluchten voor koning Herodes.",
+    questions:[
+      {
+        text:"In welk bijzonder gebouw werd Jezus <strong>niet</strong> geboren, maar juist in een eenvoudige stal?",
+        answers:["paleis","een paleis","tempel","het paleis","de tempel"],
+        explain:"Hoewel hij volgens christenen een koning was, werd Jezus niet in een paleis geboren maar in een eenvoudige stal."
+      },
+      {
+        text:"Waarom moesten Maria en Jozef naar Bethlehem reizen?",
+        answers:["volkstelling","voor een volkstelling","census","inschrijving","voor de volkstelling"],
+        explain:"Er was een volkstelling: iedereen moest zich laten inschrijven in de stad van zijn familie."
+      },
+      {
+        text:"Jezus werd neergelegd in een voederbak voor dieren. Hoe heet zo'n bak?",
+        answers:["kribbe","een kribbe","de kribbe"],
+        explain:"Een kribbe is een voederbak voor dieren. Dat Jezus daarin werd gelegd, laat zien hoe eenvoudig hij werd geboren."
+      },
+      {
+        text:"Welke eenvoudige mensen kwamen als eerste op bezoek bij het kindje Jezus?",
+        answers:["herders","de herders"],
+        explain:"Herders hoorden van engelen dat er een bijzonder kind was geboren. Ze gingen meteen kijken."
+      },
+      {
+        text:"Naar welk land vluchtte de familie om Jezus te beschermen tegen koning Herodes?",
+        answers:["egypte","naar egypte"],
+        explain:"De familie vluchtte naar Egypte. Na de dood van Herodes keerden ze terug naar Nazareth."
+      }
+    ]
+  },
+
+  // ──── KAMER 5: HET LEVEN VAN JEZUS ────
+  {
+    id:5, name:"Kamer 5 – De Leerzaal", emoji:"📜",
+    atmo:"Een zaal met houten bankjes. Op het schoolbord staat in grote letters: <em>'Behandel anderen zoals je zelf behandeld wilt worden.'</em> Er hangen schilderijen aan de muur: een bruiloft, broden en vissen, een man die over water loopt.",
+    image:"https://upload.wikimedia.org/wikipedia/commons/9/96/Bloch-SermonOnTheMount.jpg",
+    imageCaption:"Carl Bloch, De Bergrede (1877): Jezus spreekt tot de menigte",
+    unlockLesson:"Jezus trok rond als leraar met twaalf leerlingen. Hij gaf les (de Bergrede), vertelde verhalen met een les (gelijkenissen) en deed volgens de Bijbel wonderen.",
+    questions:[
+      {
+        text:"Hoe oud was Jezus ongeveer toen hij begon met rondtrekken en lesgeven?",
+        answers:["30","dertig","ongeveer 30"],
+        explain:"Jezus was ongeveer 30 jaar toen hij aan zijn openbare leven begon."
+      },
+      {
+        text:"Hoeveel leerlingen (discipelen) koos Jezus uit om met hem mee te reizen?",
+        answers:["12","twaalf"],
+        explain:"Jezus had twaalf discipelen. Ze reisden ongeveer drie jaar lang samen rond."
+      },
+      {
+        text:"Jezus vertelde vaak korte verhalen met een diepere les erin. Hoe noemen we zulke verhalen?",
+        answers:["gelijkenissen","gelijkenis","een gelijkenis"],
+        explain:"Gelijkenissen zijn verhaaltjes met een boodschap. Jezus gebruikte ze om moeilijke ideeën op een simpele manier uit te leggen."
+      },
+      {
+        text:"Hoe heet de beroemde toespraak van Jezus op een berg, met daarin de Gouden Regel en het Onze Vader?",
+        answers:["de bergrede","bergrede"],
+        explain:"De Bergrede is de bekendste toespraak van Jezus. 'Behandel anderen zoals je zelf behandeld wilt worden' komt hieruit."
+      },
+      {
+        text:"Jezus noemde zichzelf 'de goede ___': iemand die voor zijn schapen zorgt. Welk woord?",
+        answers:["herder"],
+        explain:"'Ik ben de goede Herder' is een beroemde uitspraak van Jezus. Een herder beschermt zijn schapen, zo zag Jezus zijn rol."
+      }
+    ]
+  },
+
+  // ──── KAMER 6: LIJDEN EN DOOD ────
+  {
+    id:6, name:"Kamer 6 – Golgotha", emoji:"✝️",
+    atmo:"Een donkere kamer. In het midden staat een groot houten kruis. Er hangt een rode mantel overheen. Het is stil. De deur naar de laatste kamer is afgesloten met een zware ketting.",
+    image:"https://upload.wikimedia.org/wikipedia/commons/d/d7/Cristo_crucificado.jpg",
+    imageCaption:"Diego Velázquez, Christus aan het kruis (ca. 1632): Museo del Prado, Madrid",
+    unlockLesson:"Jezus werd verraden door Judas, veroordeeld door Pilatus, en gekruisigd op Golgotha. Hij stierf op vrijdag: Goede Vrijdag.",
+    questions:[
+      {
+        text:"Op welk dier reed Jezus Jeruzalem binnen terwijl de menigte juichte?",
+        answers:["ezel","een ezel"],
+        explain:"Jezus reed op een ezel: een bescheiden dier, geen oorlogspaard. Die dag heet Palmzondag."
+      },
+      {
+        text:"Hoe noemen we de allerlaatste maaltijd die Jezus samen met zijn leerlingen at?",
+        answers:["het laatste avondmaal","laatste avondmaal"],
+        explain:"Bij het Laatste Avondmaal gaf Jezus brood en wijn een speciale betekenis. Christenen herhalen dit ritueel nog steeds."
+      },
+      {
+        text:"Welke leerling verraadde Jezus door hem met een kus aan te wijzen aan de soldaten?",
+        answers:["judas","judas iskariot"],
+        explain:"Judas Iskariot verraadde Jezus voor 30 zilverstukken. Een 'Judaskus' is nu een uitdrukking voor vals verraad."
+      },
+      {
+        text:"Hoe heette de Romeinse bestuurder die Jezus liet veroordelen?",
+        answers:["pilatus","pontius pilatus"],
+        explain:"Pontius Pilatus was de Romeinse bestuurder in het gebied. Hij gaf onder druk toe aan de menigte."
+      },
+      {
+        text:"Op welke dag van de week stierf Jezus volgens de Bijbel?",
+        answers:["vrijdag","goede vrijdag"],
+        explain:"Jezus stierf op vrijdag. Die dag heet Goede Vrijdag: 'goed' in de zin van 'heilig'."
+      }
+    ]
+  },
+
+  // ──── KAMER 7: DE OPSTANDING ────
+  {
+    id:7, name:"Kamer 7 – Het Lege Graf", emoji:"🌟",
+    atmo:"Je stapt een lichte kamer in. De muren zijn wit. Een grote ronde steen staat opzij. In het midden zie je een lege stenen plaat: hier heeft iemand gelegen, maar er is niemand meer. Zonlicht stroomt naar binnen. De sleutel naar de uitgang ligt vlakbij...",
+    image:"https://upload.wikimedia.org/wikipedia/commons/e/eb/Piero_della_Francesca_-_Resurrection_-_WGA17609.jpg",
+    imageCaption:"Piero della Francesca, De Verrijzenis (ca. 1463): Sansepolcro, Italië",
+    unlockLesson:"Christenen geloven dat Jezus op de derde dag opstond uit de dood. Dit is de kern van hun geloof. Ze noemen die boodschap het evangelie: de blijde boodschap.",
+    questions:[
+      {
+        text:"Na hoeveel dagen was het graf van Jezus leeg, volgens de Bijbel?",
+        answers:["3","drie","de derde dag","op de derde dag"],
+        explain:"Op de derde dag (vrijdag → zaterdag → zondag) was het graf leeg."
+      },
+      {
+        text:"Wie was de eerste persoon die de levende Jezus weer zag, volgens de Bijbel?",
+        answers:["maria magdalena","magdalena"],
+        explain:"Maria Magdalena was de eerste getuige van de opstanding. Ze was een trouwe volgeling van Jezus."
+      },
+      {
+        text:"Welk feest vieren christenen omdat ze geloven dat Jezus opstond uit de dood?",
+        answers:["pasen","het paasfeest"],
+        explain:"Pasen is het belangrijkste feest van het christendom, zelfs belangrijker dan Kerstmis!"
+      },
+      {
+        text:"Hoe heet het feest waarop christenen vieren dat de Heilige Geest kwam, 50 dagen na Pasen?",
+        answers:["pinksteren","pinksterfeest"],
+        explain:"Pinksteren wordt gezien als het begin van de christelijke kerk. De leerlingen begonnen op die dag te preken."
+      },
+      {
+        text:"De kern van het christendom heet het 'evangelie'. Wat betekent dat woord?",
+        answers:["blijde boodschap","goed nieuws","goede boodschap","blije boodschap"],
+        explain:"Evangelie = 'blijde boodschap' of 'goed nieuws'. Het gaat over het geloof dat Jezus de dood overwon."
+      }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════
+//  GAME ENGINE
+// ═══════════════════════════════════════
+let state={roomIdx:0,totalCorrect:0,startTime:null,timerInterval:null,qStates:[]};
+function initQStates(){state.qStates=rooms.map(r=>r.questions.map(()=>({tries:0,correct:false,revealed:false})))}
+function normalize(s){return s.toLowerCase().trim().replace(/[àáâã]/g,'a').replace(/[èéêë]/g,'e').replace(/[ìíîï]/g,'i').replace(/[òóôõö]/g,'o').replace(/[ùúûü]/g,'u').replace(/ç/g,'c').replace(/^(de |het |een )/,'').replace(/[.,!?;:'"]/g,'').replace(/\s+/g,' ').trim()}
+function isCorrect(input,answers){const ni=normalize(input);return answers.some(a=>{const na=normalize(a);return na===ni||ni.includes(na)})}
+function startTimer(){state.startTime=Date.now();state.timerInterval=setInterval(()=>{const s=Math.floor((Date.now()-state.startTime)/1000);document.getElementById('timer').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000)}
+function getElapsed(){const s=Math.floor((Date.now()-state.startTime)/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function startGame(){initQStates();state.roomIdx=0;state.totalCorrect=0;document.getElementById('hdr').style.display='flex';document.getElementById('progbar').style.display='block';showScreen('room-screen');renderRoom(0);startTimer();updateHeader()}
+
+function renderRoom(ri){
+  const room=rooms[ri],qs=room.questions,qst=state.qStates[ri];
+  const ans=qst.filter(q=>q.correct||q.revealed).length,pct=Math.round(ans/qs.length*100);
+  let h=`<div class="rhead"><div class="remoji">${room.emoji}</div><div class="rname">${room.name}</div><div class="rnum">Kamer ${room.id} van ${rooms.length}</div></div>
+  <div class="ratmo">${room.atmo}</div><div class="rimg-wrap"><img src="${room.image}" alt="${room.imageCaption}" loading="lazy"><div class="rimg-cap"><span>${room.imageCaption}</span></div></div>
+  <div class="rprog"><div class="rprog-label">Voortgang:</div><div class="rprog-bar"><div class="rprog-fill" id="rprogfill" style="width:${pct}%"></div></div><div class="rprog-count" id="rcount">${ans}/${qs.length}</div></div><div id="qa">`;
+  qs.forEach((q,qi)=>{
+    const s=qst[qi],dis=s.correct||s.revealed?'disabled':'';
+    let fb='';if(s.correct)fb=`<div class="fb ok">✅ Goed! ${q.explain}</div>`;else if(s.revealed)fb=`<div class="fb shown">🔓 Het antwoord was: <strong>${q.answers[0]}</strong>. ${q.explain}</div>`;
+
+    h+=`<div class="qcard ${s.correct?'ok':s.revealed?'shown':''}" id="qcard-${ri}-${qi}"><div class="qnum">Vraag ${qi+1}</div><div class="qtxt">${q.text}</div>
+    <div class="arow"><input class="ainput" type="text" id="ainput-${ri}-${qi}" placeholder="Typ je antwoord..." ${dis} onkeydown="if(event.key==='Enter')checkAnswer(${ri},${qi})">
+    <button class="chkbtn" id="chkbtn-${ri}-${qi}" onclick="checkAnswer(${ri},${qi})" ${dis}>Controleer</button></div>${fb}
+</div>`;
+  });
+  h+='</div>';document.getElementById('room-content').innerHTML=h;updateProgress();
+}
+
+function checkAnswer(ri,qi){
+  const q=rooms[ri].questions[qi],s=state.qStates[ri][qi];if(s.correct||s.revealed)return;
+  const input=document.getElementById(`ainput-${ri}-${qi}`).value.trim();if(!input)return;
+  const card=document.getElementById(`qcard-${ri}-${qi}`);
+  let fb=card.querySelector('.fb');if(!fb){fb=document.createElement('div');fb.className='fb';card.querySelector('.arow').after(fb)}
+  if(isCorrect(input,q.answers)){
+    s.correct=true;state.totalCorrect++;card.classList.remove('bad');card.classList.add('ok');
+    fb.className='fb ok';fb.innerHTML=`✅ Goed! ${q.explain}`;
+    document.getElementById(`ainput-${ri}-${qi}`).disabled=true;document.getElementById(`chkbtn-${ri}-${qi}`).disabled=true;
+    updateHeader();checkRoomComplete(ri);
+  }else{
+    s.tries++;card.classList.remove('bad');void card.offsetWidth;card.classList.add('bad');
+    if(s.tries>=3){
+      s.revealed=true;card.classList.remove('bad');card.classList.add('shown');
+      fb.className='fb shown';fb.innerHTML=`🔓 Het antwoord was: <strong>${q.answers[0]}</strong>. ${q.explain}`;
+      document.getElementById(`ainput-${ri}-${qi}`).disabled=true;document.getElementById(`chkbtn-${ri}-${qi}`).disabled=true;
+      checkRoomComplete(ri);
+    }else{fb.className='fb bad';fb.textContent=`❌ Helaas! Probeer nog eens. (poging ${s.tries} van 3)`}
+  }
+  updateRoomProgress(ri);
+}
+
+function checkRoomComplete(ri){if(state.qStates[ri].every(s=>s.correct||s.revealed))setTimeout(()=>showUnlockOverlay(ri),600)}
+function updateRoomProgress(ri){const qst=state.qStates[ri],a=qst.filter(s=>s.correct||s.revealed).length,t=rooms[ri].questions.length;const pf=document.getElementById('rprogfill'),rc=document.getElementById('rcount');if(pf)pf.style.width=Math.round(a/t*100)+'%';if(rc)rc.textContent=`${a}/${t}`}
+
+function showUnlockOverlay(ri){
+  const room=rooms[ri],last=ri===rooms.length-1;
+  document.getElementById('uo-emoji').textContent=last?'🏆':'🗝️';
+  document.getElementById('uo-title').textContent=last?'Je bent ontsnapt!':`${room.emoji} Kamer ${room.id} gehaald!`;
+  document.getElementById('uo-sub').textContent=last?'Alle kamers klaar! Gefeliciteerd!':`Door naar kamer ${room.id+1}!`;
+  document.getElementById('uo-lesson').textContent='📖 '+room.unlockLesson;
+  document.querySelector('#unlock-ov button').textContent=last?'🏆 Bekijk je score':`➡️ Kamer ${room.id+1}`;
+  document.getElementById('unlock-ov').classList.add('show');
+}
+
+function proceedAfterUnlock(){document.getElementById('unlock-ov').classList.remove('show');if(state.roomIdx>=rooms.length-1)endGame();else{state.roomIdx++;renderRoom(state.roomIdx);window.scrollTo(0,0)}}
+function updateHeader(){document.getElementById('score').textContent=state.totalCorrect}
+function updateProgress(){const total=rooms.reduce((a,r)=>a+r.questions.length,0),done=state.qStates.reduce((a,rs)=>a+rs.filter(s=>s.correct||s.revealed).length,0);document.getElementById('progfill').style.width=Math.round(done/total*100)+'%'}
+
+function endGame(){
+  clearInterval(state.timerInterval);const elapsed=getElapsed(),total=rooms.reduce((a,r)=>a+r.questions.length,0);
+  document.getElementById('end-time').textContent=elapsed;document.getElementById('end-score').textContent=`${state.totalCorrect}/${total}`;
+  const items=[
+    {h:"📖 De Bijbel",p:"Een verzameling boeken in twee delen: Oude Testament (vóór Jezus) en Nieuwe Testament (over Jezus). De vier evangeliën vertellen zijn levensverhaal."},
+    {h:"🔮 De Messias",p:"De profeten voorspelden een redder: de Messias ('Gezalfde'). In het Grieks: Christus. Christenen geloven dat Jezus die Messias is."},
+    {h:"🕊️ Maria",p:"Jonge vrouw uit Nazareth, verloofd met timmerman Jozef. De engel Gabriël vertelde haar over de geboorte van Jezus."},
+    {h:"⭐ Geboorte",p:"Jezus werd geboren in Bethlehem, in een stal. Herders en wijzen kwamen op bezoek. De familie vluchtte naar Egypte."},
+    {h:"📜 Zijn leven",p:"Vanaf zijn 30e trok Jezus rond met 12 leerlingen. Hij gaf les (Bergrede), vertelde gelijkenissen en deed volgens de Bijbel wonderen."},
+    {h:"✝️ Kruisiging",p:"Judas verraadde hem, Pilatus veroordeelde hem. Jezus werd gekruisigd op Golgotha op Goede Vrijdag."},
+    {h:"🌟 Opstanding",p:"Op de derde dag was het graf leeg. Christenen vieren dit met Pasen. De boodschap heet het evangelie: de blijde boodschap."}
+  ];
+  document.getElementById('end-summary').innerHTML=items.map(i=>`<div class="sitem"><h4>${i.h}</h4><p>${i.p}</p></div>`).join('');
+  showScreen('end');document.getElementById('hdr').style.display='none';document.getElementById('progbar').style.display='none';
+}
+function restartGame(){document.getElementById('hdr').style.display='none';document.getElementById('progbar').style.display='none';showScreen('intro')}
+</script>
+</body>
+</html>

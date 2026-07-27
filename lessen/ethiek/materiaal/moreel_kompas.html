@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Het Moreel Kompas · Ethiek klas 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFE1C4;--paper-edge:#E2CFA6;--card:#F7EFD9;--card-hi:#FCF6E6;
+  --ink:#43301C;--muted:#8A7556;--line:rgba(67,48,28,.16);
+  --regels:#3D5A8C;--gevolgen:#4A7A52;--karakter:#B8732A;
+  --display:'Fraunces',Georgia,serif;--body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--body);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(130% 90% at 50% -5%,#F3E7CD 0%,var(--paper) 45%,var(--paper-edge) 100%) fixed;
+  min-height:100vh;
+}
+.screen{display:none;max-width:760px;margin:0 auto;padding:48px 24px 80px;}
+.screen.active{display:block;}
+.eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:.72rem;font-weight:600;color:var(--karakter);margin:0 0 12px;}
+h1{font-family:var(--display);font-weight:500;font-size:clamp(1.9rem,6vw,2.6rem);margin:0 0 14px;line-height:1.1;letter-spacing:-.01em;}
+.lede{font-size:1.02rem;color:#5a4a35;max-width:56ch;margin:0 0 30px;}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--card-hi);border:none;border-radius:12px;padding:14px 22px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .1s,background .15s;}
+.btn:hover{background:#5a4226;}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:var(--karakter);}
+.btn.primary:hover{background:#9c5f22;}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line);}
+.btn.ghost:hover{border-color:var(--ink);}
+.btn:disabled{opacity:.4;cursor:default;}
+
+/* intro */
+.hoe{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:28px;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+.hoe h2{font-family:var(--display);font-weight:500;font-size:1.1rem;margin:0 0 10px;}
+.hoe ul{margin:0;padding-left:1.2em;}
+.hoe li{margin-bottom:6px;}
+.modus{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap;}
+.modus button{flex:1;min-width:150px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px 16px;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);}
+.modus button.active{border-color:var(--karakter);background:var(--card-hi);}
+.modus button b{display:block;font-family:var(--display);font-size:1.02rem;margin-bottom:3px;}
+.modus button span{font-size:.85rem;color:var(--muted);}
+
+/* game */
+.progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.progress-row .p{font-size:.85rem;font-weight:600;color:var(--muted);}
+.progressbar{height:6px;border-radius:3px;background:var(--card);overflow:hidden;margin-bottom:26px;}
+.progressbar .fill{height:100%;background:var(--karakter);border-radius:3px;transition:width .3s ease;}
+.dilemma{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 26px 22px;box-shadow:0 12px 30px -20px rgba(67,48,28,.75);}
+.dilemma .num{font-family:var(--display);font-style:italic;color:var(--muted);font-size:.92rem;margin:0 0 8px;}
+.dilemma .scene{font-size:1.12rem;line-height:1.5;margin:0 0 22px;}
+.opties{display:flex;flex-direction:column;gap:10px;}
+.optie{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card-hi);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;font-family:inherit;font-size:.95rem;color:var(--ink);transition:border-color .15s,transform .1s;}
+.optie:hover{border-color:var(--pole,var(--karakter));}
+.optie:active{transform:scale(.99);}
+.optie .dot{flex-shrink:0;width:9px;height:9px;border-radius:50%;background:var(--pole,var(--karakter));margin-top:6px;}
+.optie.chosen{border-color:var(--pole,var(--karakter));background:var(--paper-edge);}
+.hint{text-align:center;color:var(--muted);font-size:.85rem;margin-top:20px;}
+
+/* result */
+.meters{display:flex;flex-direction:column;gap:16px;margin:26px 0 30px;}
+.meter{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.meter .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.meter .naam{font-family:var(--display);font-weight:500;font-size:1.02rem;}
+.meter .pct{font-weight:600;font-size:.92rem;color:var(--muted);}
+.meter .track{height:10px;border-radius:5px;background:var(--paper);overflow:hidden;}
+.meter .fill{height:100%;border-radius:5px;transition:width .6s ease;}
+.meter.dominant{border-color:var(--pole);box-shadow:0 8px 22px -18px rgba(67,48,28,.7);}
+.uitleg{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:20px;box-shadow:0 10px 26px -20px rgba(67,48,28,.7);}
+.uitleg h2{font-family:var(--display);font-weight:500;font-size:1.2rem;margin:0 0 10px;display:flex;align-items:center;gap:10px;}
+.uitleg h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--pole,var(--karakter));flex-shrink:0;}
+.uitleg p{margin:0 0 10px;}
+.uitleg p:last-child{margin-bottom:0;}
+.samen{background:var(--paper-edge);border-radius:14px;padding:18px 20px;margin-bottom:26px;font-size:.95rem;}
+.samen b{color:var(--karakter);}
+.acties{display:flex;gap:12px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: INTRO -->
+<div class="screen active" id="screen-intro">
+  <p class="eyebrow">Ethiek · klas 1 · werkvorm</p>
+  <h1>Het Moreel Kompas</h1>
+  <p class="lede">Acht korte situaties. Geen goed of fout antwoord — alleen wat jij zou doen. Aan het eind zie je jouw eigen kompas: waar let jij het meest op als je moet kiezen tussen goed en kwaad?</p>
+
+  <div class="hoe">
+    <h2>Zo werkt het</h2>
+    <ul>
+      <li>Bij elke situatie kies je één van de drie reacties.</li>
+      <li>Er is geen verkeerd antwoord: kies wat het meest bij jou past.</li>
+      <li>Na acht situaties zie je jouw kompas, met een korte uitleg.</li>
+    </ul>
+  </div>
+
+  <p class="lede" style="margin-bottom:14px;font-weight:600;">Hoe ga je het doen?</p>
+  <div class="modus" id="modus">
+    <button class="active" data-modus="alleen"><b>Alleen</b><span>Ik kies zelf, in stilte.</span></button>
+    <button data-modus="samen"><b>Met z'n tweeën</b><span>We overleggen per situatie, of vullen apart in en vergelijken.</span></button>
+  </div>
+
+  <button class="btn primary" onclick="startGame()">Begin het kompas →</button>
+</div>
+
+<!-- SCREEN 2: GAME -->
+<div class="screen" id="screen-game">
+  <p class="eyebrow">Het Moreel Kompas</p>
+  <div class="progress-row">
+    <span class="p" id="progress-label">Situatie 1 van 8</span>
+  </div>
+  <div class="progressbar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="dilemma">
+    <p class="num" id="dilemma-num"></p>
+    <p class="scene" id="dilemma-scene"></p>
+    <div class="opties" id="dilemma-opties"></div>
+  </div>
+  <p class="hint">Kies de reactie die het meest bij jou past. Er komt vanzelf een volgende situatie.</p>
+</div>
+
+<!-- SCREEN 3: RESULT -->
+<div class="screen" id="screen-result">
+  <p class="eyebrow">Jouw uitkomst</p>
+  <h1 id="result-titel">Jouw kompas</h1>
+  <p class="lede">Dit is niet je persoonlijkheid en het ligt niet vast: het laat alleen zien waar jij nú het meest naar kijkt als je moet kiezen tussen goed en kwaad.</p>
+
+  <div class="meters" id="meters"></div>
+
+  <div class="uitleg" id="uitleg-dominant"></div>
+
+  <div class="samen">
+    <b>Vergelijk met je buur.</b> Kwamen jullie op hetzelfde kompas uit? Zoek één situatie waarbij jullie verschillend kozen, en leg elkaar uit waarom.
+  </div>
+
+  <div class="acties">
+    <button class="btn ghost" onclick="restart()">Opnieuw spelen</button>
+  </div>
+</div>
+
+<script>
+const POLEN = {
+  regels:   { naam:"Regels",   kleur:"var(--regels)",
+    uitleg:"Jij kijkt bij een lastige keuze eerst naar de regel of afspraak: wat hoort wel, wat hoort niet? Filosofen noemen dit <b>plichtsethiek</b>: sommige dingen doe je gewoon niet, of gevolgen nu goed of slecht uitpakken." },
+  gevolgen: { naam:"Gevolgen", kleur:"var(--gevolgen)",
+    uitleg:"Jij weegt vooral af wat een keuze oplevert of kost, voor jezelf en voor anderen. Filosofen noemen dit <b>utilisme</b>: een keuze is goed als die zo veel mogelijk mensen zo veel mogelijk goeds oplevert." },
+  karakter: { naam:"Karakter", kleur:"var(--karakter)",
+    uitleg:"Jij vraagt je vooral af wat voor persoon je wilt zijn. Filosofen noemen dit <b>deugdenethiek</b>: goed handelen begint niet bij een regel of een berekening, maar bij een goed karakter." },
+};
+
+const DILEMMAS = [
+  { scene:"Je zit met je team in een online game en jullie verliezen omdat een teamgenoot een paar keer verkeerd speelt.",
+    opties:[
+      {pole:"regels",   t:"De regels van fatsoen zijn duidelijk: je scheldt gewoon niet, punt."},
+      {pole:"gevolgen", t:"Ik zeg er iets van, maar alleen als hij er echt beter van wordt."},
+      {pole:"karakter", t:"Ik laat het gaan — ik wil geen scheldende gamer zijn."},
+    ]},
+  { scene:"Onder de foto van een klasgenoot staat een gemene reactie. Niemand zegt er iets van.",
+    opties:[
+      {pole:"regels",   t:"Zulke reacties horen niet, dus ik meld hem gewoon bij de app."},
+      {pole:"gevolgen", t:"Ik kijk eerst of mijn reactie het erger maakt of juist beter."},
+      {pole:"karakter", t:"Ik reageer, want ik wil iemand zijn die opkomt voor een ander."},
+    ]},
+  { scene:"Je vrienden willen vandaag samen spijbelen. Jij hebt er eigenlijk geen zin in, maar wil er ook bij horen.",
+    opties:[
+      {pole:"regels",   t:"Spijbelen mag niet, dus ik ga gewoon naar de les."},
+      {pole:"gevolgen", t:"Ik denk na over wat het me oplevert en wat het me kan kosten."},
+      {pole:"karakter", t:"Ik doe wat bij mij past, ook als dat betekent dat ik afwijk van de groep."},
+    ]},
+  { scene:"Je vindt op straat een portemonnee met twintig euro erin, zonder naam of pasje.",
+    opties:[
+      {pole:"regels",   t:"Gevonden voorwerpen lever je in, ook als er geen naam bij zit."},
+      {pole:"gevolgen", t:"Ik denk aan wie het meeste geholpen is met dat geld."},
+      {pole:"karakter", t:"Ik wil geen dief zijn, dus ik geef hem af."},
+    ]},
+  { scene:"Tijdens een toets zie je dat een klasgenoot stiekem afkijkt bij jouw antwoorden.",
+    opties:[
+      {pole:"regels",   t:"Afkijken is een regel overtreden: ik zeg er iets van of vertel het."},
+      {pole:"gevolgen", t:"Ik denk aan de gevolgen: voor hem, voor mij en voor de rest van de klas."},
+      {pole:"karakter", t:"Ik vraag me af wat voor klasgenoot ik wil zijn en handel daarnaar."},
+    ]},
+  { scene:"In een groepsopdracht heeft één groepsgenoot bijna niets gedaan, maar wil hij wel hetzelfde cijfer.",
+    opties:[
+      {pole:"regels",   t:"Iedereen levert een eerlijke bijdrage, dat was de afspraak."},
+      {pole:"gevolgen", t:"Ik kijk welke oplossing voor de hele groep het beste uitpakt."},
+      {pole:"karakter", t:"Ik wil eerlijk zijn, ook als dat een lastig gesprek betekent."},
+    ]},
+  { scene:"Je vriend(in) laat enthousiast een nieuwe outfit zien. Jij vindt hem eigenlijk niet mooi.",
+    opties:[
+      {pole:"regels",   t:"Je hoort de waarheid te vertellen, ook als het lastig is."},
+      {pole:"gevolgen", t:"Ik denk aan wat mijn antwoord met de ander doet, nu en later."},
+      {pole:"karakter", t:"Ik zeg iets dat eerlijk én aardig is, want zo wil ik zijn."},
+    ]},
+  { scene:"Je kunt een film gratis illegaal downloaden in plaats van ervoor te betalen.",
+    opties:[
+      {pole:"regels",   t:"Downloaden zonder te betalen mag niet, dus ik doe het niet."},
+      {pole:"gevolgen", t:"Ik denk aan wie hier de dupe van is en of dat opweegt tegen wat ik bespaar."},
+      {pole:"karakter", t:"Ik wil geen persoon zijn die zomaar spullen van anderen gebruikt."},
+    ]},
+];
+
+let modus = "alleen";
+let idx = 0;
+let scores = { regels:0, gevolgen:0, karakter:0 };
+
+document.querySelectorAll("#modus button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#modus button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    modus = btn.dataset.modus;
+  });
+});
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startGame(){
+  idx = 0;
+  scores = { regels:0, gevolgen:0, karakter:0 };
+  showScreen("screen-game");
+  renderDilemma();
+}
+
+function renderDilemma(){
+  const d = DILEMMAS[idx];
+  document.getElementById("progress-label").textContent = `Situatie ${idx+1} van ${DILEMMAS.length}`;
+  document.getElementById("progress-fill").style.width = (idx/DILEMMAS.length*100)+"%";
+  document.getElementById("dilemma-num").textContent = `Situatie ${idx+1}`;
+  document.getElementById("dilemma-scene").textContent = d.scene;
+  const wrap = document.getElementById("dilemma-opties");
+  wrap.innerHTML = "";
+  const shuffled = [...d.opties].sort(()=>Math.random()-0.5);
+  for(const o of shuffled){
+    const el = document.createElement("button");
+    el.className = "optie";
+    el.style.setProperty("--pole", POLEN[o.pole].kleur);
+    el.innerHTML = `<span class="dot"></span><span>${o.t}</span>`;
+    el.addEventListener("click", ()=>choose(o.pole, el));
+    wrap.appendChild(el);
+  }
+}
+
+function choose(pole, el){
+  document.querySelectorAll(".optie").forEach(o=>o.style.pointerEvents="none");
+  el.classList.add("chosen");
+  scores[pole]++;
+  setTimeout(()=>{
+    idx++;
+    if(idx < DILEMMAS.length){
+      renderDilemma();
+    }else{
+      document.getElementById("progress-fill").style.width = "100%";
+      showResult();
+    }
+  }, 400);
+}
+
+function showResult(){
+  const totaal = DILEMMAS.length;
+  const volgorde = Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
+  const dominant = volgorde[0];
+
+  const metersEl = document.getElementById("meters");
+  metersEl.innerHTML = "";
+  for(const key of volgorde){
+    const pct = Math.round(scores[key]/totaal*100);
+    const p = POLEN[key];
+    const m = document.createElement("div");
+    m.className = "meter" + (key===dominant ? " dominant" : "");
+    m.style.setProperty("--pole", p.kleur);
+    m.innerHTML = `
+      <div class="top"><span class="naam">${p.naam}</span><span class="pct">${scores[key]} van ${totaal}</span></div>
+      <div class="track"><div class="fill" style="width:${pct}%;background:${p.kleur}"></div></div>
+    `;
+    metersEl.appendChild(m);
+  }
+
+  const uitlegEl = document.getElementById("uitleg-dominant");
+  const dp = POLEN[dominant];
+  uitlegEl.style.setProperty("--pole", dp.kleur);
+  uitlegEl.innerHTML = `<h2><span class="dot"></span>Jouw kompas wijst vooral naar: ${dp.naam}</h2><p>${dp.uitleg}</p><p>Dit zijn drie manieren waarop filosofen al eeuwenlang nadenken over goed en kwaad. Dit blok kom je alle drie nog uitgebreider tegen.</p>`;
+
+  document.getElementById("result-titel").textContent = "Jouw kompas: " + dp.naam;
+  showScreen("screen-result");
+}
+
+function restart(){
+  showScreen("screen-intro");
+}
+</script>
+</body>
+</html>

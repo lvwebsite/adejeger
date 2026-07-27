@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twee Waarheden, Één Leugen: Winti</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root {
+    --ink: #241509;
+    --shadow: #2B1810;
+    --stone: #5C4A38;
+    --sandstone: #E8D5B5;
+    --parchment: #F4ECD8;
+    --copper: #B8722E;
+    --copper-light: #D89B4F;
+    --ok: #3D5C4A;
+    --ok-bg: #d9e6dd;
+    --err: #9A4A3A;
+    --err-bg: #f7ddd9;
+    --gold-glow: rgba(216,155,79,0.45);
+    --border: #D4BB8E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #3a2615 0%, var(--shadow) 55%, #190f08 100%);
+    color: var(--parchment);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+  }
+
+  .wrap { max-width: 840px; margin: 0 auto; }
+
+  /* Masthead */
+  .masthead { text-align: center; margin-bottom: 28px; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--copper-light);
+    margin: 0 0 6px;
+  }
+  h1.title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 46px);
+    margin: 0 0 4px;
+    color: var(--sandstone);
+    text-shadow: 0 0 28px var(--gold-glow);
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #cdb993;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+
+  /* Phase badge */
+  .phase-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .phase-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #5C4A38;
+    color: #8a6f4a;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .phase-pill.active { background: var(--copper); color: #1c1108; border-color: var(--copper); }
+  .phase-pill.done { background: var(--ok); color: #fff; border-color: var(--ok); }
+  .phase-connector { width: 40px; height: 2px; background: #4a3722; }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #4a3722;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress-dots { display: flex; gap: 8px; flex: 1; justify-content: center; }
+  .dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #4a3722; border: 2px solid #6b5030;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    color: #8a6f4a;
+    transition: background .4s, border-color .4s, color .4s;
+  }
+  .dot.active { border-color: var(--copper-light); color: var(--copper-light); background: rgba(184,114,46,0.15); }
+  .dot.done { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .progress-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #a98e66; white-space: nowrap; }
+  .mistakes-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #c07060; white-space: nowrap; min-width: 80px; text-align: right; }
+
+  /* Round card */
+  .round-card {
+    background: linear-gradient(160deg, var(--parchment) 0%, #e9dcc0 100%);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 30px 28px 32px;
+    box-shadow: 0 18px 40px -14px rgba(0,0,0,0.55);
+    border-top: 5px solid var(--stone);
+    animation: cardIn .5s cubic-bezier(.16,.8,.3,1) both;
+  }
+  @keyframes cardIn { from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);} }
+  .round-meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--copper); margin-bottom: 4px; }
+  .round-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--shadow); margin: 0 0 8px; }
+  .round-instruction {
+    font-size: 14px; color: #5a4020; margin: 0 0 20px;
+    padding: 10px 14px;
+    background: rgba(184,114,46,0.08);
+    border-left: 3px solid var(--copper);
+    border-radius: 0 6px 6px 0;
+    line-height: 1.5;
+  }
+
+  /* Statement cards */
+  .statements { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 16px; }
+  @media(max-width:600px){ .statements{grid-template-columns:1fr;} }
+
+  .stmt-card {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: border-color .15s, transform .12s, box-shadow .15s;
+    position: relative;
+    user-select: none;
+  }
+  .stmt-card:hover:not(.disabled) {
+    border-color: var(--copper);
+    box-shadow: 0 4px 18px -4px rgba(184,114,46,0.25);
+    transform: translateY(-2px);
+  }
+  .stmt-card.disabled { cursor: default; }
+  .stmt-letter { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--copper); text-transform: uppercase; margin-bottom: 8px; }
+  .stmt-text { font-size: 13.5px; color: var(--shadow); line-height: 1.55; font-weight: 500; }
+
+  .stmt-card.flash-wrong { border-color: var(--err); background: var(--err-bg); animation: shake .3s ease; }
+  .stmt-card.flash-wrong .stmt-letter, .stmt-card.flash-wrong .stmt-text { color: var(--err); }
+
+  .stmt-card.is-lie { border-color: var(--ok); background: var(--ok-bg); cursor: default; }
+  .stmt-card.is-lie .stmt-letter, .stmt-card.is-lie .stmt-text { color: var(--ok); }
+  .stmt-card.is-lie::after { content:'✗ leugen'; position:absolute; top:10px; right:12px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--ok); letter-spacing:.06em; text-transform:uppercase; }
+
+  .stmt-card.is-truth { opacity:.55; cursor:default; }
+  .stmt-card.is-truth::after { content:'✓ waar'; position:absolute; top:10px; right:12px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:#888; letter-spacing:.06em; text-transform:uppercase; }
+
+  @keyframes shake{20%{transform:translateX(-5px);}60%{transform:translateX(5px);}100%{transform:translateX(0);}}
+
+  .feedback-row { min-height: 22px; margin-bottom: 4px; font-size: 13.5px; font-weight: 600; }
+  .feedback-row.err { color: var(--err); }
+  .feedback-row.ok  { color: var(--ok); }
+
+  .reveal-block { display:none; padding:14px 16px; background:#eef3ee; border-left:3px solid var(--ok); border-radius:0 8px 8px 0; font-size:13.5px; line-height:1.6; color:#2c4536; margin-top:6px; animation:fadeIn .4s ease both; }
+  .reveal-block.show { display:block; }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  .next-btn { display:none; margin-top:18px; font-family:'Inter',sans-serif; font-weight:700; font-size:14px; padding:12px 28px; background:var(--copper); color:#1c1108; border:none; border-radius:8px; cursor:pointer; transition:filter .12s; }
+  .next-btn:hover{filter:brightness(1.08);}
+  .next-btn.show{display:inline-block;animation:fadeIn .3s ease both;}
+
+  /* Restart overlay */
+  .restart-overlay {
+    position: fixed; inset: 0; z-index: 80;
+    background: radial-gradient(ellipse at 50% 40%, rgba(154,74,58,0.92) 0%, rgba(12,7,3,0.97) 100%);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s ease;
+  }
+  .restart-overlay.show { opacity: 1; pointer-events: auto; }
+  .restart-card { text-align: center; }
+  .restart-icon { font-size: 48px; margin-bottom: 14px; }
+  .restart-title { font-family:'Cormorant Garamond',serif; font-size:32px; color:var(--sandstone); margin:0 0 8px; }
+  .restart-sub { font-size:14px; color:#cdb993; }
+
+  /* Phase 2 cards */
+  .explain-card {
+    background: linear-gradient(160deg, var(--parchment) 0%, #e9dcc0 100%);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 28px 28px 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.45);
+    border-top: 5px solid var(--copper);
+    animation: cardIn .45s cubic-bezier(.16,.8,.3,1) both;
+  }
+  .explain-card.solved { border-top-color: var(--ok); }
+  .explain-lie-label { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--err); margin-bottom:6px; }
+  .explain-lie-text { font-size:14.5px; font-weight:600; color:var(--shadow); line-height:1.5; margin:0 0 14px; padding:10px 14px; background:rgba(154,74,58,0.07); border-left:3px solid var(--err); border-radius:0 6px 6px 0; }
+  .explain-prompt { font-size:13.5px; color:#5a4020; margin:0 0 10px; }
+  
+  .text-input {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 70px;
+    margin-bottom: 10px;
+  }
+  .text-input:focus { outline: none; border-color: var(--copper); box-shadow: 0 0 0 3px rgba(184,114,46,0.15); }
+  .text-input.accepted { border-color: var(--ok); }
+  .text-input:disabled { background: #f0ece2; color: #8a7060; }
+
+  .check-btn { font-family:'Inter',sans-serif; font-weight:700; font-size:13px; padding:9px 20px; background:var(--copper); color:#1c1108; border:none; border-radius:7px; cursor:pointer; transition:filter .12s; }
+  .check-btn:hover{filter:brightness(1.08);}
+  .check-btn:disabled{opacity:.45;cursor:default;}
+
+  .explain-feedback { font-size:13px; font-weight:600; margin-top:8px; min-height:18px; }
+  .explain-feedback.err{color:var(--err);}
+  .explain-feedback.ok{color:var(--ok);}
+  .explain-feedback.partial{color:#8a5520;}
+
+  .explain-reveal { display:none; margin-top:10px; padding:12px 14px; background:#eef3ee; border-left:3px solid var(--ok); border-radius:0 8px 8px 0; font-size:13px; line-height:1.6; color:#2c4536; animation:fadeIn .4s ease both; }
+  .explain-reveal.show { display:block; }
+  .skip-link { font-size:12px; color:#8a7060; cursor:pointer; text-decoration:underline; margin-left:12px; background:none; border:none; font-family:'Inter',sans-serif; }
+  .skip-link:hover{color:var(--copper);}
+
+  /* Score screen */
+  .score-screen { display:none; text-align:center; padding:44px 24px 52px; background:linear-gradient(160deg,#1c1108,var(--shadow)); border-radius:16px; border:1px solid #4a3722; animation:cardIn .6s ease both; }
+  .score-screen.show{display:block;}
+  .score-icon{font-size:44px;margin-bottom:12px;filter:drop-shadow(0 0 14px var(--gold-glow));}
+  .score-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--sandstone);margin:0 0 10px;}
+  .score-main{font-family:'JetBrains Mono',monospace;font-size:44px;font-weight:600;color:var(--copper-light);text-shadow:0 0 24px var(--gold-glow);margin:6px 0 2px;letter-spacing:.03em;}
+  .score-sub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#a98e66;margin-bottom:14px;}
+  .score-detail{font-size:14px;color:var(--sandstone);max-width:440px;margin:0 auto 8px;line-height:1.6;}
+  .score-mistakes-line{font-size:12.5px;color:#a98e66;margin-bottom:26px;}
+  .retry-btn{font-family:'Inter',sans-serif;font-weight:700;font-size:14px;padding:12px 28px;background:var(--copper);color:#1c1108;border:none;border-radius:8px;cursor:pointer;transition:filter .12s;}
+  .retry-btn:hover{filter:brightness(1.08);}
+
+  footer.note { text-align:center; font-size:11.5px; color:#6e5a3e; margin-top:28px; line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">Levensbeschouwing · Les 7 · Winti</p>
+    <h1 class="title">Twee Waarheden, Één Leugen</h1>
+    <p class="subtitle" id="subtitleText">Drie beweringen over Winti: twee zijn waar, één is een leugen. Klik op de leugen. Fout antwoord? Je begint opnieuw.</p>
+  </div>
+
+  <div class="phase-badge" id="phaseBadge">
+    <div class="phase-pill active" id="pill1">Ronde 1: Vind de leugen</div>
+    <div class="phase-connector"></div>
+    <div class="phase-pill" id="pill2">Ronde 2: Leg de leugen uit</div>
+  </div>
+
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-dots" id="progressDots"></div>
+    <span class="progress-label" id="progressLabel">Vraag 1 / 7</span>
+    <span class="mistakes-badge" id="mistakesBadge"></span>
+  </div>
+
+  <div id="roundContainer"></div>
+  <div id="explainContainer"></div>
+  <div class="score-screen" id="scoreScreen">
+    <div class="score-icon">🌿</div>
+    <h2 class="score-title">Winti volledig doorgrond</h2>
+    <div class="score-main" id="scoreMain"></div>
+    <p class="score-sub">correct uitgelegd</p>
+    <p class="score-detail" id="scoreDetail"></p>
+    <p class="score-mistakes-line" id="scoreMistakesLine"></p>
+    <button class="retry-btn" onclick="init()">Opnieuw proberen</button>
+  </div>
+
+</div>
+
+<div class="restart-overlay" id="restartOverlay">
+  <div class="restart-card">
+    <div class="restart-icon">↺</div>
+    <h2 class="restart-title">Fout antwoord</h2>
+    <p class="restart-sub">Terug naar vraag 1...</p>
+  </div>
+</div>
+
+<footer class="note">
+  Inhoud gebaseerd op Paragraaf 6: Winti uit Wereldreligies (eindversie).<br>
+  Ronde 1: fout antwoord betekent opnieuw beginnen. Ronde 2: fouten zijn toegestaan, uitleg telt.
+</footer>
+
+<script>
+/* ============================================================
+   RONDE 1 DATA: 7 vragen Two Truths One Lie
+   ============================================================ */
+const R1 = [
+  {
+    meta: 'Vraag 1 van 7',
+    title: 'Oorsprong',
+    instruction: 'Welke bewering over het ontstaan van Winti is een leugen?',
+    stmts: [
+      { text: 'Winti is een Afro-Surinaamse religie en levenswijze, ontstaan tijdens de slavernij in de 17e tot 19e eeuw.', lie: false },
+      { text: 'Winti heeft sterke Afrikaanse wortels, maar heeft ook invloeden van inheemse Surinaamse tradities en Europese elementen opgenomen.', lie: false },
+      { text: 'Winti is afkomstig uit één Afrikaans land en werd door één stam onveranderd meegenomen naar Suriname.', lie: true }
+    ],
+    explain: 'Winti is juist een mengreligie. Afrikanen uit verschillende regio\'s werden naar Suriname gebracht en hun tradities vermengden zich met inheemse Surinaamse en Europese invloeden. Het is dus niet uit één stam of land afkomstig.'
+  },
+  {
+    meta: 'Vraag 2 van 7',
+    title: 'De vier winti\'s',
+    instruction: 'Welke bewering over de soorten winti\'s is een leugen?',
+    stmts: [
+      { text: 'Er zijn vier hoofdgroepen van winti\'s: aarde-winti\'s, water-winti\'s, bos-winti\'s en lucht-winti\'s.', lie: false },
+      { text: 'Er zijn vijf hoofdgroepen van winti\'s: aarde-, water-, bos-, lucht- en vuur-winti\'s.', lie: true },
+      { text: 'Elke winti heeft eigen eigenschappen, krachten en rituelen.', lie: false }
+    ],
+    explain: 'Volgens de tekst zijn er vier hoofdgroepen, geen vijf. Vuur-winti\'s bestaan niet als hoofdgroep. De vier groepen zijn: aarde-winti\'s, water-winti\'s, bos-winti\'s en lucht-winti\'s, elk met eigen eigenschappen en rituelen.'
+  },
+  {
+    meta: 'Vraag 3 van 7',
+    title: 'De bonuman',
+    instruction: 'Welke bewering over de geestelijk leider in Winti is een leugen?',
+    stmts: [
+      { text: 'De bonuman of duman is een geestelijk leider, genezer en bemiddelaar die contact kan leggen met de geesten en advies geeft aan de gemeenschap.', lie: false },
+      { text: 'In Winti is contact met geesten voorbehouden aan de oudste man in de familie, niet aan een speciaal aangewezen persoon.', lie: true },
+      { text: 'Voorouderverering is een belangrijk onderdeel van Winti: men gelooft dat voorouders kunnen helpen, beschermen of waarschuwen.', lie: false }
+    ],
+    explain: 'In Winti is het juist de bonuman of duman die als bemiddelaar optreedt. Dit is een speciaal aangewezen en erkend geestelijk leider met specifieke kennis en vaardigheden. De rol gaat niet automatisch naar de oudste man in de familie.'
+  },
+  {
+    meta: 'Vraag 4 van 7',
+    title: 'Rituelen',
+    instruction: 'Welke bewering over Winti-rituelen is een leugen?',
+    stmts: [
+      { text: 'Rituelen in Winti zijn vaak kleurrijk en intens, en kunnen dagen duren. Ze bestaan uit muziek, dans, zang, gebeden en offers.', lie: false },
+      { text: 'In Winti mogen er nooit offers van voedsel of drank worden gebracht. Offers zijn uitsluitend in de vorm van gebeden.', lie: true },
+      { text: 'Trommels, ritmische zang en dans helpen deelnemers om in een trance te komen, waardoor communicatie met de winti\'s mogelijk wordt.', lie: false }
+    ],
+    explain: 'Offers van voedsel of drank zijn juist een vast onderdeel van Winti-rituelen, naast zang, dans en gebeden. De bewering dat er geen voedseloffers zijn klopt dus niet. Rituelen zijn veelzijdig en zeker niet beperkt tot alleen mondelinge gebeden.'
+  },
+  {
+    meta: 'Vraag 5 van 7',
+    title: 'Onderdrukking',
+    instruction: 'Welke bewering over de geschiedenis van Winti is een leugen?',
+    stmts: [
+      { text: 'Winti werd tijdens de slavernij verboden door plantage-eigenaren en missionarissen, maar bleef in het geheim levend via trommen en dans.', lie: false },
+      { text: 'Na de afschaffing van de slavernij op 1 juli 1863 werd Winti direct erkend als officiële religie en mocht het openlijk worden beoefend.', lie: true },
+      { text: 'Winti draagt vandaag bij aan de culturele identiteit van Afro-Surinamers, zowel in Suriname als in Nederland.', lie: false }
+    ],
+    explain: 'Erkenning en openheid kwamen pas veel later. Ook na 1863 bleef Winti lange tijd onderdrukt en niet erkend. Pas in de loop van de twintigste en eenentwintigste eeuw groeide er meer erkenning, zowel in Suriname als in Nederland.'
+  },
+  {
+    meta: 'Vraag 6 van 7',
+    title: 'Mens, natuur en geestenwereld',
+    instruction: 'Welke bewering over de verbinding tussen levenden en overledenen in Winti is een leugen?',
+    stmts: [
+      { text: 'Onbalans tussen mens, natuur en geestenwereld kan leiden tot ziekte, pech of conflicten. Rituelen, muziek en dans brengen harmonie terug.', lie: false },
+      { text: 'In Winti staan de wereld van de levenden en de wereld van de overledenen volledig los van elkaar. Contact met voorouders is onmogelijk.', lie: true },
+      { text: 'Men gelooft dat het belangrijk is de band met overleden familieleden te onderhouden, omdat zij kunnen helpen, beschermen of waarschuwen.', lie: false }
+    ],
+    explain: 'Voorouderverering staat juist centraal in Winti. De band tussen levenden en overledenen is geen scheiding maar een voortdurende verbinding. Voorouders kunnen helpen of waarschuwen, en het onderhouden van die band is een kernwaarde in Winti.'
+  },
+  {
+    meta: 'Vraag 7 van 7',
+    title: 'Winti vandaag',
+    instruction: 'Welke bewering over Winti in de huidige tijd is een leugen?',
+    stmts: [
+      { text: 'Winti wordt tegenwoordig openlijker beoefend, zowel in Suriname als in de Afro-Surinaamse gemeenschap in Nederland.', lie: false },
+      { text: 'Winti is vandaag nauwelijks meer bekend en wordt vrijwel uitsluitend in afgelegen gebieden van Suriname beoefend.', lie: true },
+      { text: 'Winti wordt gezien als een belangrijke bron van gemeenschap, kracht en verbinding met voorouders, en herinnert aan de veerkracht van Afro-Surinamers.', lie: false }
+    ],
+    explain: 'Winti is juist openlijker geworden, ook buiten Suriname. De Afro-Surinaamse gemeenschap in Nederland beoefent Winti, en er is meer maatschappelijke erkenning dan in het verleden. Het is zeker niet beperkt tot afgelegen gebieden.'
+  }
+];
+
+/* ============================================================
+   RONDE 2 DATA: leerlingen leggen de leugens uit
+   Elk item heeft de leugen-tekst en keyGroups voor de contains-check.
+   Een antwoord is "goed genoeg" als het minstens 1 van de keyGroups raakt.
+   ============================================================ */
+const R2 = R1.map((q, i) => {
+  const lieStmt = q.stmts.find(s => s.lie);
+  return { lieText: lieStmt.text, explain: q.explain, title: q.title };
+});
+
+// Trefwoordgroepen per leugen: student moet minstens 1 term uit minstens 1 groep raken
+const R2_KEYS = [
+  // 1: één stam / mengreligie
+  [['mengreligie','meng','vermengd','meerdere','verschillende','regio','culturen','afrikanen']],
+  // 2: vijf groepen / vuur-winti
+  [['vier','vuur','vijf','4 ','vierde','5 ']],
+  // 3: oudste man / bonuman
+  [['bonuman','duman','geestelijk','leider','speciaal','aangewezen']],
+  // 4: geen voedseloffers
+  [['voedsel','drank','eten','offer','wel ','onderdeel']],
+  // 5: direct erkend na 1863
+  [['niet direct','later','lang','onderdrukt','twintigste','21e','geleidelijk','jaren','wel']],
+  // 6: werelden staan los
+  [['voorouder','overledenen','band','contact','verbinding','verering','helpen','beschermen']],
+  // 7: nauwelijks meer bekend
+  [['nederland','openlijker','beoefend','gemeenschap','surinamers','erkend','erkenning']]
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let phase = 1;
+let currentQ = 0;
+let phase1Mistakes = 0;
+let phase2Mistakes = 0;
+let phase1Done = [];
+let phase2Done = [];
+let shuffled = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function norm(str) {
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function containsCheck(input, keyGroups) {
+  const n = norm(input);
+  // hit at least 1 group
+  return keyGroups.some(group => group.some(kw => n.includes(norm(kw))));
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init() {
+  phase = 1;
+  currentQ = 0;
+  phase1Mistakes = 0;
+  phase2Mistakes = 0;
+  phase1Done = new Array(R1.length).fill(false);
+  phase2Done = new Array(R2.length).fill(false);
+  shuffled = R1.map(r => ({ ...r, stmts: shuffle(r.stmts) }));
+
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('explainContainer').innerHTML = '';
+  document.getElementById('roundContainer').innerHTML = '';
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('subtitleText').textContent = 'Drie beweringen over Winti: twee zijn waar, één is een leugen. Klik op de leugen. Fout antwoord? Je begint opnieuw.';
+
+  updatePhasePills();
+  renderProgress1();
+  renderRound1();
+}
+
+/* ============================================================
+   PHASE PILLS
+   ============================================================ */
+function updatePhasePills() {
+  const p1 = document.getElementById('pill1');
+  const p2 = document.getElementById('pill2');
+  if (phase === 1) {
+    p1.className = 'phase-pill active';
+    p2.className = 'phase-pill';
+  } else {
+    p1.className = 'phase-pill done';
+    p2.className = 'phase-pill active';
+  }
+}
+
+/* ============================================================
+   PROGRESS (phase 1)
+   ============================================================ */
+function renderProgress1() {
+  const dots = document.getElementById('progressDots');
+  dots.innerHTML = '';
+  R1.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i===currentQ?' active':'') + (phase1Done[i]?' done':'');
+    dot.textContent = phase1Done[i] ? '✓' : (i+1);
+    dots.appendChild(dot);
+  });
+  document.getElementById('progressLabel').textContent = `Vraag ${currentQ+1} / ${R1.length}`;
+  const m = document.getElementById('mistakesBadge');
+  m.textContent = phase1Mistakes > 0 ? `${phase1Mistakes}x opnieuw` : '';
+}
+
+/* ============================================================
+   RENDER RONDE 1
+   ============================================================ */
+function renderRound1() {
+  const container = document.getElementById('roundContainer');
+  const r = shuffled[currentQ];
+  const letters = ['A','B','C'];
+  container.innerHTML = `
+    <div class="round-card">
+      <p class="round-meta">${r.meta}</p>
+      <h2 class="round-title">${r.title}</h2>
+      <p class="round-instruction">${r.instruction}</p>
+      <div class="statements" id="stmts">
+        ${r.stmts.map((s,i) => `
+          <div class="stmt-card" id="sc${i}" onclick="click1(${i})">
+            <p class="stmt-letter">Bewering ${letters[i]}</p>
+            <p class="stmt-text">${s.text}</p>
+          </div>`).join('')}
+      </div>
+      <div class="feedback-row" id="fb1"></div>
+      <div class="reveal-block" id="rv1">${r.explain}</div>
+      <button class="next-btn" id="nb1" onclick="next1()">
+        ${currentQ < R1.length-1 ? 'Volgende vraag →' : 'Start Ronde 2 →'}
+      </button>
+    </div>`;
+}
+
+/* ============================================================
+   CLICK HANDLER RONDE 1
+   ============================================================ */
+function click1(idx) {
+  const r = shuffled[currentQ];
+  const stmt = r.stmts[idx];
+  const fb = document.getElementById('fb1');
+
+  if (stmt.lie) {
+    // Correct
+    phase1Done[currentQ] = true;
+    document.querySelectorAll('.stmt-card').forEach((c,i) => {
+      c.classList.add('disabled');
+      c.onclick = null;
+      if (r.stmts[i].lie) c.classList.add('is-lie');
+      else c.classList.add('is-truth');
+    });
+    fb.textContent = '✓ Correct, dit is de leugen.';
+    fb.className = 'feedback-row ok';
+    document.getElementById('rv1').classList.add('show');
+    document.getElementById('nb1').classList.add('show');
+    renderProgress1();
+  } else {
+    // Wrong: restart
+    phase1Mistakes++;
+    const card = document.getElementById('sc'+idx);
+    card.classList.add('flash-wrong');
+    fb.textContent = 'Fout. Je begint opnieuw bij vraag 1.';
+    fb.className = 'feedback-row err';
+    // disable all clicks during animation
+    document.querySelectorAll('.stmt-card').forEach(c => { c.onclick=null; c.classList.add('disabled'); });
+    setTimeout(() => triggerRestart(), 600);
+  }
+}
+
+function triggerRestart() {
+  const overlay = document.getElementById('restartOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    // reset phase 1 state
+    currentQ = 0;
+    phase1Done = new Array(R1.length).fill(false);
+    shuffled = R1.map(r => ({ ...r, stmts: shuffle(r.stmts) }));
+    renderProgress1();
+    renderRound1();
+  }, 1800);
+}
+
+function next1() {
+  if (currentQ < R1.length-1) {
+    currentQ++;
+    renderProgress1();
+    renderRound1();
+    window.scrollTo({top: document.getElementById('roundContainer').offsetTop - 80, behavior:'smooth'});
+  } else {
+    startPhase2();
+  }
+}
+
+/* ============================================================
+   START RONDE 2
+   ============================================================ */
+function startPhase2() {
+  phase = 2;
+  currentQ = 0;
+  document.getElementById('roundContainer').innerHTML = '';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('subtitleText').textContent = 'Hieronder zie je alle zeven leugens. Leg per leugen uit wat er niet klopt. Je mag fouten maken, maar je moet elke uitleg afmaken.';
+  updatePhasePills();
+  renderPhase2();
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+/* ============================================================
+   RENDER RONDE 2
+   ============================================================ */
+function renderPhase2() {
+  const container = document.getElementById('explainContainer');
+  container.innerHTML = R2.map((item, i) => `
+    <div class="explain-card" id="ec${i}">
+      <p class="explain-lie-label">Leugen ${i+1} van 7 · ${item.title}</p>
+      <p class="explain-lie-text">${item.lieText}</p>
+      <p class="explain-prompt">Leg in eigen woorden uit wat er niet klopt in deze bewering.</p>
+      <textarea class="text-input" id="ta${i}" placeholder="Schrijf hier je uitleg…" rows="3"></textarea>
+      <div>
+        <button class="check-btn" id="cb${i}" onclick="check2(${i})">Controleer</button>
+      </div>
+      <div class="explain-feedback" id="ef${i}"></div>
+      <div class="explain-reveal" id="er${i}">${item.explain}</div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   CHECK RONDE 2
+   ============================================================ */
+function check2(i) {
+  const input = document.getElementById('ta'+i).value.trim();
+  const fb = document.getElementById('ef'+i);
+
+  if (!input) { fb.textContent = 'Schrijf eerst een antwoord.'; fb.className='explain-feedback err'; return; }
+
+  const hit = containsCheck(input, R2_KEYS[i]);
+
+  if (hit) {
+    acceptAnswer2(i);
+  } else {
+    phase2Mistakes++;
+    fb.textContent = 'Je antwoord raakt de kern nog niet. Probeer opnieuw: wat klopt er precies niet?';
+    fb.className = 'explain-feedback partial';
+  }
+}
+
+function skip2(i) {
+  // Allow skip but mark as not done by student knowledge; still show reveal
+  document.getElementById('ef'+i).textContent = 'Overgeslagen. Lees de uitleg hieronder.';
+  document.getElementById('ef'+i).className = 'explain-feedback partial';
+  acceptAnswer2(i, true);
+}
+
+function acceptAnswer2(i, skipped) {
+  phase2Done[i] = true;
+  const card = document.getElementById('ec'+i);
+  card.classList.add('solved');
+  const ta = document.getElementById('ta'+i);
+  ta.disabled = true;
+  if (!skipped) ta.classList.add('accepted');
+  document.getElementById('cb'+i).disabled = true;
+  document.getElementById('er'+i).classList.add('show');
+  if (!skipped) {
+    document.getElementById('ef'+i).textContent = '✓ Goed. De uitleg staat hieronder.';
+    document.getElementById('ef'+i).className = 'explain-feedback ok';
+  }
+
+  // Check if all done
+  if (phase2Done.every(Boolean)) {
+    setTimeout(showScore, 700);
+  }
+}
+
+/* ============================================================
+   SCORE
+   ============================================================ */
+function showScore() {
+  document.getElementById('explainContainer').style.opacity = '0.4';
+  const screen = document.getElementById('scoreScreen');
+  screen.classList.add('show');
+
+  const skipped = R2.length - phase2Done.filter(Boolean).length;
+  const explained = phase2Done.filter(Boolean).length;
+  document.getElementById('scoreMain').textContent = `${explained} / ${R2.length}`;
+
+  let detail = '';
+  if (phase2Mistakes === 0 && skipped === 0) detail = 'Foutloos beide rondes doorlopen. Indrukwekkend.';
+  else if (explained === R2.length) detail = 'Alle leugens uitgelegd. Goed gedaan.';
+  else detail = 'Bekijk de uitleg van de overgeslagen vragen nog eens.';
+
+  document.getElementById('scoreDetail').textContent = detail;
+  const ml = document.getElementById('scoreMistakesLine');
+  const restarts = phase1Mistakes;
+  const parts = [];
+  if (restarts > 0) parts.push(`${restarts}x herstartd in Ronde 1`);
+  if (phase2Mistakes > 0) parts.push(`${phase2Mistakes} foute poging${phase2Mistakes===1?'':'en'} in Ronde 2`);
+  ml.textContent = parts.length ? parts.join(' · ') : 'Geen fouten gemaakt.';
+
+  screen.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+/* ============================================================
+   START
+   ============================================================ */
+init();
+</script>
+</body>
+</html>

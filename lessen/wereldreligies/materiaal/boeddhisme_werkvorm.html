@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnose &amp; Recept: De Vier Edele Waarheden</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --ink:#23201a;
+    --shadow:#2a2620;
+    --paper:#F6F1E7;
+    --paper-line:#e7dec9;
+    --saffron:#C8772E;      /* warm monk-robe ochre */
+    --saffron-light:#E0A85A;
+    --jade:#3E6B5A;          /* calm jade green */
+    --jade-light:#5B8B78;
+    --plum:#6E4A5A;
+    --stone:#6b6052;
+    --ok:#3E6B5A;
+    --err:#A2503C;
+    --glow:rgba(224,168,90,0.5);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% -8%, #fbf7ee 0%, var(--paper) 60%, #efe7d4 100%);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:30px 16px 70px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+
+  .masthead{text-align:center;margin-bottom:6px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;
+    text-transform:uppercase;color:var(--saffron);margin:0 0 6px;
+  }
+  h1.title{
+    font-family:'Cormorant Garamond',serif;font-weight:700;
+    font-size:clamp(30px,5.5vw,46px);margin:0 0 6px;color:var(--shadow);
+  }
+  .subtitle{font-size:14.5px;color:var(--stone);max-width:600px;margin:0 auto 22px;line-height:1.6;}
+
+  /* progress */
+  .phase-track{display:flex;justify-content:center;gap:10px;margin-bottom:26px;flex-wrap:wrap;}
+  .phase-chip{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;
+    padding:7px 14px;border-radius:20px;border:1.5px solid var(--paper-line);
+    background:#fff;color:var(--stone);
+  }
+  .phase-chip.active{border-color:var(--saffron);color:var(--saffron);background:#fff6ea;font-weight:600;}
+  .phase-chip.done{border-color:var(--jade);color:var(--jade);background:#eef5f1;}
+
+  /* card pool */
+  .panel{
+    background:#fff;border:1px solid var(--paper-line);border-radius:14px;
+    padding:22px 22px 26px;margin-bottom:22px;
+    box-shadow:0 14px 32px -18px rgba(0,0,0,0.35);
+  }
+  .panel-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+  .panel-step{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);font-weight:600;}
+  .panel-title{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:700;color:var(--shadow);margin:0;}
+  .panel-intro{font-size:13.5px;color:var(--stone);line-height:1.6;margin:8px 0 18px;}
+
+  .pool-label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--stone);margin:0 0 10px;
+  }
+  .card-pool{display:flex;flex-wrap:wrap;gap:10px;min-height:54px;padding:12px;
+    background:var(--paper);border-radius:10px;border:1px dashed var(--paper-line);margin-bottom:24px;}
+  .card-pool.empty::after{content:'Alle kaarten geplaatst';color:var(--stone);font-size:12.5px;font-style:italic;margin:auto;}
+
+  .card{
+    background:#fff;border:1.5px solid var(--paper-line);border-radius:9px;
+    padding:11px 14px;font-size:13.5px;font-weight:500;color:var(--ink);
+    cursor:grab;user-select:none;max-width:300px;line-height:1.4;
+    box-shadow:0 3px 8px -4px rgba(0,0,0,0.25);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .2s ease;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(0,0,0,0.3);}
+  .card.dragging{opacity:0.45;cursor:grabbing;}
+  .card.selected{border-color:var(--saffron);background:#fff6ea;box-shadow:0 0 0 3px rgba(200,119,46,0.18);}
+  .card .card-tag{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.05em;color:var(--saffron);text-transform:uppercase;margin-bottom:3px;}
+
+  /* slots: the diagnostic chain */
+  .chain{display:grid;gap:14px;margin-bottom:8px;}
+  .slot-row{display:flex;align-items:stretch;gap:14px;}
+  .slot-step-no{
+    flex-shrink:0;width:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;color:#fff;
+    background:var(--jade);border-radius:10px;
+  }
+  .slot-body{flex:1;}
+  .slot-prompt{font-size:13px;font-weight:600;color:var(--shadow);margin:0 0 7px;}
+  .slot-prompt .micro{display:block;font-weight:400;font-size:11.5px;color:var(--stone);margin-top:2px;}
+  .dropzone{
+    min-height:56px;border:2px dashed var(--paper-line);border-radius:10px;
+    padding:9px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--paper);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .dropzone.over{border-color:var(--saffron);background:#fff6ea;}
+  .dropzone.filled{border-style:solid;border-color:var(--jade-light);background:#fff;}
+  .dropzone.locked{border-color:var(--jade);background:#eef5f1;}
+
+  .treatment-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+
+  .placed-card{
+    background:#fff;border:1.5px solid var(--jade-light);border-radius:8px;padding:9px 12px;
+    font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;max-width:100%;line-height:1.4;
+  }
+  .placed-card .x{margin-left:auto;color:var(--stone);cursor:pointer;font-weight:700;font-size:15px;line-height:1;padding:0 2px;}
+  .placed-card.locked .x{display:none;}
+
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px;}
+  button{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;border:none;border-radius:8px;
+    padding:11px 20px;cursor:pointer;transition:transform .12s ease, filter .12s ease;
+  }
+  button:hover{filter:brightness(1.06);}
+  button:active{transform:scale(0.97);}
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-primary{background:var(--saffron);color:#fff;}
+  .btn-ghost{background:transparent;color:var(--shadow);border:1.5px solid var(--paper-line);}
+
+  .feedback{font-size:13.5px;font-weight:600;min-height:20px;margin-top:4px;}
+  .feedback.err{color:var(--err);}
+  .feedback.ok{color:var(--jade);}
+  .hint-note{font-size:12px;color:var(--stone);font-style:italic;}
+
+  .reveal{
+    margin-top:16px;padding:16px 18px;background:#eef5f1;border-radius:10px;
+    border:1px solid #d4e4dc;font-size:13.5px;line-height:1.65;color:#274539;display:none;
+  }
+  .reveal.show{display:block;animation:fade .4s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .reveal h4{margin:0 0 8px;font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--jade);}
+  .reveal p{margin:0 0 8px;}
+  .reveal .term{font-weight:700;color:var(--shadow);}
+
+  .phase{display:none;}
+  .phase.active{display:block;animation:fade .45s ease;}
+
+  /* schrijfmoment strip: matches your recurring marker */
+  .write-strip{
+    display:flex;align-items:center;gap:10px;margin-top:22px;padding:12px 16px;
+    background:#fff6ea;border:1px solid #f0dcbd;border-radius:10px;font-size:13px;color:#7a5b2c;
+  }
+  .write-strip svg{flex-shrink:0;}
+  .write-strip b{color:var(--saffron);}
+
+  footer.note{text-align:center;font-size:11.5px;color:#9a8d76;margin-top:26px;line-height:1.7;}
+
+  @media (max-width:560px){
+    .slot-step-no{width:38px;font-size:21px;}
+    .card{max-width:100%;}
+  }
+  @media (prefers-reduced-motion: reduce){*{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">Boeddhisme · werkvorm</p>
+    <h1 class="title">Diagnose &amp; Recept</h1>
+    <p class="subtitle">De Boeddha stelde een vraag als een arts: <em>hoe word een mens vrij van lijden?</em> Zijn Vier Edele Waarheden volgen precies de logica van een diagnose. Leg de kaarten in de juiste vololgorde, en schrijf daarna het &#x2018;recept&#x2019;.</p>
+  </div>
+
+  <div class="phase-track">
+    <span class="phase-chip active" id="chip1">1 · De diagnose</span>
+    <span class="phase-chip" id="chip2">2 · Het recept</span>
+    <span class="phase-chip" id="chip3">3 · Toepassen</span>
+    <span class="phase-chip" id="chip4">4 · Voorbeelden</span>
+  </div>
+
+  <!-- ============ PHASE 1: DIAGNOSIS ============ -->
+  <div class="phase active" id="phase1">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-step">Stap 1</span>
+        <h2 class="panel-title">Stel de diagnose</h2>
+      </div>
+      <p class="panel-intro">Een arts werkt in stappen: eerst het probleem, dan de oorzaak, dan de vraag of het beter kan, en pas daarna een plan. De Vier Edele Waarheden volgen dezelfde route. Sleep elke kaart naar de juiste stap. <strong>Let op:</strong> er zit één kaart tussen die er niet hoort.</p>
+
+      <p class="pool-label">Kaarten: sleep naar de juiste plek</p>
+      <div class="card-pool" id="pool1"></div>
+
+      <div class="chain" id="chain1">
+        <div class="slot-row">
+          <div class="slot-step-no">1</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Het symptoom <span class="micro">Wat is het probleem dat de arts ziet?</span></p>
+            <div class="dropzone" data-slot="0"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no">2</div>
+          <div class="slot-body">
+            <p class="slot-prompt">De oorzaak <span class="micro">Waar komt het probleem vandaan?</span></p>
+            <div class="dropzone" data-slot="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no">3</div>
+          <div class="slot-body">
+            <p class="slot-prompt">De prognose <span class="micro">Kan de patiënt beter worden?</span></p>
+            <div class="dropzone" data-slot="2"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no">4</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Het behandelplan <span class="micro">Wat moet de patiënt gaan doen?</span></p>
+            <div class="dropzone" data-slot="3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="check1">Controleer de diagnose</button>
+        <span class="feedback" id="fb1"></span>
+      </div>
+      <p class="hint-note" id="hint1" style="margin-top:8px;">Je krijgt alleen te horen <em>hoeveel</em> kaarten fout liggen: niet welke. Blijf redeneren.</p>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 2: TREATMENT ============ -->
+  <div class="phase" id="phase2">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-step">Stap 2</span>
+        <h2 class="panel-title">Schrijf het recept: het Achtvoudige Pad</h2>
+      </div>
+      <p class="panel-intro">De vierde waarheid wijst naar een behandelplan: het <strong>Achtvoudige Pad</strong>. Het pad bestaat uit drie soorten oefening: <em>wijsheid</em>, <em>moreel gedrag</em> en <em>geestelijke training</em>. Sleep elke leefregel naar de juiste categorie. Ook hier zit één kaart tussen die niet in het pad thuishoort.</p>
+
+      <p class="pool-label">Leefregels: sleep naar de juiste categorie</p>
+      <div class="card-pool" id="pool2"></div>
+
+      <div class="treatment-grid" id="chain2">
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--saffron);">A</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Wijsheid <span class="micro">begrijpen hoe het leven echt in elkaar zit</span></p>
+            <div class="dropzone" data-slot="0" data-multi="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--plum);">B</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Moreel gedrag <span class="micro">hoe je met anderen omgaat</span></p>
+            <div class="dropzone" data-slot="1" data-multi="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--jade);">C</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Geestelijke training <span class="micro">je aandacht en geest oefenen</span></p>
+            <div class="dropzone" data-slot="2" data-multi="1"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="check2">Controleer het recept</button>
+        <span class="feedback" id="fb2"></span>
+      </div>
+      <p class="hint-note" style="margin-top:8px;">Weer alleen het aantal fouten, niet welke. Drie categorieën, dus meerdere kaarten per vak.</p>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 3: TOEPASSEN (higher order) ============ -->
+  <div class="phase" id="phase3">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-step">Stap 3</span>
+        <h2 class="panel-title">Pas het toe op het echte leven</h2>
+      </div>
+      <p class="panel-intro">Nu het moeilijkste: je hebt de theorie geordend, maar begrijp je hem ook? Hieronder staan vier situaties die niet in de tekst staan. Sleep elke situatie naar het boeddhistische idee dat er volgens jou het best bij past. Eén idee blijft over, en één situatie hoort bij geen van alle (die laat je in de pool staan).</p>
+
+      <p class="pool-label">Situaties: sleep naar het passende idee</p>
+      <div class="card-pool" id="pool3"></div>
+
+      <div class="chain" id="chain3">
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--saffron);font-size:15px;">①</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Verlangen &amp; gehechtheid is de bron <span class="micro">het vasthouden of steeds-meer-willen veroorzaakt het probleem</span></p>
+            <div class="dropzone" data-slot="0"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--jade);font-size:15px;">②</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Loslaten geeft rust <span class="micro">door niet meer vast te houden verdwijnt het lijden</span></p>
+            <div class="dropzone" data-slot="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--plum);font-size:15px;">③</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Moreel gedrag uit het pad <span class="micro">juist spreken of juist handelen tegenover anderen</span></p>
+            <div class="dropzone" data-slot="2"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:#7a6a3a;font-size:15px;">④</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Geestelijke training uit het pad <span class="micro">je aandacht of je geest oefenen</span></p>
+            <div class="dropzone" data-slot="3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="check3">Controleer je analyse</button>
+        <span class="feedback" id="fb3"></span>
+      </div>
+      <p class="hint-note" style="margin-top:8px;">Eén idee hierboven blijft leeg, en één situatie hoort nergens bij: die laat je in de pool staan. Je hoort alleen hoeveel er fout zijn, niet welke.</p>
+
+      <div class="reveal" id="reveal3">
+        <h4>Waarom dit klopt</h4>
+        <p><span class="term">De gamer</span> die niet kan stoppen, zit vast aan <em>verlangen en gehechtheid</em>: precies wat volgens het boeddhisme de bron van lijden is.</p>
+        <p><span class="term">Iemand die zijn oude telefoon weer fijn vindt</span> nadat hij stopte met verlangen naar een nieuwe, laat zien hoe <em>loslaten</em> rust geeft.</p>
+        <p><span class="term">Niet roddelen over een klasgenoot</span> is <em>juist spreken</em>: moreel gedrag uit het Achtvoudige Pad.</p>
+        <p><span class="term">Elke dag tien minuten ademhalingsoefening</span> is <em>juist mediteren / juiste aandacht</em>: geestelijke training.</p>
+        <p>De situatie die nergens paste: <span class="term">&#x201C;bidden tot een god om hulp&#x201D;</span>: hoort niet bij het boeddhisme, want dat kent geen scheppergod die je lot bepaalt. Je bewandelt het pad zelf.</p>
+      </div>
+
+      <div class="controls" style="margin-top:14px;">
+        <button class="btn-primary" id="toPhase4" style="display:none;">Naar de laatste opdracht →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 4: VOORBEELDEN SORTEREN (apply) ============ -->
+  <div class="phase" id="phase4">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-step">Stap 4</span>
+        <h2 class="panel-title">Welk gedrag hoort bij welk deel van het pad?</h2>
+      </div>
+      <p class="panel-intro">In stap 2 sorteerde je de regels van het Achtvoudige Pad. Nu het echte werk: hieronder staan concrete voorbeelden van gedrag. Sleep elk voorbeeld naar het deel van het pad waar het bij past. <strong>Let op:</strong> niet alles hoort bij het pad: sommige voorbeelden zijn juist <em>slecht</em> gedrag of gedachten en horen nergens. Die laat je in de pool staan.</p>
+
+      <p class="pool-label">Voorbeelden: sleep naar het juiste deel</p>
+      <div class="card-pool" id="pool4"></div>
+
+      <div class="treatment-grid" id="chain4">
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--saffron);">A</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Wijsheid <span class="micro">begrijpen hoe het leven echt in elkaar zit</span></p>
+            <div class="dropzone" data-slot="0" data-multi="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--plum);">B</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Moreel gedrag <span class="micro">hoe je met anderen omgaat</span></p>
+            <div class="dropzone" data-slot="1" data-multi="1"></div>
+          </div>
+        </div>
+        <div class="slot-row">
+          <div class="slot-step-no" style="background:var(--jade);">C</div>
+          <div class="slot-body">
+            <p class="slot-prompt">Geestelijke training <span class="micro">je aandacht en geest oefenen</span></p>
+            <div class="dropzone" data-slot="2" data-multi="1"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="check4">Controleer je sortering</button>
+        <span class="feedback" id="fb4"></span>
+      </div>
+      <p class="hint-note" style="margin-top:8px;">De voorbeelden van slecht gedrag of slechte gedachten horen bij geen enkel deel van het pad: die blijven in de pool. Je hoort alleen hoeveel er fout staan.</p>
+
+      <div class="reveal" id="reveal4">
+        <h4>Waarom dit klopt</h4>
+        <p><span class="term">Wijsheid:</span> nadenken over wat echt belangrijk is in je leven, en proberen eerlijk naar jezelf te kijken.</p>
+        <p><span class="term">Moreel gedrag:</span> eerlijk zijn tegen een vriend, niemand pijn doen, en werk of bijbaan kiezen dat niemand schaadt.</p>
+        <p><span class="term">Geestelijke training:</span> je telefoon wegleggen om je te concentreren, rustig ademhalen als je boos wordt, en elke dag even mediteren.</p>
+        <p>De voorbeelden van <span class="term">roddelen, iemand pesten of alleen aan jezelf denken</span> horen nergens: het Achtvoudige Pad gaat juist over <em>juist</em> en <em>goed</em> handelen. Slecht gedrag is geen onderdeel van het pad.</p>
+      </div>
+
+      <div class="write-strip" id="writeStrip4" style="display:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 21l3.5-1 11-11-2.5-2.5-11 11L3 21z" stroke="#C8772E" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 6l2.5 2.5" stroke="#C8772E" stroke-width="1.7"/></svg>
+        <span><b>Pak je schrift.</b> Sluit je laptop. De schrijfopdracht staat op het bord.</span>
+      </div>
+
+      <div class="controls" style="margin-top:14px;">
+        <button class="btn-ghost" id="restart">↺ Helemaal opnieuw</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Inhoud gebaseerd op Paragraaf 5: Boeddhisme uit Wereldreligies: eindversie.<br>
+    Geen hints tijdens het sorteren; je hoort alleen het aantal fouten. Uitleg verschijnt pas na een juiste oplossing.
+  </footer>
+</div>
+
+<script>
+/* =========================================================================
+   DATA: alle kaartinhoud uit Paragraaf 5: Boeddhisme.
+   Fase 1: Vier Edele Waarheden in dokterslogica (4 juist + 1 trap-kaart).
+   Fase 2: Achtvoudige Pad in 3 categorieën (wijsheid/moreel/geestelijk) + 1 trap.
+   ========================================================================= */
+
+// PHASE 1: diagnostic chain. correctSlot: 0..3 ; trap = -1 (hoort nergens)
+const PHASE1_CARDS = [
+  { id:'p1a', tag:'Waarheid', text:'In ieders leven is er pijn en verdriet.', slot:0 },
+  { id:'p1b', tag:'Waarheid', text:'Het komt voort uit verlangen en gehechtheid.', slot:1 },
+  { id:'p1c', tag:'Waarheid', text:'Het kan ophouden: door verlangens los te laten.', slot:2 },
+  { id:'p1d', tag:'Waarheid', text:'Door het Achtvoudige Pad te volgen kom je daar.', slot:3 },
+  { id:'p1trap', tag:'?', text:'Een scheppergod bepaalt of jij verlost wordt.', slot:-1 },
+];
+
+// PHASE 2: eightfold path grouped. slot 0=wijsheid,1=moreel,2=geestelijk ; trap=-1
+const PHASE2_CARDS = [
+  { id:'p2a', tag:'Pad', text:'Juist begrip', slot:0 },
+  { id:'p2b', tag:'Pad', text:'Juist denken / juiste bedoeling', slot:0 },
+  { id:'p2c', tag:'Pad', text:'Juist spreken', slot:1 },
+  { id:'p2d', tag:'Pad', text:'Juist handelen', slot:1 },
+  { id:'p2e', tag:'Pad', text:'Juiste manier van leven (werk)', slot:1 },
+  { id:'p2f', tag:'Pad', text:'Juiste inspanning', slot:2 },
+  { id:'p2g', tag:'Pad', text:'Juiste aandacht / bewustzijn', slot:2 },
+  { id:'p2h', tag:'Pad', text:'Juist mediteren', slot:2 },
+  { id:'p2trap', tag:'?', text:'Offers brengen aan de goden', slot:-1 },
+];
+
+// PHASE 3: apply to real-life situations (higher order). slot 0..3 ; trap=-1
+const PHASE3_CARDS = [
+  { id:'p3a', text:'Een gamer kan niet stoppen met spelen: hij wil steeds het volgende level halen.', slot:0 },
+  { id:'p3b', text:'Iemand was jaloers op een nieuwe telefoon, maar zodra hij stopt met die te willen hebben, voelt hij zich rustiger en is hij weer tevreden met zijn oude.', slot:1 },
+  { id:'p3c', text:'Je hoort een roddel over een klasgenoot, maar besluit die niet door te vertellen.', slot:2 },
+  { id:'p3d', text:'Iemand doet elke ochtend tien minuten een rustige ademhalingsoefening.', slot:3 },
+  { id:'p3trap', text:'Iemand bidt tot een god en vraagt of die zijn problemen wil oplossen.', slot:-1 },
+];
+
+// PHASE 4: concrete behaviour examples sorted into the 3 path groups; fillers (slot -1) belong nowhere
+const PHASE4_CARDS = [
+  { id:'p4a', text:'Nadenken over wat echt belangrijk voor je is in het leven.', slot:0 },
+  { id:'p4b', text:'Eerlijk naar je eigen fouten durven kijken.', slot:0 },
+  { id:'p4c', text:'Eerlijk zijn tegen een vriend, ook als dat moeilijk is.', slot:1 },
+  { id:'p4d', text:'Een bijbaan kiezen waarmee je niemand schaadt.', slot:1 },
+  { id:'p4e', text:'Je telefoon wegleggen zodat je je beter kunt concentreren.', slot:2 },
+  { id:'p4f', text:'Rustig ademhalen om kalm te blijven als je boos wordt.', slot:2 },
+  { id:'p4trap1', text:'Roddelen over een klasgenoot achter zijn rug om.', slot:-1 },
+  { id:'p4trap2', text:'Iemand pesten omdat je je dan even sterker voelt.', slot:-1 },
+  { id:'p4trap3', text:'Alleen aan jezelf denken en anderen bewust negeren.', slot:-1 },
+];
+
+const state = {
+  phase: 1,
+  placed1: {}, // cardId -> slotIndex (-? )  we track via DOM, but keep pool authoritative
+  done1: false,
+  done2: false,
+  done3: false,
+  done4: false,
+};
+
+/* ---------- drag & drop helpers (HTML5 DnD + click-to-place fallback) ---------- */
+let selectedCard = null;
+
+function makeCard(c){
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.draggable = true;
+  el.dataset.id = c.id;
+  el.dataset.slot = c.slot;
+  el.innerHTML = `${c.text}`;
+  el.addEventListener('dragstart', e => {
+    el.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', c.id);
+  });
+  el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  // click-to-select (mobile / no-drag fallback)
+  el.addEventListener('click', () => {
+    if (el.classList.contains('selected')) { el.classList.remove('selected'); selectedCard=null; return; }
+    document.querySelectorAll('.card.selected').forEach(s=>s.classList.remove('selected'));
+    el.classList.add('selected'); selectedCard = el;
+  });
+  return el;
+}
+
+function wireDropzone(zone){
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('over');
+    const id = e.dataTransfer.getData('text/plain');
+    const card = document.querySelector(`.card[data-id="${id}"]`);
+    if (card) moveCardToZone(card, zone);
+  });
+  // click-to-place
+  zone.addEventListener('click', () => {
+    if (selectedCard) { moveCardToZone(selectedCard, zone); selectedCard.classList.remove('selected'); selectedCard=null; }
+  });
+}
+
+function moveCardToZone(card, zone){
+  const multi = zone.dataset.multi === '1';
+  if (!multi && zone.children.length > 0){
+    // single-slot: bounce existing card back to its pool
+    const existing = zone.querySelector('.card');
+    if (existing) returnToPool(existing);
+  }
+  zone.appendChild(card);
+  zone.classList.add('filled');
+  card.classList.remove('selected');
+}
+
+function returnToPool(card){
+  const poolId = 'pool' + state.phase;
+  document.getElementById(poolId).appendChild(card);
+  refreshPoolEmptyState();
+}
+
+function refreshPoolEmptyState(){
+  ['pool1','pool2','pool3','pool4'].forEach(pid=>{
+    const p=document.getElementById(pid); if(!p) return;
+    p.classList.toggle('empty', p.children.length===0);
+  });
+  // dropzone filled state
+  document.querySelectorAll('.dropzone').forEach(z=>{
+    z.classList.toggle('filled', z.querySelector('.card')!==null || z.querySelector('.placed-card')!==null);
+  });
+}
+
+/* ---------- shuffle ---------- */
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+/* ---------- build phases ---------- */
+function buildPhase1(){
+  const pool = document.getElementById('pool1');
+  pool.innerHTML='';
+  shuffle(PHASE1_CARDS).forEach(c => pool.appendChild(makeCard(c)));
+  document.querySelectorAll('#chain1 .dropzone').forEach(wireDropzone);
+  wirePool(pool);
+  refreshPoolEmptyState();
+}
+function buildPhase2(){
+  const pool = document.getElementById('pool2');
+  pool.innerHTML='';
+  shuffle(PHASE2_CARDS).forEach(c => pool.appendChild(makeCard(c)));
+  document.querySelectorAll('#chain2 .dropzone').forEach(wireDropzone);
+  wirePool(pool);
+  refreshPoolEmptyState();
+}
+function buildPhase3(){
+  const pool = document.getElementById('pool3');
+  pool.innerHTML='';
+  shuffle(PHASE3_CARDS).forEach(c => pool.appendChild(makeCard(c)));
+  document.querySelectorAll('#chain3 .dropzone').forEach(wireDropzone);
+  wirePool(pool);
+  refreshPoolEmptyState();
+}
+function buildPhase4(){
+  const pool = document.getElementById('pool4');
+  pool.innerHTML='';
+  shuffle(PHASE4_CARDS).forEach(c => pool.appendChild(makeCard(c)));
+  document.querySelectorAll('#chain4 .dropzone').forEach(wireDropzone);
+  wirePool(pool);
+  refreshPoolEmptyState();
+}
+function wirePool(pool){
+  pool.addEventListener('dragover', e=>{e.preventDefault();});
+  pool.addEventListener('drop', e=>{
+    e.preventDefault();
+    const id=e.dataTransfer.getData('text/plain');
+    const card=document.querySelector(`.card[data-id="${id}"]`);
+    if(card){ pool.appendChild(card); refreshPoolEmptyState(); }
+  });
+  pool.addEventListener('click', ()=>{
+    if(selectedCard){ pool.appendChild(selectedCard); selectedCard.classList.remove('selected'); selectedCard=null; refreshPoolEmptyState(); }
+  });
+}
+
+/* ---------- checking ---------- */
+function checkPhase1(){
+  const cards = PHASE1_CARDS;
+  // every card must be placed (trap card must NOT be in a slot -> it should stay in pool)
+  let errors = 0;
+  let unplacedNonTrap = 0;
+  cards.forEach(c=>{
+    const el = document.querySelector(`.card[data-id="${c.id}"]`);
+    const parent = el.parentElement;
+    const inSlot = parent.classList.contains('dropzone');
+    if (c.slot === -1){
+      // trap: correct ONLY if left in pool
+      if (inSlot) errors++;
+    } else {
+      if (!inSlot){ unplacedNonTrap++; }
+      else {
+        const slotIdx = parseInt(parent.dataset.slot,10);
+        if (slotIdx !== c.slot) errors++;
+      }
+    }
+  });
+
+  const fb = document.getElementById('fb1');
+  if (unplacedNonTrap > 0){
+    fb.textContent = `Je hebt nog ${unplacedNonTrap} kaart(en) niet geplaatst. Niet elke kaart hoort in de keten, maar de waarheden wel.`;
+    fb.className='feedback err';
+    return;
+  }
+  if (errors === 0){
+    fb.textContent='✓ De diagnose klopt.';
+    fb.className='feedback ok';
+    lockZones('#chain1');
+    state.done1 = true;
+    setTimeout(()=>goPhase(2), 700);
+  } else {
+    fb.textContent = `${errors} kaart(en) liggen verkeerd. Denk aan de volgorde van een arts: probleem → oorzaak → kan het beter? → plan.`;
+    fb.className='feedback err';
+  }
+}
+
+function checkPhase2(){
+  const cards = PHASE2_CARDS;
+  let errors = 0, unplacedNonTrap = 0;
+  cards.forEach(c=>{
+    const el = document.querySelector(`.card[data-id="${c.id}"]`);
+    const parent = el.parentElement;
+    const inSlot = parent.classList.contains('dropzone');
+    if (c.slot === -1){
+      if (inSlot) errors++;
+    } else {
+      if (!inSlot) unplacedNonTrap++;
+      else {
+        const slotIdx = parseInt(parent.dataset.slot,10);
+        if (slotIdx !== c.slot) errors++;
+      }
+    }
+  });
+  const fb = document.getElementById('fb2');
+  if (unplacedNonTrap > 0){
+    fb.textContent = `Je hebt nog ${unplacedNonTrap} leefregel(s) niet geplaatst. Eén kaart hoort niet in het pad.`;
+    fb.className='feedback err';
+    return;
+  }
+  if (errors === 0){
+    fb.textContent='✓ Het recept klopt.';
+    fb.className='feedback ok';
+    lockZones('#chain2');
+    state.done2 = true;
+    setTimeout(()=>goPhase(3), 700);
+  } else {
+    fb.textContent = `${errors} kaart(en) liggen in het verkeerde vak. Vraag je af: gaat dit over jezelf begrijpen, over omgaan met anderen, of over je geest oefenen?`;
+    fb.className='feedback err';
+  }
+}
+
+function checkPhase3(){
+  const cards = PHASE3_CARDS;
+  let errors = 0, unplacedNonTrap = 0;
+  cards.forEach(c=>{
+    const el = document.querySelector(`.card[data-id="${c.id}"]`);
+    const parent = el.parentElement;
+    const inSlot = parent.classList.contains('dropzone');
+    if (c.slot === -1){
+      if (inSlot) errors++;
+    } else {
+      if (!inSlot) unplacedNonTrap++;
+      else {
+        const slotIdx = parseInt(parent.dataset.slot,10);
+        if (slotIdx !== c.slot) errors++;
+      }
+    }
+  });
+  const fb = document.getElementById('fb3');
+  if (unplacedNonTrap > 0){
+    fb.textContent = `Je hebt nog ${unplacedNonTrap} situatie(s) niet geplaatst. Eén situatie hoort bij geen van de ideeën.`;
+    fb.className='feedback err';
+    return;
+  }
+  if (errors === 0){
+    fb.textContent='✓ Sterke analyse.';
+    fb.className='feedback ok';
+    lockZones('#chain3');
+    state.done3 = true;
+    document.getElementById('reveal3').classList.add('show');
+    document.getElementById('toPhase4').style.display='inline-block';
+  } else {
+    fb.textContent = `${errors} situatie(s) liggen bij het verkeerde idee. Vraag je af: gaat dit over de oorzaak van lijden, over loslaten, over hoe je met anderen omgaat, of over je geest oefenen?`;
+    fb.className='feedback err';
+  }
+}
+
+function checkPhase4(){
+  const cards = PHASE4_CARDS;
+  let errors = 0, unplacedNonTrap = 0;
+  cards.forEach(c=>{
+    const el = document.querySelector(`.card[data-id="${c.id}"]`);
+    const parent = el.parentElement;
+    const inSlot = parent.classList.contains('dropzone');
+    if (c.slot === -1){
+      if (inSlot) errors++;
+    } else {
+      if (!inSlot) unplacedNonTrap++;
+      else {
+        const slotIdx = parseInt(parent.dataset.slot,10);
+        if (slotIdx !== c.slot) errors++;
+      }
+    }
+  });
+  const fb = document.getElementById('fb4');
+  if (unplacedNonTrap > 0){
+    fb.textContent = `Je hebt nog ${unplacedNonTrap} goed voorbeeld(en) niet geplaatst. De voorbeelden van slecht gedrag horen wél in de pool te blijven.`;
+    fb.className='feedback err';
+    return;
+  }
+  if (errors === 0){
+    fb.textContent='✓ Helemaal juist gesorteerd.';
+    fb.className='feedback ok';
+    lockZones('#chain4');
+    state.done4 = true;
+    document.getElementById('reveal4').classList.add('show');
+    document.getElementById('writeStrip4').style.display='flex';
+    const chip=document.getElementById('chip4');
+    chip.classList.remove('active'); chip.classList.add('done');
+  } else {
+    fb.textContent = `${errors} voorbeeld(en) staan verkeerd. Denk eraan: gaat het over jezelf begrijpen, over omgaan met anderen, of over je geest oefenen? En slecht gedrag hoort nergens.`;
+    fb.className='feedback err';
+  }
+}
+
+function lockZones(sel){
+  document.querySelectorAll(`${sel} .dropzone`).forEach(z=>{
+    z.classList.add('locked');
+    z.querySelectorAll('.card').forEach(card=>{
+      card.draggable=false;
+      card.style.cursor='default';
+      card.classList.add('placed');
+    });
+  });
+}
+
+/* ---------- phase navigation ---------- */
+function goPhase(n){
+  state.phase = n;
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('phase'+i).classList.toggle('active', i===n);
+    const chip=document.getElementById('chip'+i);
+    chip.classList.remove('active','done');
+    if (i<n) chip.classList.add('done');
+    if (i===n) chip.classList.add('active');
+  });
+  if (n===2 && document.getElementById('pool2').children.length===0 && !state.done2){
+    buildPhase2();
+  }
+  if (n===3 && document.getElementById('pool3').children.length===0 && !state.done3){
+    buildPhase3();
+  }
+  if (n===4 && document.getElementById('pool4').children.length===0 && !state.done4){
+    buildPhase4();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- init ---------- */
+document.getElementById('check1').addEventListener('click', checkPhase1);
+document.getElementById('check2').addEventListener('click', checkPhase2);
+document.getElementById('check3').addEventListener('click', checkPhase3);
+document.getElementById('check4').addEventListener('click', checkPhase4);
+document.getElementById('toPhase4').addEventListener('click', ()=>goPhase(4));
+document.getElementById('restart').addEventListener('click', ()=>{
+  state.done1=false; state.done2=false; state.done3=false; state.done4=false;
+  ['fb1','fb2','fb3','fb4'].forEach(id=>document.getElementById(id).textContent='');
+  document.getElementById('reveal3').classList.remove('show');
+  document.getElementById('reveal4').classList.remove('show');
+  document.getElementById('toPhase4').style.display='none';
+  document.getElementById('writeStrip4').style.display='none';
+  buildPhase1(); buildPhase2(); buildPhase3(); buildPhase4();
+  goPhase(1);
+});
+
+buildPhase1();
+buildPhase2();
+buildPhase3();
+buildPhase4();
+refreshPoolEmptyState();
+</script>
+</body>
+</html>
