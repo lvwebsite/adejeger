@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>De Tempelpoort: Ontdekkingsreis</title>
+<title>De Tempelpoort — Ontdekkingsreis</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
@@ -182,6 +182,17 @@
   .btn-primary{background:var(--copper);color:#1c1108;}
   .btn-ghost{background:transparent;color:var(--sandstone);border:1px solid #5C4A38;}
   .btn-ghost:hover{background:rgba(255,255,255,0.06);}
+
+  select.group-select{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    background:#1c1108;
+    color:var(--sandstone);
+    border:1px solid #5C4A38;
+    border-radius:7px;
+    padding:9px 12px;
+  }
 
   /* ---------- Rooms ---------- */
   .room{
@@ -535,15 +546,18 @@
   <div class="masthead">
     <p class="eyebrow">Een ontdekkingsreis · 4 kamers</p>
     <h1 class="title">De Tempelpoort</h1>
-    <p class="subtitle">Verdwaald in een oud woud stuiten jullie op een vergeten tempel. Vier verzegelde kamers bewaken kennis die al duizenden jaren wordt doorgegeven. Elke kamer die jullie ontgrendelen, brengt jullie dieper naar binnen: naar de verborgen tuin achter de poort. De klok loopt al. Hoe sneller jullie de tempel doorgronden, hoe beter je tijd.</p>
+    <p class="subtitle">Verdwaald in een oud woud stuiten jullie op een vergeten tempel. Vier verzegelde kamers bewaken kennis die al duizenden jaren wordt doorgegeven. Elke kamer die jullie ontgrendelen, brengt jullie dieper naar binnen — naar de verborgen tuin achter de poort. De klok loopt al. Hoe sneller jullie de tempel doorgronden, hoe beter je tijd.</p>
   </div>
 
   <div class="corridor" id="corridor"></div>
 
   <div class="control-bar">
-    <button class="btn-ghost" id="startBtn">⏸ Pauzeer</button>
     <span class="timer-display" id="timerDisplay">00:00</span>
-    <button class="btn-ghost" id="resetBtn">↺ Reset</button>
+    <select class="group-select" id="groupSelect">
+      <option value="solo">Individueel</option>
+      <option value="duo">Tweetallen</option>
+      <option value="groep">Groepjes van 3–4</option>
+    </select>
   </div>
 
   <div class="penalty-toast" id="penaltyToast">+15 sec tijdstraf</div>
@@ -593,7 +607,7 @@
   </div>
 
   <footer class="note">
-    Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit Wereldreligies: eindversie.<br>
+    Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit Wereldreligies — eindversie.<br>
     De klok telt op vanaf 00:00; elk fout antwoord geeft 15 seconden tijdstraf. Geen hints tijdens het spel; alleen "Probeer opnieuw" bij een fout antwoord, uitleg pas na een juist antwoord.
   </footer>
 
@@ -612,8 +626,8 @@
 
 <script>
 /* =========================================================================
-   DATA LAYER: alle puzzle-inhoud staat hier gebundeld.
-   Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit "Wereldreligies: eindversie".
+   DATA LAYER — alle puzzle-inhoud staat hier gebundeld.
+   Inhoud gebaseerd op Paragraaf 4: Hindoeïsme uit "Wereldreligies — eindversie".
    Structuur per kamer: id, titel, flavor-tekst, puzzles[], keyLabel
    ========================================================================= */
 
@@ -622,7 +636,7 @@ const ROOMS = [
     id: 'r1',
     num: 'Kamer I',
     title: 'De Gravures van het Voorportaal',
-    flavor: 'Bij de ingang van de tempel vinden de avonturiers vier stenen platen met ingekerfde spreuken. De letters zijn versleten door de tijd, maar de betekenis is nog te ontcijferen: als je weet waar je moet zoeken.',
+    flavor: 'Bij de ingang van de tempel vinden de avonturiers vier stenen platen met ingekerfde spreuken. De letters zijn versleten door de tijd, maar de betekenis is nog te ontcijferen — als je weet waar je moet zoeken.',
     keyLabel: 'Sleutel der Stilte',
     puzzles: [
       {
@@ -637,7 +651,7 @@ const ROOMS = [
         tag: 'Raadsel 2 van 4',
         q: '"Wat in jou blijft doorgaan, leven na leven, gevormd door wat je deed."',
         answer: 'atman',
-        explain: 'Volgens het hindoeïsme is atman de ziel, die de eeuwige cyclus van geboorte, dood en wedergeboorte (samsara) doorloopt: telkens in een nieuw leven, in menselijke of dierlijke vorm. Hoe dat volgende leven eruitziet, hangt af van karma: de optelsom van goede en slechte daden, woorden en gedachten.'
+        explain: 'Volgens het hindoeïsme is atman de ziel, die de eeuwige cyclus van geboorte, dood en wedergeboorte (samsara) doorloopt — telkens in een nieuw leven, in menselijke of dierlijke vorm. Hoe dat volgende leven eruitziet, hangt af van karma: de optelsom van goede en slechte daden, woorden en gedachten.'
       },
       {
         type: 'riddle',
@@ -659,7 +673,7 @@ const ROOMS = [
     id: 'r2',
     num: 'Kamer II',
     title: 'De Zaal der Verbindingen',
-    flavor: 'Op de muren hangen oude symbolen, elk gekoppeld aan drie mogelijke namen. Slechts één naam per symbool is juist: de andere zijn vervalsingen die latere reizigers achterlieten om indringers te misleiden.',
+    flavor: 'Op de muren hangen oude symbolen, elk gekoppeld aan drie mogelijke namen. Slechts één naam per symbool is juist — de andere zijn vervalsingen die latere reizigers achterlieten om indringers te misleiden.',
     keyLabel: 'Sleutel der Verbinding',
     puzzles: [
       {
@@ -684,7 +698,7 @@ const ROOMS = [
         q: '"Plicht en sociale orde, met wortels in het hindoeïstische denken over het kastensysteem"',
         options: ['dharma', 'karma', 'moksha'],
         answer: 'dharma',
-        explain: 'Volgens de tekst heeft het kastensysteem, hoewel tegenwoordig officieel afgeschaft in India, zijn wortels in het hindoeïstische denken over dharma (plicht) en sociale orde. Karma is de optelsom van daden die het volgende leven bepaalt, en moksha is de bevrijding uit samsara: andere begrippen, met een andere betekenis.'
+        explain: 'Volgens de tekst heeft het kastensysteem, hoewel tegenwoordig officieel afgeschaft in India, zijn wortels in het hindoeïstische denken over dharma (plicht) en sociale orde. Karma is de optelsom van daden die het volgende leven bepaalt, en moksha is de bevrijding uit samsara — andere begrippen, met een andere betekenis.'
       },
       {
         type: 'choice',
@@ -692,7 +706,7 @@ const ROOMS = [
         q: '"De moedergodin, vereerd in vele vormen zoals Durga, Lakshmi en Parvati"',
         options: ['Devi (Shakti)', 'Brahman', 'Vishnu'],
         answer: 'Devi (Shakti)',
-        explain: 'Volgens de tekst is er naast Brahma, Vishnu en Shiva ook Devi of Shakti, de moedergodin, die in vele vormen wordt vereerd, zoals Durga, Lakshmi of Parvati. Brahman is de hoogste werkelijkheid waarmee alle goden volgens gelovigen verbonden zijn, en Vishnu is de beschermer van de kosmos: geen van beide is de moedergodin.'
+        explain: 'Volgens de tekst is er naast Brahma, Vishnu en Shiva ook Devi of Shakti, de moedergodin, die in vele vormen wordt vereerd, zoals Durga, Lakshmi of Parvati. Brahman is de hoogste werkelijkheid waarmee alle goden volgens gelovigen verbonden zijn, en Vishnu is de beschermer van de kosmos — geen van beide is de moedergodin.'
       }
     ]
   },
@@ -705,7 +719,7 @@ const ROOMS = [
     puzzles: [
       {
         type: 'oddoneout',
-        tag: 'Ronde 1 van 4: wie hoort er niet bij?',
+        tag: 'Ronde 1 van 4 — wie hoort er niet bij?',
         q: "Brahma · Vishnu · Shiva · Veda's",
         options: ['Brahma', 'Vishnu', 'Shiva', "Veda's"],
         answer: "Veda's",
@@ -713,7 +727,7 @@ const ROOMS = [
       },
       {
         type: 'oddoneout',
-        tag: 'Ronde 2 van 4: wie hoort er niet bij?',
+        tag: 'Ronde 2 van 4 — wie hoort er niet bij?',
         q: 'Puja · Diwali · Holi · Brahman',
         options: ['Puja', 'Diwali', 'Holi', 'Brahman'],
         answer: 'Brahman',
@@ -721,7 +735,7 @@ const ROOMS = [
       },
       {
         type: 'oddoneout',
-        tag: 'Ronde 3 van 4: wie hoort er niet bij?',
+        tag: 'Ronde 3 van 4 — wie hoort er niet bij?',
         q: 'Vaishnavisme · Shaivisme · Shaktisme · Dharma',
         options: ['Vaishnavisme', 'Shaivisme', 'Shaktisme', 'Dharma'],
         answer: 'Dharma',
@@ -729,7 +743,7 @@ const ROOMS = [
       },
       {
         type: 'oddoneout',
-        tag: 'Ronde 4 van 4: wie hoort er niet bij?',
+        tag: 'Ronde 4 van 4 — wie hoort er niet bij?',
         q: 'Ahimsa · Karma · Respect voor het leven · Spirituele kennis',
         options: ['Ahimsa', 'Karma', 'Respect voor het leven', 'Spirituele kennis'],
         answer: 'Karma',
@@ -741,12 +755,12 @@ const ROOMS = [
     id: 'r4',
     num: 'Kamer IV',
     title: 'De Tuin van het Licht',
-    flavor: 'De laatste kamer toont vijf stenen tegels met beschrijvingen. Slechts twee daarvan horen bij een naam die hier in de tuin te vinden is: de andere drie zijn vervalste tegels, achtergelaten om je op het verkeerde pad te zetten. Koppel alleen de twee juiste om de laatste sleutel te verdienen.',
+    flavor: 'De laatste kamer toont vijf stenen tegels met beschrijvingen. Slechts twee daarvan horen bij een naam die hier in de tuin te vinden is — de andere drie zijn vervalste tegels, achtergelaten om je op het verkeerde pad te zetten. Koppel alleen de twee juiste om de laatste sleutel te verdienen.',
     keyLabel: 'Sleutel van het Licht',
     puzzles: [
       {
         type: 'match',
-        tag: 'Koppel de juiste beschrijvingen aan de juiste feestdag: let op, niet elke tegel past',
+        tag: 'Koppel de juiste beschrijvingen aan de juiste feestdag — let op, niet elke tegel past',
         items: [
           { id: 'd1', text: '"Lichtjesfeest dat de overwinning van het goede op het kwade viert"', answer: 'Diwali' },
           { id: 'd2', text: '"Vrolijk lentefeest waarbij mensen elkaar met gekleurd poeder bestrooien"', answer: 'Holi' }
@@ -768,7 +782,7 @@ const ROOMS = [
 const STORY_BEATS = [
   {
     eyebrow: 'Kamer I voltooid · Sleutel der Stilte',
-    text: 'De versleten letters lichten één voor één op. Met een diepe trilling schuift de eerste steen opzij: de tempel heeft jullie woorden gehoord. Achter het voorportaal gloeit een nieuwe doorgang.'
+    text: 'De versleten letters lichten één voor één op. Met een diepe trilling schuift de eerste steen opzij — de tempel heeft jullie woorden gehoord. Achter het voorportaal gloeit een nieuwe doorgang.'
   },
   {
     eyebrow: 'Kamer II voltooid · Sleutel der Verbinding',
@@ -776,11 +790,11 @@ const STORY_BEATS = [
   },
   {
     eyebrow: 'Kamer III voltooid · Sleutel der Onderscheiding',
-    text: 'Jullie hebben laten zien dat je weet wat bij elkaar hoort en wat niet. Het binnenste mechanisme valt stil, en voor jullie verschijnt de laatste kamer, vlak voor de poort naar de verborgen tuin.'
+    text: 'Jullie hebben laten zien dat je weet wat bij elkaar hoort en wat niet. Het binnenste mechanisme valt stil — en voor jullie verschijnt de laatste kamer, vlak voor de poort naar de verborgen tuin.'
   },
   {
     eyebrow: 'Kamer IV voltooid · Sleutel van het Licht',
-    text: 'De laatste tegels gloeien op. Met een diep gerommel schuiven de zware deuren uiteen en stroomt warm licht naar binnen. Jullie staan op de drempel van de verborgen tuin: de reis door de tempel is voltooid.'
+    text: 'De laatste tegels gloeien op. Met een diep gerommel schuiven de zware deuren uiteen en stroomt warm licht naar binnen. Jullie staan op de drempel van de verborgen tuin — de reis door de tempel is voltooid.'
   }
 ];
 
@@ -792,7 +806,7 @@ let bestTimeSeconds = null;  // beste tijd tot nu toe, blijft bewaard tussen pog
 let state = {
   unlocked: 0,        // hoeveel kamers volledig opgelost zijn
   roomProgress: {},    // per room: hoeveel puzzles in die kamer al opgelost
-  timerSeconds: 0,     // klok telt OP vanaf 00:00: hoe lager, hoe beter
+  timerSeconds: 0,     // klok telt OP vanaf 00:00 — hoe lager, hoe beter
   timerRunning: false,
   timerInterval: null,
   mistakes: 0,          // totaal aantal foute antwoorden, voor evt. nabespreking
@@ -885,7 +899,7 @@ function renderRooms(){
     bodyHtml += `
       <div class="key-banner ${isSolved ? 'show' : ''}" id="keybanner-${room.id}">
         <span class="key-icon">🗝️</span>
-        <span>${room.keyLabel} verkregen: de poort onthoudt deze kamer.</span>
+        <span>${room.keyLabel} verkregen — de poort onthoudt deze kamer.</span>
       </div>
     `;
 
@@ -1090,7 +1104,7 @@ function revealFinale(){
 
   let verdict = '';
   if (previousBest === null){
-    verdict = 'Dit is jullie eerste voltooiing. Onthoud deze tijd: bij een nieuwe poging kun je proberen sneller te zijn.';
+    verdict = 'Dit is jullie eerste voltooiing. Onthoud deze tijd — bij een nieuwe poging kun je proberen sneller te zijn.';
   } else if (finalTime < previousBest){
     verdict = `Nieuw record! Jullie waren sneller dan de vorige tijd van ${formatTime(previousBest)}.`;
   } else if (finalTime === previousBest){
@@ -1102,7 +1116,7 @@ function revealFinale(){
 
   const mEl = document.getElementById('scoreMistakes');
   if (state.mistakes === 0){
-    mEl.textContent = 'Foutloos gespeeld: geen enkele tijdstraf.';
+    mEl.textContent = 'Foutloos gespeeld — geen enkele tijdstraf.';
   } else {
     const penalty = state.mistakes * state.PENALTY_SECONDS;
     mEl.textContent = `${state.mistakes} fout${state.mistakes===1?'':'e'} ${state.mistakes===1?'antwoord':'antwoorden'} · ${penalty} sec tijdstraf inbegrepen.`;
@@ -1273,7 +1287,7 @@ function selectMatchTarget(roomId, pIdx, el){
 }
 
 /* =========================================================================
-   TIMER: telt OP vanaf 00:00. Tijdstraf bij fout antwoord telt erbij op.
+   TIMER — telt OP vanaf 00:00. Tijdstraf bij fout antwoord telt erbij op.
    ========================================================================= */
 function formatTime(sec){
   const m = Math.floor(sec/60).toString().padStart(2,'0');
@@ -1286,7 +1300,7 @@ function updateTimerDisplay(){
   el.textContent = formatTime(state.timerSeconds);
   el.classList.remove('warn','crit');
   // Kleur is hier een signaal van verstreken tijd, geen aftelgevaar:
-  // na 10 min oranje, na 15 min rood: puur als zachte tijdsindicatie voor de docent.
+  // na 10 min oranje, na 15 min rood — puur als zachte tijdsindicatie voor de docent.
   if (state.timerSeconds >= 900) el.classList.add('crit');
   else if (state.timerSeconds >= 600) el.classList.add('warn');
 }
@@ -1294,7 +1308,6 @@ function updateTimerDisplay(){
 function startTimer(){
   if (state.timerRunning) return;
   state.timerRunning = true;
-  document.getElementById('startBtn').textContent = '⏸ Pauzeer';
   state.timerInterval = setInterval(() => {
     state.timerSeconds++;
     updateTimerDisplay();
@@ -1304,30 +1317,7 @@ function startTimer(){
 function pauseTimer(){
   state.timerRunning = false;
   clearInterval(state.timerInterval);
-  document.getElementById('startBtn').textContent = '▶ Start de klok';
 }
-
-document.getElementById('startBtn').addEventListener('click', () => {
-  // Tijdens een verhaalbeat (of na afloop) staat de klok bewust stil; niet handmatig hervatten.
-  if (state.storyPending || state.finished) return;
-  if (state.timerRunning) pauseTimer();
-  else startTimer();
-});
-
-document.getElementById('resetBtn').addEventListener('click', () => {
-  if (!confirm('Reset alle voortgang en de klok? (Je beste tijd blijft wel bewaard.)')) return;
-  pauseTimer();
-  document.getElementById('storyOverlay').classList.remove('show');
-  document.getElementById('scoreBlock').classList.remove('show');
-  state = {
-    unlocked:0, roomProgress:{}, timerSeconds:0, timerRunning:false, timerInterval:null,
-    mistakes:0, finished:false, justRevealed:null, storyPending:false, PENALTY_SECONDS:15
-  };
-  updateTimerDisplay();
-  renderCorridor();
-  renderRooms();
-  startTimer();
-});
 
 document.getElementById('storyContinueBtn').addEventListener('click', () => {
   // bepaal welke kamer net is opgelost (= state.unlocked, want die is nog niet opgehoogd)
@@ -1335,7 +1325,7 @@ document.getElementById('storyContinueBtn').addEventListener('click', () => {
 });
 
 /* =========================================================================
-   INIT: de klok start automatisch
+   INIT — de klok start automatisch
    ========================================================================= */
 updateTimerDisplay();
 renderCorridor();
