@@ -49,6 +49,26 @@
     .stelling{flex-wrap:wrap;}
     .stelling .tekst{flex:1 1 100%;order:4;margin-top:6px;}
   }
+
+  .klas-tabs input{position:absolute;opacity:0;pointer-events:none;}
+  .tab-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .tab-bar label{cursor:pointer;font-family:var(--body);font-weight:600;font-size:.82rem;padding:7px 14px;border-radius:100px;background:var(--paper);border:1px solid var(--line);color:var(--muted);transition:background .15s,color .15s,border-color .15s;}
+  .tab-bar label:hover{color:var(--ink);}
+  .tab-panel{display:none;}
+  .week-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;padding:11px 4px;border-bottom:1px solid var(--line);}
+  .week-row:last-child{border-bottom:none;}
+  .week-date{font-family:var(--display);font-style:italic;color:var(--muted);min-width:118px;flex-shrink:0;font-size:.92rem;}
+  .week-names{flex:1;font-size:.92rem;min-width:200px;}
+  .week-names .naam{color:var(--ink);}
+  .week-names .naam:not(:last-child)::after{content:" · ";color:var(--muted);}
+  #tab-a3a:checked ~ .tab-bar label[for="tab-a3a"]{background:var(--phase);color:#fff;border-color:var(--phase);}
+  #tab-a3a:checked ~ #panel-a3a{display:block;}
+  #tab-a3b:checked ~ .tab-bar label[for="tab-a3b"]{background:var(--phase);color:#fff;border-color:var(--phase);}
+  #tab-a3b:checked ~ #panel-a3b{display:block;}
+  #tab-a3c:checked ~ .tab-bar label[for="tab-a3c"]{background:var(--phase);color:#fff;border-color:var(--phase);}
+  #tab-a3c:checked ~ #panel-a3c{display:block;}
+  #tab-ag3a:checked ~ .tab-bar label[for="tab-ag3a"]{background:var(--phase);color:#fff;border-color:var(--phase);}
+  #tab-ag3a:checked ~ #panel-ag3a{display:block;}
 </style>
 </head>
 <body>
@@ -61,8 +81,65 @@
   <section class="block">
     <h2><span class="dot"></span>Het rooster</h2>
     <div class="content">
-      <p class="rooster-note">De namenlijst per nummer komt hier binnenkort te staan.</p>
-      <p>Naast je naam staat straks een nummer van 1 tot 30. In de week die bij jouw naam hoort, geef je aan het begin van de les je presentatie. Zoek je nummer hieronder op om je stelling te zien en of je vóór of tegen moet zijn.</p>
+      <p>Kies hieronder je klas. Naast je naam staat een nummer van 1 tot 30. In de week die bij jouw naam hoort, geef je aan het begin van de les je presentatie. Zoek je nummer op bij de stellingen hieronder om te zien wat jouw stelling is en of je vóór of tegen moet zijn.</p>
+      <div class="klas-tabs">
+      <input type="radio" name="klas-vwo" id="tab-a3a" checked>
+      <input type="radio" name="klas-vwo" id="tab-a3b">
+      <input type="radio" name="klas-vwo" id="tab-a3c">
+      <input type="radio" name="klas-vwo" id="tab-ag3a">
+      <div class="tab-bar">
+        <label for="tab-a3a">A3a</label>
+        <label for="tab-a3b">A3b</label>
+        <label for="tab-a3c">A3c</label>
+        <label for="tab-ag3a">Ag3a</label>
+      </div>
+      <div class="tab-panel" id="panel-a3a">
+        <div class="week-row"><span class="week-date">Week van 28 september</span><span class="week-names"><span class="naam">Jonas (1)</span><span class="naam">Milou (2)</span><span class="naam">Miu (3)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 5 oktober</span><span class="week-names"><span class="naam">James (4)</span><span class="naam">Thije (5)</span><span class="naam">Takee (6)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 26 oktober</span><span class="week-names"><span class="naam">Adela (7)</span><span class="naam">Lien (8)</span><span class="naam">Ella (9)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 16 november</span><span class="week-names"><span class="naam">Willem (10)</span><span class="naam">Torben (11)</span><span class="naam">Tom (12)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 23 november</span><span class="week-names"><span class="naam">Ivan (13)</span><span class="naam">Niene (14)</span><span class="naam">Philip (15)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 30 november</span><span class="week-names"><span class="naam">Charlotte (16)</span><span class="naam">Koen (17)</span><span class="naam">Saar (18)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 11 januari</span><span class="week-names"><span class="naam">Saar (19)</span><span class="naam">Aylin (20)</span><span class="naam">Florine (21)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 25 januari</span><span class="week-names"><span class="naam">Maja (22)</span><span class="naam">Boris (23)</span><span class="naam">Joaquin (24)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 8 februari</span><span class="week-names"><span class="naam">Olivia (25)</span><span class="naam">Beau (26)</span><span class="naam">Mio (27)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 15 februari</span><span class="week-names"><span class="naam">Liels (28)</span><span class="naam">Elin (29)</span></span></div>
+      </div>
+      <div class="tab-panel" id="panel-a3b">
+        <div class="week-row"><span class="week-date">Week van 28 september</span><span class="week-names"><span class="naam">Reed (1)</span><span class="naam">Sam (2)</span><span class="naam">Venna (3)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 5 oktober</span><span class="week-names"><span class="naam">Sophie (4)</span><span class="naam">Simon (5)</span><span class="naam">Amente (6)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 26 oktober</span><span class="week-names"><span class="naam">Jaira (7)</span><span class="naam">Nova (8)</span><span class="naam">Tommy (9)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 16 november</span><span class="week-names"><span class="naam">Tiago (10)</span><span class="naam">Adriana (11)</span><span class="naam">Faas (12)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 23 november</span><span class="week-names"><span class="naam">Anas (13)</span><span class="naam">Belle (14)</span><span class="naam">Dominique (15)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 30 november</span><span class="week-names"><span class="naam">Sebas (16)</span><span class="naam">Willem (17)</span><span class="naam">Christina (18)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 11 januari</span><span class="week-names"><span class="naam">Willem (19)</span><span class="naam">Felien (20)</span><span class="naam">Marko (21)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 25 januari</span><span class="week-names"><span class="naam">Vallerie (22)</span><span class="naam">Mikki (23)</span><span class="naam">Carina (24)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 8 februari</span><span class="week-names"><span class="naam">Julian (25)</span><span class="naam">Anne (26)</span></span></div>
+      </div>
+      <div class="tab-panel" id="panel-a3c">
+        <div class="week-row"><span class="week-date">Week van 28 september</span><span class="week-names"><span class="naam">Hayden (1)</span><span class="naam">Floorjte (2)</span><span class="naam">Thomas (3)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 5 oktober</span><span class="week-names"><span class="naam">Bauke (4)</span><span class="naam">Lana (5)</span><span class="naam">Oscar (6)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 26 oktober</span><span class="week-names"><span class="naam">Milan (7)</span><span class="naam">Luna (8)</span><span class="naam">David (9)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 16 november</span><span class="week-names"><span class="naam">Ester (10)</span><span class="naam">Cato (11)</span><span class="naam">Evi (12)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 23 november</span><span class="week-names"><span class="naam">Tijl (13)</span><span class="naam">Hanna (14)</span><span class="naam">Morris (15)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 30 november</span><span class="week-names"><span class="naam">Ceder (16)</span><span class="naam">Lina (17)</span><span class="naam">Dina (18)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 11 januari</span><span class="week-names"><span class="naam">Felicia (19)</span><span class="naam">Faber (20)</span><span class="naam">Olivier (21)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 25 januari</span><span class="week-names"><span class="naam">Bodil (22)</span><span class="naam">Lua (23)</span><span class="naam">Lucas (24)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 8 februari</span><span class="week-names"><span class="naam">Valeri (25)</span><span class="naam">Tijn (26)</span><span class="naam">Pleun (27)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 15 februari</span><span class="week-names"><span class="naam">Avi (28)</span></span></div>
+      </div>
+      <div class="tab-panel" id="panel-ag3a">
+        <div class="week-row"><span class="week-date">Week van 28 september</span><span class="week-names"><span class="naam">Yasmine (1)</span><span class="naam">Sofia (2)</span><span class="naam">Jack (3)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 5 oktober</span><span class="week-names"><span class="naam">Olivia CC (4)</span><span class="naam">Olivia CRM (5)</span><span class="naam">Peikj (6)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 26 oktober</span><span class="week-names"><span class="naam">Eva (7)</span><span class="naam">Simon (8)</span><span class="naam">Faas (9)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 16 november</span><span class="week-names"><span class="naam">Evan (10)</span><span class="naam">Tibout (11)</span><span class="naam">Thomas (12)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 23 november</span><span class="week-names"><span class="naam">Oscar (13)</span><span class="naam">Lucas (14)</span><span class="naam">Lily (15)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 30 november</span><span class="week-names"><span class="naam">Robert (16)</span><span class="naam">Aisha (17)</span><span class="naam">Enzo (18)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 11 januari</span><span class="week-names"><span class="naam">Maarten (19)</span><span class="naam">Koen (20)</span><span class="naam">Carmen (21)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 25 januari</span><span class="week-names"><span class="naam">Marlena (22)</span><span class="naam">Leah (23)</span><span class="naam">Hannah (24)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 8 februari</span><span class="week-names"><span class="naam">Isaac (25)</span><span class="naam">Liam (26)</span><span class="naam">Neti (27)</span></span></div>
+        <div class="week-row"><span class="week-date">Week van 15 februari</span><span class="week-names"><span class="naam">Xavi (28)</span></span></div>
+      </div>      </div>
     </div>
   </section>
 
@@ -79,7 +156,7 @@
       <li class="stelling"><span class="nr">07</span><span class="tekst">Schooluniformen moeten verplicht worden</span><span class="badge tegen">tegen</span></li>
       <li class="stelling"><span class="nr">08</span><span class="tekst">Euthanasie (het recht op hulp bij sterven als je ernstig ziek bent) is iets goeds</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">09</span><span class="tekst">Iedereen moet vegetariër worden</span><span class="badge tegen">tegen</span></li>
-      <li class="stelling"><span class="nr">10</span><span class="tekst">Videogames met geweld moeten verboden worden voor iedereen onder de 18</span><span class="badge tegen">tegen</span></li>
+      <li class="stelling"><span class="nr">10</span><span class="tekst">Abortus moet verboden worden</span><span class="badge tegen">tegen</span></li>
       <li class="stelling"><span class="nr">11</span><span class="tekst">Vrijheid van meningsuiting mag nooit worden beperkt, wat iemand ook zegt</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">12</span><span class="tekst">Iedereen moet vegetariër worden</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">13</span><span class="tekst">Wij moeten in Nederland meer vluchtelingen opnemen</span><span class="badge tegen">tegen</span></li>
@@ -93,7 +170,7 @@
       <li class="stelling"><span class="nr">21</span><span class="tekst">Social media doen meer kwaad dan goed voor de mentale gezondheid van jongeren</span><span class="badge tegen">tegen</span></li>
       <li class="stelling"><span class="nr">22</span><span class="tekst">Energiedrankjes moeten verboden worden voor jongeren onder de 16 vanwege gezondheidsrisico's</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">23</span><span class="tekst">Energiedrankjes moeten verboden worden voor jongeren onder de 16 vanwege gezondheidsrisico's</span><span class="badge tegen">tegen</span></li>
-      <li class="stelling"><span class="nr">24</span><span class="tekst">Videogames met geweld moeten verboden worden voor iedereen onder de 18</span><span class="badge voor">voor</span></li>
+      <li class="stelling"><span class="nr">24</span><span class="tekst">Abortus moet verboden worden</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">25</span><span class="tekst">Iedere tiener moet een jaar lang een bijbaantje hebben om verantwoordelijkheid te leren</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">26</span><span class="tekst">Schooluniformen moeten verplicht worden</span><span class="badge voor">voor</span></li>
       <li class="stelling"><span class="nr">27</span><span class="tekst">Kleding moet verplicht duurzamer worden, ook als de prijs daardoor omhoog gaat</span><span class="badge voor">voor</span></li>
