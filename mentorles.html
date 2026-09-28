@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dossier: Daan's Telefoon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12141c;
+  --paper:#1b1e27;
+  --paper-2:#232733;
+  --paper-line:#323747;
+  --accent:#e8a33d;
+  --accent-dim:#a97627;
+  --danger:#d1495b;
+  --good:#5fb87a;
+  --text:#eef0f3;
+  --text-dim:#9aa0ac;
+  --wa-bg:#0b141a;
+  --wa-header:#1f2c34;
+  --wa-bubble-in:#1f2c34;
+  --wa-bubble-out:#005c4b;
+  --wa-green:#25d366;
+  --font-head:'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#12141c; --paper:#1b1e27; --paper-2:#232733; --text:#eef0f3; --text-dim:#9aa0ac;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#12141c; --paper:#1b1e27; --paper-2:#232733; --text:#eef0f3; --text-dim:#9aa0ac;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--font-body);
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:#1b1400;}
+
+/* ---------- texture / backdrop ---------- */
+.backdrop{
+  position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(232,163,61,0.09), transparent 60%),
+    radial-gradient(ellipse 700px 600px at 100% 20%, rgba(37,211,102,0.05), transparent 55%),
+    var(--ink);
+}
+
+/* ---------- header ---------- */
+.topbar{
+  padding:22px clamp(16px,4vw,48px) 0;
+  max-width:1360px; margin:0 auto;
+}
+.topbar-title{
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+}
+.topbar-title .stamp{
+  font-family:var(--font-body); font-weight:700; font-size:11px; letter-spacing:.14em;
+  color:var(--ink); background:var(--accent); padding:3px 9px; border-radius:3px;
+  transform:rotate(-2deg);
+}
+.topbar-title h1{
+  font-family:var(--font-head); font-weight:600; font-size:clamp(24px,3.4vw,34px);
+  margin:6px 0 2px; letter-spacing:.2px;
+}
+.topbar-sub{color:var(--text-dim); font-size:14.5px; margin:0 0 18px; max-width:640px; line-height:1.5;}
+
+.room-tabs{
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;
+}
+.room-tab{
+  position:relative;
+  font-family:var(--font-body); font-weight:600; font-size:13.5px;
+  color:var(--text-dim);
+  background:var(--paper);
+  border:1px solid var(--paper-line);
+  border-bottom:none;
+  padding:10px 16px 12px;
+  border-radius:8px 8px 0 0;
+  cursor:pointer;
+  display:flex; align-items:center; gap:7px;
+  transition:color .15s, background .15s;
+}
+.room-tab .n{
+  width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper-2); font-size:11px; color:var(--text-dim); flex-shrink:0;
+}
+.room-tab.active{ color:var(--text); background:var(--paper-2); }
+.room-tab.active .n{ background:var(--accent); color:#1b1400; }
+.room-tab.done .n{ background:var(--good); color:#08240f; }
+.room-tab.locked{ cursor:not-allowed; color:#5a5f6c; }
+.room-tab.locked .n{ background:#282c37; }
+.room-tab.shake{ animation:shake .38s; }
+@keyframes shake{
+  0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);}
+}
+
+/* ---------- main layout ---------- */
+.stage{
+  max-width:1360px; margin:0 auto;
+  padding:0 clamp(16px,4vw,48px) 60px;
+  display:grid;
+  grid-template-columns:1.25fr 380px;
+  gap:22px;
+  align-items:start;
+}
+@media (max-width:940px){
+  .stage{ grid-template-columns:1fr; }
+}
+
+/* ---------- case panel ---------- */
+.case{
+  background:var(--paper-2);
+  border:1px solid var(--paper-line);
+  border-radius:0 10px 10px 10px;
+  padding:clamp(20px,3vw,34px);
+  min-height:420px;
+}
+.case-kicker{
+  color:var(--accent); font-weight:600; font-size:12.5px; letter-spacing:.06em; margin:0 0 8px;
+}
+.case h2{
+  font-family:var(--font-head); font-weight:600; font-size:clamp(21px,2.6vw,27px);
+  margin:0 0 12px; line-height:1.25;
+}
+.case .briefing{
+  color:var(--text-dim); font-size:15px; line-height:1.65; margin:0 0 10px; max-width:66ch;
+}
+.hint-box{
+  display:flex; gap:10px; align-items:flex-start;
+  background:rgba(232,163,61,0.08); border:1px dashed var(--accent-dim);
+  border-radius:8px; padding:12px 14px; margin:16px 0 26px; max-width:66ch;
+}
+.hint-box .ic{font-size:17px; line-height:1.4;}
+.hint-box p{margin:0; font-size:13.8px; color:#d9b779; line-height:1.55;}
+
+.qlist{ display:flex; flex-direction:column; gap:18px; }
+.qcard{
+  background:var(--paper); border:1px solid var(--paper-line); border-radius:9px; padding:18px 18px 16px;
+}
+.qcard .qnum{
+  font-size:11.5px; font-weight:700; letter-spacing:.08em; color:var(--text-dim); margin-bottom:6px;
+}
+.qcard .qtext{ font-size:15.3px; line-height:1.5; margin:0 0 13px; }
+
+.mc-options{ display:flex; flex-direction:column; gap:8px; }
+.mc-opt{
+  text-align:left; width:100%; font-family:var(--font-body); font-size:14px; color:var(--text);
+  background:var(--paper-2); border:1px solid var(--paper-line); border-radius:7px;
+  padding:10px 13px; cursor:pointer; transition:border-color .15s, background .15s;
+}
+.mc-opt:hover{ border-color:var(--accent-dim); }
+.mc-opt.chosen{ border-color:var(--accent); background:rgba(232,163,61,0.09); }
+.mc-opt.correct-mark{ border-color:var(--good); background:rgba(95,184,122,0.12); }
+.mc-opt.wrong-mark{ border-color:var(--danger); background:rgba(209,73,91,0.1); }
+.mc-opt:disabled{ cursor:default; }
+
+textarea.qinput{
+  width:100%; resize:vertical; min-height:64px; font-family:var(--font-body); font-size:14px;
+  background:var(--paper-2); color:var(--text); border:1px solid var(--paper-line); border-radius:7px;
+  padding:10px 12px; line-height:1.5;
+}
+textarea.qinput:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:transparent; }
+.qcheck-btn{
+  margin-top:9px; font-family:var(--font-body); font-weight:600; font-size:13px;
+  background:var(--accent); color:#1b1400; border:none; border-radius:6px; padding:8px 15px; cursor:pointer;
+}
+.qcheck-btn:hover{ filter:brightness(1.06); }
+
+.feedback{
+  margin-top:12px; padding:10px 13px; border-radius:7px; font-size:13.8px; line-height:1.55;
+  display:none;
+}
+.feedback.show{ display:block; }
+.feedback.good{ background:rgba(95,184,122,0.12); border:1px solid var(--good); color:#bfe8ca; }
+.feedback.hint{ background:rgba(232,163,61,0.09); border:1px solid var(--accent-dim); color:#e6c98b; }
+.feedback.bad{ background:rgba(209,73,91,0.1); border:1px solid var(--danger); color:#f0b6bd; }
+
+.case-footer{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--paper-line);
+  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+}
+.progress-txt{ font-size:13px; color:var(--text-dim); }
+.next-btn{
+  font-family:var(--font-body); font-weight:700; font-size:14px;
+  background:var(--good); color:#08240f; border:none; border-radius:7px; padding:11px 20px; cursor:pointer;
+  transition:opacity .15s, transform .1s;
+}
+.next-btn:disabled{ opacity:.35; cursor:not-allowed; }
+.next-btn:not(:disabled):hover{ transform:translateY(-1px); }
+
+/* ---------- debrief screen ---------- */
+.debrief h2{font-family:var(--font-head); font-size:26px; margin:0 0 6px;}
+.debrief .lede{color:var(--text-dim); font-size:15px; line-height:1.6; max-width:62ch; margin:0 0 22px;}
+.debrief ul{ margin:0 0 22px; padding-left:20px; display:flex; flex-direction:column; gap:9px; }
+.debrief li{ font-size:14.5px; line-height:1.55; color:var(--text); }
+.reset-btn{
+  font-family:var(--font-body); font-weight:600; font-size:13px; color:var(--text-dim);
+  background:transparent; border:1px solid var(--paper-line); border-radius:7px; padding:9px 15px; cursor:pointer;
+}
+.reset-btn:hover{ color:var(--text); border-color:var(--accent-dim); }
+
+/* ---------- phone preview card (inline, in the layout) ---------- */
+.phone-preview{
+  background:var(--paper-2); border:1px solid var(--paper-line); border-radius:10px;
+  padding:44px 26px; text-align:center; position:sticky; top:22px;
+}
+.phone-preview .emoji{ font-size:52px; margin-bottom:16px; }
+.phone-preview h3{ font-family:var(--font-head); font-weight:600; font-size:19px; margin:0 0 8px; }
+.phone-preview p{ color:var(--text-dim); font-size:13.5px; line-height:1.55; margin:0 auto 22px; max-width:28ch; }
+.phone-open-btn{
+  font-family:var(--font-body); font-weight:700; font-size:14.5px;
+  background:var(--wa-green); color:#05210f; border:none; border-radius:8px; padding:13px 24px; cursor:pointer;
+}
+.phone-open-btn:hover{ filter:brightness(1.05); }
+
+/* ---------- phone modal (opens on top of everything, page is inert behind it) ---------- */
+.phone-modal{
+  position:fixed; inset:0; z-index:100; background:rgba(6,7,11,0.88);
+  display:none; align-items:center; justify-content:center;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  overscroll-behavior:contain;
+}
+.phone-modal.open{ display:flex; }
+.phone-frame{
+  width:clamp(300px, 28vw, 380px); height:clamp(600px, 84vh, 760px); background:#05060a; border-radius:42px; padding:12px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 2px #2a2e38;
+  position:relative;
+}
+.phone-screen{
+  width:100%; height:100%; background:var(--wa-bg); border-radius:32px; overflow:hidden; position:relative;
+  display:flex; flex-direction:column;
+}
+#phoneContent{ flex:1; display:flex; flex-direction:column; min-height:0; }
+.notch{
+  position:absolute; top:12px; left:50%; transform:translateX(-50%);
+  width:110px; height:22px; background:#05060a; border-radius:12px; z-index:20;
+}
+.statusbar{
+  height:40px; flex-shrink:0; display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 22px 6px; font-size:12px; font-weight:600; color:#fff; position:relative; z-index:5;
+}
+
+/* home screen */
+.homescreen{ flex:1; background:
+    radial-gradient(circle at 30% 15%, #2b3a52, #0d1420 65%);
+  padding:14px 18px 20px; display:flex; flex-direction:column; }
+.home-date{ text-align:center; color:#fff; margin:6px 0 22px; }
+.home-date .time{ font-size:44px; font-weight:600; line-height:1; }
+.home-date .day{ font-size:13px; opacity:.85; margin-top:4px; }
+.app-grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:16px 10px; margin-top:auto; margin-bottom:14px;
+}
+.app-icon{
+  display:flex; flex-direction:column; align-items:center; gap:5px; background:none; border:none; cursor:pointer;
+  font-family:var(--font-body); color:#fff; padding:0;
+}
+.app-icon .glyph{
+  width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+  font-size:24px; position:relative; background:#2c3140;
+}
+.app-icon.wa .glyph{ background:var(--wa-green); }
+.app-icon .badge{
+  position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:10px; font-weight:700;
+  min-width:17px; height:17px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 3px;
+}
+.app-icon .lbl{ font-size:10.5px; opacity:.9; }
+.app-icon.disabled{ opacity:.45; }
+.dock{
+  display:flex; justify-content:space-around; background:rgba(255,255,255,0.08); border-radius:20px;
+  padding:10px 6px; backdrop-filter:blur(6px);
+}
+.dock .glyph{ width:46px; height:46px; font-size:21px; }
+
+/* whatsapp chat list */
+.wa-screen{ flex:1; display:flex; flex-direction:column; background:var(--wa-bg); min-height:0; }
+.wa-header{
+  background:var(--wa-header); padding:10px 14px 12px; display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.wa-header .back{ background:none; border:none; color:#fff; font-size:19px; cursor:pointer; padding:2px 4px; line-height:1; }
+.wa-header .title{ color:#fff; font-weight:600; font-size:16.5px; flex:1; }
+.wa-header .sub{ color:#9fb8c6; font-size:11.5px; margin-top:1px; }
+.chat-list{ flex:1; overflow-y:auto; overscroll-behavior:contain; }
+.chat-row{
+  display:flex; align-items:center; gap:11px; padding:10px 14px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.chat-row:hover{ background:rgba(255,255,255,0.03); }
+.chat-row .av{
+  width:44px; height:44px; border-radius:50%; background:#2a3942; display:flex; align-items:center; justify-content:center;
+  font-size:19px; flex-shrink:0;
+}
+.chat-row .mid{ flex:1; min-width:0; }
+.chat-row .nm{ color:#fff; font-size:14.5px; font-weight:500; }
+.chat-row .last{ color:#8696a0; font-size:12.5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-row .rt{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+.chat-row .tm{ color:#8696a0; font-size:11px; }
+.chat-row .unread{ background:var(--wa-green); color:#05210f; font-size:10.5px; font-weight:700; min-width:17px; height:17px; border-radius:9px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+
+/* whatsapp conversation */
+.wa-thread{
+  flex:1; overflow-y:auto; overscroll-behavior:contain; padding:12px 10px; display:flex; flex-direction:column; gap:3px;
+  background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:14px 14px;
+}
+.date-div{ align-self:center; background:#1f2c34; color:#9fb8c6; font-size:11px; padding:4px 10px; border-radius:6px; margin:10px 0 6px; }
+.bubble-row{ display:flex; }
+.bubble-row.out{ justify-content:flex-end; }
+.bubble{
+  max-width:78%; padding:6px 9px 7px; border-radius:8px; font-size:13.3px; line-height:1.42; position:relative;
+  margin:2px 0;
+}
+.bubble.in{ background:var(--wa-bubble-in); color:#e9edef; border-top-left-radius:2px; }
+.bubble.out{ background:var(--wa-bubble-out); color:#e9edef; border-top-right-radius:2px; }
+.bubble .sender{ font-size:12px; font-weight:700; margin-bottom:2px; display:block; }
+.bubble .tm{ font-size:10px; color:#a3b6ae; float:right; margin:5px 0 -2px 8px; }
+.bubble.media{ background:#111b21; padding:7px; }
+.bubble.sticker-bubble{ background:transparent !important; box-shadow:none; padding:0 !important; }
+.sticker-wrap{ width:104px; height:104px; position:relative; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.4)); }
+.sticker-wrap svg{ width:100%; height:100%; }
+.gif-badge{
+  position:absolute; bottom:4px; left:4px; background:rgba(0,0,0,0.75); color:#fff; font-size:9px; font-weight:800;
+  padding:1px 6px; border-radius:4px; letter-spacing:.04em;
+}
+.sticker-tm{ display:block; text-align:right; font-size:10px; color:#8696a0; margin-top:2px; }
+.photo-wrap{ width:180px; height:100px; border-radius:6px; overflow:hidden; display:block; }
+.photo-wrap svg{ width:100%; height:100%; display:block; }
+.link-card{ display:flex; align-items:center; gap:10px; width:216px; }
+.link-icon{ width:46px; height:46px; flex-shrink:0; border-radius:9px; }
+.link-meta{ display:flex; flex-direction:column; min-width:0; }
+.link-domain{ font-size:12.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.link-sub{ font-size:10.5px; color:#8696a0; margin-top:1px; }
+.bubble.media .imgph{
+  width:170px; height:96px; background:repeating-linear-gradient(135deg,#2a323b,#2a323b 8px,#232a31 8px,#232a31 16px);
+  border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:2px;
+}
+.wa-composer{
+  flex-shrink:0; display:flex; align-items:center; gap:8px; padding:8px 10px; background:transparent;
+}
+.wa-composer .fake-input{ flex:1; background:#1f2c34; border-radius:20px; padding:9px 14px; color:#8696a0; font-size:13px; }
+.wa-composer .mic{ width:36px; height:36px; border-radius:50%; background:var(--wa-green); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+
+.phone-close{
+  display:flex; position:absolute; top:calc(18px + env(safe-area-inset-top,0px)); right:18px;
+  width:38px; height:38px; border-radius:50%; background:var(--paper-2); border:1px solid var(--paper-line);
+  color:var(--text); font-size:18px; align-items:center; justify-content:center; cursor:pointer; z-index:50;
+}
+
+footer.credit{ text-align:center; color:#4d5261; font-size:11.5px; padding:0 20px 34px; }
+</style>
+</head>
+<body>
+<svg style="display:none">
+  <symbol id="icon-cat" viewBox="0 0 100 100">
+    <path d="M25 35 L15 10 L40 30 Z" fill="#f2a154"/>
+    <path d="M75 35 L85 10 L60 30 Z" fill="#f2a154"/>
+    <path d="M25 35 L20 18 L36 30 Z" fill="#f6c690"/>
+    <path d="M75 35 L80 18 L64 30 Z" fill="#f6c690"/>
+    <circle cx="50" cy="55" r="32" fill="#f2a154"/>
+    <circle cx="38" cy="52" r="5" fill="#2a1c10"/>
+    <circle cx="62" cy="52" r="5" fill="#2a1c10"/>
+    <path d="M44 66 Q50 72 56 66" stroke="#2a1c10" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M15 58 L34 55 M15 66 L34 62 M66 55 L85 58 M66 62 L85 66" stroke="#2a1c10" stroke-width="2" stroke-linecap="round"/>
+    <path d="M18 80 q32 20 64 0" stroke="#ffd76a" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.75"/>
+  </symbol>
+  <symbol id="icon-dog" viewBox="0 0 100 100">
+    <ellipse cx="18" cy="46" rx="14" ry="23" fill="#a6693a" transform="rotate(-18 18 46)"/>
+    <ellipse cx="82" cy="46" rx="14" ry="23" fill="#a6693a" transform="rotate(18 82 46)"/>
+    <circle cx="50" cy="55" r="32" fill="#c98a52"/>
+    <path d="M35 50 Q35 44 41 44 Q47 44 47 50 Q47 56 41 56 Q35 56 35 50Z" fill="#241608"/>
+    <path d="M53 50 Q53 44 59 44 Q65 44 65 50 Q65 56 59 56 Q53 56 53 50Z" fill="#241608"/>
+    <ellipse cx="50" cy="64" rx="6" ry="4" fill="#241608"/>
+    <path d="M38 72 Q50 86 62 72" stroke="#241608" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M48 76 q2 8 0 12" stroke="#e26b7d" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="icon-explosion" viewBox="0 0 100 100">
+    <polygon points="50,5 61,35 90,25 68,50 92,68 60,62 55,95 45,63 12,72 35,48 8,28 38,36" fill="#ffb238"/>
+    <polygon points="50,20 57,40 76,34 62,50 78,62 56,58 52,82 45,58 20,65 37,48 18,36 40,42" fill="#ff6b3d"/>
+  </symbol>
+  <symbol id="icon-laugh" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="42" fill="#ffcd3c"/>
+    <path d="M28 34 L42 44 M42 34 L28 44" stroke="#5a3a00" stroke-width="5" stroke-linecap="round"/>
+    <path d="M58 34 L72 44 M72 34 L58 44" stroke="#5a3a00" stroke-width="5" stroke-linecap="round"/>
+    <path d="M26 62 Q50 90 74 62 Q50 76 26 62Z" fill="#8a3b1c"/>
+    <circle cx="18" cy="55" r="5" fill="#69c8ff"/>
+    <circle cx="82" cy="55" r="5" fill="#69c8ff"/>
+  </symbol>
+  <symbol id="icon-sparkle" viewBox="0 0 100 100">
+    <path d="M50 8 L58 42 L92 50 L58 58 L50 92 L42 58 L8 50 L42 42Z" fill="#c893ff"/>
+    <circle cx="78" cy="20" r="6" fill="#ffd76a"/>
+    <circle cx="20" cy="78" r="5" fill="#69e0c8"/>
+  </symbol>
+  <symbol id="icon-football" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" fill="#f4f4f4" stroke="#222" stroke-width="3"/>
+    <polygon points="50,30 60,38 56,50 44,50 40,38" fill="#222"/>
+    <path d="M50 30 L50 10 M60 38 L78 26 M56 50 L70 62 M44 50 L30 62 M40 38 L22 26" stroke="#222" stroke-width="3"/>
+    <path d="M6 30 q12 -12 22 -4 M72 30 q12 -8 22 4" stroke="#8fa8ff" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+  </symbol>
+  <symbol id="icon-moon" viewBox="0 0 100 100">
+    <path d="M64 10 A40 40 0 1 0 64 90 A32 32 0 1 1 64 10Z" fill="#ffe37a"/>
+    <text x="68" y="34" font-size="15" fill="#7a6a1a" font-family="Inter, sans-serif" font-weight="700">z</text>
+    <text x="80" y="22" font-size="10" fill="#7a6a1a" font-family="Inter, sans-serif" font-weight="700">z</text>
+  </symbol>
+  <symbol id="icon-photo" viewBox="0 0 100 100">
+    <rect x="4" y="4" width="92" height="92" rx="10" fill="#2a323b"/>
+    <circle cx="50" cy="44" r="17" fill="#3a4652"/>
+    <path d="M14 80 Q34 54 50 68 Q66 48 88 76" stroke="#3a4652" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <circle cx="72" cy="24" r="6" fill="#54606c"/>
+  </symbol>
+  <symbol id="icon-link" viewBox="0 0 100 100">
+    <rect x="6" y="6" width="88" height="88" rx="16" fill="#1f2c34"/>
+    <rect x="24" y="24" width="52" height="52" rx="10" fill="#e8a33d"/>
+    <circle cx="38" cy="38" r="5" fill="#1f2c34"/>
+    <circle cx="62" cy="38" r="5" fill="#1f2c34"/>
+    <circle cx="50" cy="50" r="5" fill="#1f2c34"/>
+    <circle cx="38" cy="62" r="5" fill="#1f2c34"/>
+    <circle cx="62" cy="62" r="5" fill="#1f2c34"/>
+  </symbol>
+</svg>
+<div class="backdrop"></div>
+
+<div class="topbar">
+  <div class="topbar-title">
+    <span class="stamp">DOSSIER #1C-114</span>
+  </div>
+  <h1>De telefoon van Daan</h1>
+  <p class="topbar-sub">Jullie onderzoeken vier situaties uit het appverkeer van Daan (12, klas 1C). Blader door zijn WhatsApp rechts, beantwoord de vragen links, en ontgrendel zo de volgende kamer.</p>
+  <div class="room-tabs" id="roomTabs"></div>
+</div>
+
+<div class="stage">
+  <div class="case" id="casePanel"></div>
+
+  <div class="phone-preview">
+    <div class="emoji">📱</div>
+    <h3>Daan's telefoon</h3>
+    <p>Open zijn telefoon om de WhatsApp-gesprekken te bekijken.</p>
+    <button class="phone-open-btn" id="phoneOpenBtn">Open telefoon</button>
+  </div>
+</div>
+
+<div class="phone-modal" id="phoneModal">
+  <button class="phone-close" id="phoneClose" aria-label="Sluit telefoon">✕</button>
+  <div class="phone-frame">
+    <div class="phone-screen" id="phoneScreen">
+      <div class="notch"></div>
+      <div id="phoneContent"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="credit">Fictieve situatie — alle namen en gesprekken zijn verzonnen voor deze mentorles.</footer>
+
+<script>
+/* ===================== DATA ===================== */
+
+const contacts = {
+  klas2c: { name:"1C weekklas", avatar:"📚", type:"group", messages:[
+    {day:"Maandag", from:"Daan", text:"Weet iemand precies wat we moeten leren voor de toets van morgen? 😩", time:"15:42"},
+    {day:"Maandag", from:"Liam", text:"ja gwn hoofdstuk 4", time:"15:42"},
+    {day:"Maandag", from:"Kevin", text:"🖼️ [sticker: dansende kat]", time:"15:43"},
+    {day:"Maandag", from:"Liam", text:"KEVIN WAT DOE JIJ 💀💀", time:"15:43"},
+    {day:"Maandag", from:"Noa", text:"iemand nog snappen hoe opgave 14 van wiskunde moet trouwens", time:"15:43"},
+    {day:"Maandag", from:"Kevin", text:"welke opgave dan", time:"15:44"},
+    {day:"Maandag", from:"Noa", text:"14 van blz 32, snap er niks van", time:"15:44"},
+    {day:"Maandag", from:"Liam", text:"🖼️ [gif: explosie]", time:"15:44"},
+    {day:"Maandag", from:"Kevin", text:"HAHAHAHA bro niet doen", time:"15:45"},
+    {day:"Maandag", from:"Noa", text:"wie komt er zaterdag voetballen trouwens", time:"15:45"},
+    {day:"Maandag", from:"Liam", text:"ik wel!", time:"15:45"},
+    {day:"Maandag", from:"Kevin", text:"ikke ook, hoe laat ook alweer", time:"15:46"},
+    {day:"Maandag", from:"Noa", text:"denk 14:00 bij het veld", time:"15:46"},
+    {day:"Maandag", from:"Liam", text:"sturen jullie me de tijd nog appart, zie het anders niet meer terug in dit topic 😂", time:"15:46"},
+    {day:"Maandag", from:"Sophie", text:"meneer zei toch nog dat het h5 blz 60-66 was voor morgen en niet h4?", time:"15:47"},
+    {day:"Maandag", from:"Liam", text:"ja klopt idd", time:"15:47"},
+    {day:"Maandag", from:"Noa", text:"ja precies, h5 dus", time:"15:47"},
+    {day:"Maandag", from:"Kevin", text:"🖼️ [sticker: lachende hond]", time:"15:47"},
+    {day:"Maandag", from:"Liam", text:"heeft iedereen Engels huiswerk al af trouwens", time:"15:47"},
+    {day:"Maandag", from:"Noa", text:"nee nog niet 😭 moet nog zoveel", time:"15:48"},
+    {day:"Maandag", from:"Kevin", text:"🖼️ [sticker: sterretjes]", time:"15:48"},
+    {day:"Maandag", from:"Liam", text:"is er ook nog een bio-toets deze week trouwens??", time:"15:48"},
+    {day:"Maandag", from:"Kevin", text:"WACHT ECHT WANNEER dan die bio-toets", time:"15:49"},
+    {day:"Maandag", from:"Noa", text:"volgende week denk ik pas", time:"15:49"},
+    {day:"Maandag", from:"Liam", text:"gelukkig, dacht al", time:"15:49"},
+    {day:"Maandag", from:"Kevin", text:"wie heeft trouwens de nieuwe Fortnite skin al", time:"15:50"},
+    {day:"Maandag", from:"Liam", text:"die is retesaai imo", time:"15:50"},
+    {day:"Maandag", from:"Kevin", text:"nee juist heel vet 😤", time:"15:50"},
+    {day:"Maandag", from:"Noa", text:"🖼️ [sticker: dansende kat]", time:"15:51"},
+    {day:"Maandag", from:"Liam", text:"iemand al begonnen aan geschiedenis huiswerk", time:"15:51"},
+  ]},
+  mama: { name:"Mama ❤️", avatar:"❤️", type:"dm", messages:[
+    {day:"Maandag", from:"Mama", text:"Hoi Daan, weet je al wat je precies moet leren voor je toets morgen?", time:"19:32"},
+    {day:"Maandag", from:"Daan", text:"Ja hoofdstuk 4!", time:"19:35"},
+    {day:"Maandag", from:"Mama", text:"Oke, fijn! Ga er maar lekker voor zitten dan 📚", time:"19:35"},
+    {day:"Maandag", from:"Daan", text:"Doe ik zo mam", time:"19:36"},
+    {day:"Woensdag", from:"Mama", text:"Daan?? Waarom ben je nu al thuis, ik dacht dat je nog les had", time:"14:20"},
+    {day:"Woensdag", from:"Daan", text:"was zo moe, kon me echt niet meer concentreren.. mocht van school naar huis", time:"14:26"},
+    {day:"Woensdag", from:"Mama", text:"Heb je eigenlijk wel goed geslapen? En is je huiswerk van gisteren af?", time:"14:27"},
+    {day:"Woensdag", from:"Daan", text:"nee nog niet af, was gisteren pas heel laat in slaap gevallen", time:"14:33"},
+  ]},
+  gympie: { name:"gympie gangzz", avatar:"😂", type:"group", messages:[
+    {day:"Woensdag", from:"Liam", text:"hahah zag je Timo net bij gym 💀💀", time:"13:12"},
+    {day:"Woensdag", from:"Kevin", text:"die jongen kan ECHT niks bro 😂", time:"13:12"},
+    {day:"Woensdag", from:"Sophie", text:"🖼️ [sticker: uitlachen]", time:"13:13"},
+    {day:"Woensdag", from:"Liam", text:"🖼️ [foto verstuurd]", time:"13:13"},
+    {day:"Woensdag", from:"Kevin", text:"LOL kijk hem nou echt niet", time:"13:14"},
+    {day:"Woensdag", from:"Sophie", text:"iemand moet dit naar hem doorsturen 😭", time:"13:14"},
+    {day:"Woensdag", from:"Liam", text:"doe het zelf dan HAHA", time:"13:15"},
+  ]},
+  ties: { name:"Ties 🐐", avatar:"🐐", type:"dm", messages:[
+    {day:"Woensdag", from:"Daan", text:"gast eigenlijk vind ik het niet echt oke wat ze doen bij Timo in die groep", time:"20:03"},
+    {day:"Woensdag", from:"Ties", text:"idk man, bemoei je er maar niet mee, is niet echt ons probleem", time:"20:05"},
+    {day:"Woensdag", from:"Daan", text:"ja je hebt wel gelijk denk ik, is ook niet mijn verantwoordelijkheid ofzo", time:"20:06"},
+    {day:"Vrijdag", from:"Daan", text:"gast ik zit echt in de shit", time:"21:47"},
+    {day:"Vrijdag", from:"Daan", text:"ik heb meegedaan met die weddenschap van Kevin en nu appt er een onbekend nummer dat ik moet betalen", time:"21:47"},
+    {day:"Vrijdag", from:"Ties", text:"wtf, serieus?? hoeveel dan", time:"21:48"},
+    {day:"Vrijdag", from:"Daan", text:"85 euro en ze dreigen ermee als ik niet betaal", time:"21:48"},
+    {day:"Vrijdag", from:"Ties", text:"gast dit is niet normaal, je moet dit echt aan iemand vertellen", time:"21:49"},
+    {day:"Vrijdag", from:"Daan", text:"ja maar ik schaam me zo hiervoor, en ik ben eigenlijk best wel bang", time:"21:50"},
+  ]},
+  timo: { name:"Timo", avatar:"🙂", type:"dm", messages:[
+    {day:"Donderdag", from:"Timo", text:"hey... jij zit toch ook in die andere klasgroep waar ze het over mij hebben?", time:"16:20"},
+    {day:"Donderdag", from:"Timo", text:"waarom heb je daar nooit iets van gezegd? 😕", time:"16:21"},
+    {day:"Donderdag", from:"Daan", text:"doe even normaal joh, niet zo zeuren", time:"16:25"},
+  ]},
+  fenna: { name:"Fenna", avatar:"🌻", type:"dm", messages:[
+    {day:"Zaterdag", from:"Fenna", text:"heb je het al gehoord van Timo?", time:"11:02"},
+    {day:"Zaterdag", from:"Fenna", text:"hij wil schijnbaar niet meer naar school komen, voelt zich echt klote door dat gedoe in die groepsapp", time:"11:03"},
+    {day:"Zaterdag", from:"Daan", text:"oh shit, dat wist ik niet..", time:"11:05"},
+    {day:"Zaterdag", from:"Fenna", text:"iemand had daar toch wel iets van mogen zeggen ofzo", time:"11:06"},
+  ]},
+  bram: { name:"Bram ⚽", avatar:"⚽", type:"dm", messages:[
+    {day:"Dinsdag", from:"Bram", text:"GOZER heb je de wedstrijd gezien of niet 😳", time:"23:52"},
+    {day:"Dinsdag", from:"Daan", text:"jaaa waanzinnig die goal in de 89e minuut", time:"23:53"},
+    {day:"Dinsdag", from:"Bram", text:"🖼️ [gif: doelpunt herhaling]", time:"23:58"},
+    {day:"Woensdag", from:"Daan", text:"die verdediging was echt niks trouwens", time:"00:14"},
+    {day:"Woensdag", from:"Bram", text:"facts, moeten echt een nieuwe spits halen in januari", time:"00:22"},
+    {day:"Woensdag", from:"Daan", text:"denk het wel ja, huidige spits mist gewoon te veel kansen", time:"00:41"},
+    {day:"Woensdag", from:"Bram", text:"moet jij niet gaan slapen 😂", time:"01:07"},
+    {day:"Woensdag", from:"Daan", text:"nog vijf minuutjes ofzo", time:"01:08"},
+    {day:"Woensdag", from:"Bram", text:"🖼️ [sticker: maan]", time:"01:31"},
+    {day:"Woensdag", from:"Daan", text:"oke ga nu echt slapen gn", time:"01:42"},
+  ]},
+
+  weddenschap: { name:"CL Weddenschapjes", avatar:"🔥", type:"group", messages:[
+    {day:"Donderdag", from:"Kevin", text:"yo doet iedereen mee met de weddenschap voor vanavond?", time:"19:02"},
+    {day:"Donderdag", from:"Liam", text:"kom op joh, iedereen zet gewoon wat in, is een makkie", time:"19:03"},
+    {day:"Donderdag", from:"Kevin", text:"🖼️ [link: bet-scoreplay.net]", time:"19:03"},
+    {day:"Donderdag", from:"Daan", text:"idk man ik weet niet of dat wel mag eigenlijk..", time:"19:04"},
+    {day:"Donderdag", from:"Liam", text:"doe niet zo saai man, is gewoon voor de lol", time:"19:05"},
+    {day:"Donderdag", from:"Kevin", text:"iedereen doet toch mee, chill", time:"19:05"},
+    {day:"Donderdag", from:"Daan", text:"oke fine, doe ik ook mee dan", time:"19:07"},
+  ]},
+  onbekend: { name:"Onbekend nummer", avatar:"❓", type:"dm", messages:[
+    {day:"Vrijdag", from:"Onbekend", text:"Je hebt verloren bij de weddenschap van gisteren. Je bent me €85 schuldig.", time:"21:30"},
+    {day:"Vrijdag", from:"Onbekend", text:"Zorg dat je deze week betaalt, anders wordt het vervelend voor je.", time:"21:31"},
+    {day:"Vrijdag", from:"Onbekend", text:"Ik weet trouwens op welke school jij zit 👀", time:"21:31"},
+  ]},
+  oma: { name:"Oma 💕", avatar:"💕", type:"dm", messages:[
+    {day:"Zondag", from:"Oma", text:"Liefste Daan, kom je over twee weken zondag naar mijn verjaardag?", time:"10:03"},
+    {day:"Zondag", from:"Daan", text:"Ja gezellig oma! Hoe laat moeten we er zijn?", time:"10:15"},
+    {day:"Zondag", from:"Oma", text:"Rond een uur of 3 lijkt me fijn ☺️", time:"10:16"},
+  ]},
+  fcteam: { name:"FC Castricum JO13-1", avatar:"🏆", type:"group", messages:[
+    {day:"Maandag", from:"Coach Rick", text:"Training donderdag gaat gewoon door, 18:30 op het hoofdveld", time:"17:00"},
+    {day:"Maandag", from:"Sem", text:"komt goed coach", time:"17:02"},
+    {day:"Maandag", from:"Daan", text:"zie je daar!", time:"17:03"},
+  ]},
+  fortnite: { name:"Fortnite Squad", avatar:"🎮", type:"group", messages:[
+    {day:"Zaterdag", from:"Mike", text:"wie heeft er zin om vanavond te gamen", time:"20:11"},
+    {day:"Zaterdag", from:"Kevin", text:"ik zo, moet alleen nog even huiswerk afmaken", time:"20:12"},
+    {day:"Zaterdag", from:"Daan", text:"ik doe zo mee", time:"20:14"},
+  ]},
+  mike: { name:"Mike 🛹", avatar:"🛹", type:"dm", messages:[
+    {day:"Zondag", from:"Mike", text:"STUUR DIT DOOR NAAR 10 MENSEN BINNEN 1 UUR ANDERS KRIJG JE 7 JAAR ONGELUK 😱😱 (dit is geen grap serieus)", time:"12:40"},
+    {day:"Zondag", from:"Daan", text:"haha oke joh", time:"12:41"},
+    {day:"Zondag", from:"Mike", text:"NEE ECHT DOEN JOH ANDERS GEBEURT ER IETS ERGS", time:"12:42"},
+  ]},
+};
+const contactOrder = ["gympie","onbekend","weddenschap","fenna","ties","timo","mike","bram","klas2c","fortnite","mama","fcteam","oma"];
+
+const rooms = [
+  { id:1, key:"toets", icon:"📚", title:"Kamer 1 — De toets die misging",
+    briefing:"Er ging iets mis rond een toets van Daan.",
+    hint:"Open op de telefoon: 1C weekklas én Mama ❤️.",
+    questions:[
+      { id:"q1_0", type:"text", prompt:"Lees de groepsapp en het gesprek met mama door. Wat is hier precies gebeurd? Leg in eigen woorden uit wat er misging.",
+        requireAll:[["toets","leer"],["fout","verkeerd","mis"]],
+        good:"Precies — dat is wat hier gebeurde." },
+      { id:"q1_1", type:"text", prompt:"In de klassenapp stond het juiste antwoord gewoon tussen de berichten. Waarom wist Daan het toch niet meer goed toen zijn moeder ernaar vroeg?",
+        keywords:["spam","sticker","druk","rommelig","chaos","overzicht","zoveel berichten","niet meer terug","gemist","ondergesneeuwd","kwijt"],
+        good:"Precies. Groepsapps gaan vaak alle kanten op — tussen memes en zijpaadjes door raakt belangrijke info makkelijk ondergesneeuwd." },
+      { id:"q1_2", type:"text", prompt:"Waarom is Teams een beter kanaal om vragen aan de klas of aan een docent te stellen dan een WhatsApp-groepsapp?",
+        keywords:["officieel","overzicht","rustig","georganiseerd","gestructureerd","docent","leraar","geen sticker","geen spam","serieus","gecontroleerd","zoekbaar","terugvinden","meekijk"],
+        good:"Goed antwoord — Teams is de officiële, overzichtelijke plek waar een docent meekijkt, en waar berichten niet verdrinken tussen stickers en zijpaadjes zoals in een WhatsApp-groepsapp." },
+      { id:"q1_3", type:"text", prompt:"Is een groepsapp een betrouwbare plek om te checken wat je moet leren voor een toets? Leg uit waarom wel of niet. Gebruik in je antwoord de woorden \"betrouwbaar\" (of \"onbetrouwbaar\") én \"fout\" (of \"fouten\").",
+        requireAll:[["betrouwbaar","onbetrouwbaar"],["fout","fouten"]],
+        good:"Klopt — in een groepsapp kan iedereen zomaar iets typen, ook fouten, en niemand controleert of het echt klopt." },
+    ]},
+  { id:2, key:"pesten", icon:"🚫", title:"Kamer 2 — Wat er in stilte gebeurde",
+    briefing:"Er speelt iets in een andere groepsapp van Daan.",
+    hint:"Open op de telefoon: gympie gangzz, Ties, Timo en Fenna.",
+    questions:[
+      { id:"q2_0", type:"text", prompt:"Lees 'gympie gangzz' en de gesprekken met Ties, Timo en Fenna door. Wat is hier gebeurd? Leg in eigen woorden uit.",
+        requireAll:[["timo"],["pest","naar doen","vervelend","uitlach"]],
+        good:"Precies — dat is wat hier speelt." },
+      { id:"q2_1", type:"text", prompt:"Daan stuurde zelf geen nare berichten over Timo, hij las alleen mee. Is hij dan toch verantwoordelijk voor wat er gebeurde? Leg uit waarom wel of niet. Gebruik in je antwoord de woorden \"verantwoordelijk\", \"stilte\" (of \"zwijgen\") en \"medeplichtig\".",
+        requireAll:[["verantwoordelijk"],["stilte","stil blijven","zwijg","niks zeggen","niets zeggen"],["medeplichtig"]],
+        good:"Als omstander heb je invloed: door in stilte te blijven en niks te zeggen, ben je op een bepaalde manier medeplichtig — de pesters krijgen het gevoel dat het oké is. Dat noemen we het omstandereffect." },
+      { id:"q2_2", type:"text", prompt:"Wat had Daan kunnen doen op het moment dat hij zag dat er nare dingen over Timo werden gezegd in de groepsapp?",
+        keywords:["zeg","meld","stop","mentor","leraar","vertrouwenspersoon","steun","opkom","reageer","help","vertel","praat"],
+        good:"Goed — hij had er iets van kunnen zeggen in de groep, het kunnen melden bij een mentor, of achteraf steun kunnen bieden aan Timo." },
+      { id:"q2_3", type:"text", prompt:"Tegen Ties gaf Daan toe dat hij het niet oké vond. Tegen Timo zei hij juist dat hij 'niet moest zeuren'. Waarom denk je dat hij dat tegen Timo zei?",
+        keywords:["schaamte","bang","groep","stoer","erbij horen","angst","buitengesloten","sociale druk","groepsdruk","imago"],
+        good:"Herkenbaar — vaak durven mensen tegenover een vriend wél eerlijk te zijn, maar tegenover de groep (of het slachtoffer) niet, uit angst om zelf buitengesloten te worden." },
+      { id:"q2_4", type:"text", prompt:"Hoe voelde Daan zich, denk je, toen hij erachter kwam dat Timo niet meer naar school wilde?",
+        keywords:["schuldig","schaamte","rot","schrik","spijt","naar","slecht","verdrietig","klote"],
+        good:"Herkenbaar — dat soort schuldgevoel of schrik komt vaak pas als je de echte gevolgen ziet van iets wat eerder onschuldig leek." },
+      { id:"q2_5", type:"text", prompt:"Uiteindelijk wil Timo niet meer naar school. Wat zegt dat over het idee dat online pesten 'toch maar een appje' is?",
+        keywords:["net zo","zwaar","erg","serieus","impact","gevolgen","niet onschuldig","geen kleine","niet minder"],
+        good:"Online pesten voelt voor de dader soms 'kleiner' omdat je elkaar niet in de ogen kijkt, maar het effect op het slachtoffer kan minstens zo groot zijn." },
+    ]},
+  { id:3, key:"slaap", icon:"😴", title:"Kamer 3 — De nacht die te kort was",
+    briefing:"Er gebeurde iets met Daan, een paar dagen geleden, midden in de nacht.",
+    hint:"Open op de telefoon: Bram ⚽ en Mama ❤️. Let op de tijdstempels.",
+    questions:[
+      { id:"q3_0", type:"text", prompt:"Bekijk het gesprek met Bram en met mama. Wat is hier gebeurd? Leg in eigen woorden uit.",
+        requireAll:[["laat","nacht","slapen","slaap"],["moe","huiswerk","ziek"]],
+        good:"Precies — dat is wat hier gebeurde." },
+      { id:"q3_1", type:"text", prompt:"Bekijk de tijden van de berichten tussen Daan en Bram. Hoe laat gingen ze ongeveer pas slapen, en hoeveel uur slaap denk je dat Daan die nacht heeft gehad?",
+        keywords:["1 uur","01:","laat","weinig","paar uur","kort","te weinig","half twee","2 uur","3 uur","4 uur","5 uur","6 uur","7 uur","niet genoeg","te kort"],
+        good:"Klopt zo'n beetje — rond 01:30-01:42 was het laatste bericht, terwijl er de volgende ochtend gewoon weer school was. Dat is veel te weinig slaap voor een tiener." },
+      { id:"q3_2", type:"mc", prompt:"Wat is een goed advies voor telefoongebruik vlak voor het slapengaan?",
+        options:["Telefoon gewoon naast je bed houden, voor het geval er iets belangrijks is","Telefoon op stil zetten en buiten de slaapkamer leggen","Gewoon doorgaan tot je vanzelf in slaap valt","Alleen een uitzondering maken bij spannende wedstrijden"],
+        correct:1,
+        explain:"Het blauwe licht en de constante meldingen houden je hersenen actief. Een telefoon buiten de slaapkamer (of op stil, uit het zicht) helpt echt om beter te slapen." },
+      { id:"q3_3", type:"text", prompt:"Welke gevolgen zag je bij Daan de dag ná zijn late-night appsessie?",
+        keywords:["huiswerk","moe","ziek","naar huis","concentratie","niet af","slaperig"],
+        good:"Precies: zijn huiswerk was niet af, hij was zo moe dat hij niet kon concentreren, en werd zelfs ziek naar huis gestuurd." },
+      { id:"q3_4", type:"text", reflection:true, prompt:"En jij? Blijf jij weleens laat wakker met je telefoon (appen, gamen, scrollen)? Wat merk je de volgende dag als dat gebeurt?",
+        good:"Bedankt dat je dit deelt — hier is geen goed of fout antwoord, maar het is goed om er even bij stil te staan." },
+    ]},
+  { id:4, key:"druk", icon:"⚠️", title:"Kamer 4 — Onder druk",
+    briefing:"Daan is ergens in verzeild geraakt waar hij nu spijt van heeft.",
+    hint:"Open op de telefoon: CL Weddenschapjes, Onbekend nummer, en Ties (kijk naar vrijdag).",
+    questions:[
+      { id:"q4_0", type:"text", prompt:"Bekijk 'CL Weddenschapjes', het gesprek met het onbekende nummer, en het latere gesprek met Ties. Wat is hier gebeurd? Leg in eigen woorden uit.",
+        requireAll:[["wedden","gokken","weddenschap"],["dreig","schuld","geld"]],
+        good:"Precies — dat is wat hier gebeurde." },
+      { id:"q4_1", type:"text", prompt:"Daan werd door Kevin en Liam onder druk gezet om mee te doen aan de online weddenschap. Wat had hij kunnen doen in plaats van toch meedoen?",
+        keywords:["nee zeggen","grens","niet meedoen","weigeren","voor zichzelf opkomen","stoppen"],
+        good:"Goed — gewoon duidelijk 'nee' zeggen en zijn grens aangeven, ook al voelt dat in het moment ongemakkelijk tegenover vrienden." },
+      { id:"q4_2", type:"mc", prompt:"Wat moet je doen als je dreigende berichten krijgt van een onbekend nummer, zoals Daan?",
+        options:["Zelf reageren en proberen het op te lossen","Negeren en hopen dat het overwaait","Het vertellen aan een volwassene en de berichten bewaren als bewijs","Meteen betalen zodat je ervan af bent"],
+        correct:2,
+        explain:"Bewijs bewaren (screenshots) en het melden bij een volwassene is de veiligste stap — zelf betalen of reageren kan de situatie juist erger maken." },
+      { id:"q4_3", type:"text", prompt:"Waarom is het riskant dat onbekende mensen Daans telefoonnummer hebben?",
+        keywords:["onbekende","vreemde","iedereen","bereikbaar","contact opnemen","misbruiken","nummer delen","lastigvallen","benaderen"],
+        good:"Precies — zodra je nummer of social media bij de verkeerde mensen terechtkomt, kan in principe iedereen je appen, lastigvallen of bedreigen. Daarom is het belangrijk voorzichtig te zijn met aan wie je die gegevens geeft of doorspeelt." },
+    ]},
+];
+
+/* ===================== STATE ===================== */
+const appStartTime = Date.now();
+let sessionStartTime = appStartTime;
+let downloadsNS = null;
+(async ()=>{
+  try{
+    if(window.claude && typeof window.claude.use === "function"){
+      downloadsNS = await window.claude.use("downloads");
+    }
+  }catch(e){ downloadsNS = null; }
+})();
+
+let state = {
+  currentRoom: 1,
+  unlocked: [1],
+  done: [],
+  answered: {},   // qid -> true, only once the CORRECT answer was given
+  chosen: {},     // qid -> option index (mc) or typed text - for redisplay
+  attempted: {},  // qid -> true once they've checked at least once
+  phoneScreen: "home",
+  activeChatId: null,
+};
+
+/* ===================== RENDER: TABS ===================== */
+function renderTabs(){
+  const wrap = document.getElementById("roomTabs");
+  wrap.innerHTML = "";
+  rooms.forEach(r=>{
+    const btn = document.createElement("button");
+    const locked = !state.unlocked.includes(r.id);
+    const isDone = state.done.includes(r.id);
+    btn.className = "room-tab" + (r.id===state.currentRoom && !locked ? " active":"") + (locked?" locked":"") + (isDone?" done":"");
+    btn.innerHTML = `<span class="n">${isDone?"✓":r.id}</span> Kamer ${r.id}`;
+    btn.onclick = ()=>{
+      if(locked){ btn.classList.add("shake"); setTimeout(()=>btn.classList.remove("shake"),400); return; }
+      state.currentRoom = r.id;
+      renderAll();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+/* ===================== RENDER: CASE PANEL ===================== */
+function keywordHit(answer, q){
+  const a = answer.toLowerCase();
+  if(q.requireAll){
+    return q.requireAll.every(group => group.some(k => a.includes(k)));
+  }
+  return q.keywords.some(k => a.includes(k));
+}
+
+function formatDuration(ms){
+  const totalSec = Math.floor(ms/1000);
+  const min = Math.floor(totalSec/60);
+  const sec = totalSec%60;
+  if(min <= 0) return `${sec} seconden`;
+  return `${min} minu${min===1?"ut":"t"}en en ${sec} seconde${sec===1?"":"n"}`;
+}
+
+function buildTranscript(){
+  const finishedAt = state.finishTime || Date.now();
+  const duration = formatDuration(finishedAt - sessionStartTime);
+  const now = new Date();
+  let lines = [];
+  lines.push("DOSSIER: DAAN'S TELEFOON — Antwoordenoverzicht");
+  lines.push("Datum: " + dayStr() + " " + now.getFullYear());
+  lines.push("Totale tijd: " + duration);
+  lines.push("");
+  rooms.forEach(room=>{
+    lines.push("=".repeat(50));
+    lines.push(room.title.toUpperCase());
+    lines.push("=".repeat(50));
+    room.questions.forEach((q,i)=>{
+      lines.push("");
+      lines.push(`Vraag ${i+1}: ${q.prompt}`);
+      let answerText = "(geen antwoord)";
+      if(q.type === "mc"){
+        const oi = state.chosen[q.id];
+        if(typeof oi === "number") answerText = q.options[oi];
+      } else {
+        if(state.chosen[q.id]) answerText = state.chosen[q.id];
+      }
+      lines.push("Antwoord: " + answerText);
+    });
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+function triggerBlobDownload(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
+}
+
+async function downloadTranscript(btn){
+  const originalLabel = btn.textContent;
+  const text = buildTranscript();
+  const filename = "daans-telefoon-antwoorden.txt";
+  btn.disabled = true;
+  if(downloadsNS){
+    try{
+      await downloadsNS.save({ filename, data:text });
+      btn.textContent = "Gedownload ✓";
+    }catch(e){
+      if(e && e.code === "declined"){
+        btn.textContent = originalLabel;
+      } else {
+        // fall back to a plain browser download if the platform call fails
+        try{ triggerBlobDownload(filename, text); btn.textContent = "Gedownload ✓"; }
+        catch(e2){ btn.textContent = "Downloaden mislukt"; }
+      }
+    }
+  } else {
+    // plain browser context (e.g. hosted on your own site) — normal download
+    try{ triggerBlobDownload(filename, text); btn.textContent = "Gedownload ✓"; }
+    catch(e){ btn.textContent = "Downloaden mislukt"; }
+  }
+  btn.disabled = false;
+  setTimeout(()=>{ btn.textContent = originalLabel; }, 2500);
+}
+
+function renderCase(){
+  const panel = document.getElementById("casePanel");
+  if(state.currentRoom > rooms.length || (state.done.length === rooms.length && state.currentRoom === rooms.length && state.showDebrief)){
+    // handled elsewhere
+  }
+  if(state.showDebrief){
+    const durationTxt = formatDuration((state.finishTime||Date.now()) - sessionStartTime);
+    panel.innerHTML = `
+      <p class="case-kicker">DOSSIER GESLOTEN</p>
+      <h2 class="debrief-h">Missie voltooid 🎉</h2>
+      <div class="debrief">
+        <p class="lede">Jullie zijn door alle vier kamers heen, in <b>${durationTxt}</b>. Bespreek met de klas:</p>
+        <ul>
+          <li>Wie herkent één van deze situaties, zonder namen te noemen?</li>
+          <li>Wat zou jij anders hebben gedaan als je Daan was, in elk van de vier kamers?</li>
+          <li>Bij wie op school kun je terecht als je zoiets meemaakt — als omstander of als slachtoffer?</li>
+          <li>Is het makkelijker om online "nee" te zeggen tegen groepsdruk dan in het echt? Waarom (niet)?</li>
+        </ul>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="qcheck-btn" id="downloadBtn">⬇ Download antwoorden</button>
+          <button class="reset-btn" id="resetBtn">↺ Opnieuw beginnen</button>
+        </div>
+      </div>
+    `;
+    document.getElementById("downloadBtn").onclick = (e)=> downloadTranscript(e.currentTarget);
+    document.getElementById("resetBtn").onclick = ()=>{
+      sessionStartTime = Date.now();
+      state = { currentRoom:1, unlocked:[1], done:[], answered:{}, chosen:{}, attempted:{}, phoneScreen:"home", activeChatId:null,
+        roomStartTimes:{1:Date.now()}, hintsUnlocked:{} };
+      renderAll();
+    };
+    return;
+  }
+
+  const room = rooms.find(r=>r.id===state.currentRoom);
+  let qHtml = "";
+  room.questions.forEach((q,i)=>{
+    const correct = !!state.answered[q.id];
+    const attempted = !!(state.attempted && state.attempted[q.id]);
+    if(q.type === "mc"){
+      let optsHtml = "";
+      q.options.forEach((opt,oi)=>{
+        const isChosenWrong = !correct && attempted && state.chosen[q.id] === oi;
+        let cls = "mc-opt";
+        if(correct && oi===q.correct) cls += " correct-mark";
+        else if(isChosenWrong) cls += " wrong-mark";
+        optsHtml += `<button class="${cls}" data-q="${q.id}" data-oi="${oi}" ${correct?"disabled":""}>${opt}</button>`;
+      });
+      qHtml += `
+        <div class="qcard">
+          <div class="qnum">VRAAG ${i+1} VAN ${room.questions.length}</div>
+          <p class="qtext">${q.prompt}</p>
+          <div class="mc-options">${optsHtml}</div>
+          <div class="feedback ${attempted?"show "+(correct?"good":"bad"):""}" id="fb_${q.id}">${attempted ? (correct ? q.explain : "Nog niet helemaal — probeer het nog een keer.") : ""}</div>
+        </div>`;
+    } else {
+      const val = state.chosen[q.id] || "";
+      qHtml += `
+        <div class="qcard">
+          <div class="qnum">VRAAG ${i+1} VAN ${room.questions.length}</div>
+          <p class="qtext">${q.prompt}</p>
+          <textarea class="qinput" id="in_${q.id}" placeholder="Typ hier je antwoord..." ${correct?"disabled":""}>${val}</textarea>
+          ${correct?"":`<button class="qcheck-btn" data-q="${q.id}">Controleer antwoord</button>`}
+          <div class="feedback ${attempted?"show "+(correct?"good":"bad"):""}" id="fb_${q.id}">${attempted ? (correct ? q.good : "Nog niet het antwoord dat we zoeken — probeer het nog een keer.") : ""}</div>
+        </div>`;
+    }
+  });
+
+  const answeredCount = room.questions.filter(q=>state.answered[q.id]).length;
+  const allAnswered = answeredCount === room.questions.length;
+  const isLastRoom = room.id === rooms.length;
+
+  panel.innerHTML = `
+    <p class="case-kicker">${room.icon} KAMER ${room.id} VAN ${rooms.length}</p>
+    <h2>${room.title}</h2>
+    <p class="briefing">${room.briefing}</p>
+    <div class="hint-box" id="hintBox"><span class="ic">⏳</span><p>Probeer het eerst zelf...</p></div>
+    <div class="qlist">${qHtml}</div>
+    <div class="case-footer">
+      <span class="progress-txt">${answeredCount} / ${room.questions.length} vragen beantwoord</span>
+      <button class="next-btn" id="nextBtn" ${allAnswered?"":"disabled"}>${isLastRoom?"Missie afronden →":"Volgende kamer →"}</button>
+    </div>
+  `;
+
+  // wire mc buttons
+  panel.querySelectorAll(".mc-opt").forEach(b=>{
+    b.onclick = ()=>{
+      const qid = b.dataset.q, oi = parseInt(b.dataset.oi,10);
+      const q = room.questions.find(x=>x.id===qid);
+      state.chosen[qid] = oi;
+      state.attempted = state.attempted || {};
+      state.attempted[qid] = true;
+      if(oi === q.correct) state.answered[qid] = true;
+      renderCase();
+    };
+  });
+  // wire text check buttons
+  panel.querySelectorAll(".qcheck-btn").forEach(b=>{
+    b.onclick = ()=>{
+      const qid = b.dataset.q;
+      const q = room.questions.find(x=>x.id===qid);
+      const val = document.getElementById("in_"+qid).value.trim();
+      if(!val) return;
+      state.chosen[qid] = val;
+      state.attempted = state.attempted || {};
+      state.attempted[qid] = true;
+      const isGood = q.reflection ? true : keywordHit(val, q);
+      if(isGood) state.answered[qid] = true;
+      renderCase();
+    };
+  });
+  const nextBtn = document.getElementById("nextBtn");
+  if(nextBtn){
+    nextBtn.onclick = ()=>{
+      if(!state.done.includes(room.id)) state.done.push(room.id);
+      if(isLastRoom){
+        state.showDebrief = true;
+        state.finishTime = Date.now();
+      } else {
+        const nextId = room.id + 1;
+        if(!state.unlocked.includes(nextId)) state.unlocked.push(nextId);
+        state.currentRoom = nextId;
+      }
+      renderAll();
+    };
+  }
+  updateHintBox();
+}
+
+/* ===================== RENDER: PHONE ===================== */
+function renderPhone(){
+  const el = document.getElementById("phoneContent");
+  if(state.phoneScreen === "home"){
+    let unread = 0;
+    Object.values(contacts).forEach(()=> unread++); // decorative badge count
+    el.innerHTML = `
+      <div class="statusbar"><span class="clocknum">${nowStr()}</span><span>📶 🔋</span></div>
+      <div class="homescreen">
+        <div class="home-date">
+          <div class="time" id="homeTime">${nowStr()}</div>
+          <div class="day" id="homeDay">${dayStr()}</div>
+        </div>
+        <div class="app-grid">
+          <button class="app-icon wa" id="openWA"><span class="glyph">💬<span class="badge">${contactOrder.length}</span></span><span class="lbl">WhatsApp</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">📷</span><span class="lbl">Camera</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">🖼️</span><span class="lbl">Foto's</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">📅</span><span class="lbl">Agenda</span></button>
+          <button class="app-icon disabled" data-toast="1"><span class="glyph">🌐</span><span class="lbl">Browser</span></button>
+          <button class="app-icon disabled" data-toast="1"><span class="glyph">🎵</span><span class="lbl">Muziek</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">⚙️</span><span class="lbl">Instellingen</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">🕐</span><span class="lbl">Klok</span></button>
+        </div>
+        <div class="dock">
+          <button class="app-icon wa" id="openWA2"><span class="glyph">💬</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">📞</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">✉️</span></button>
+          <button class="app-icon" data-toast="1"><span class="glyph">📷</span></button>
+        </div>
+      </div>
+    `;
+    const go = ()=>{ state.phoneScreen="chatlist"; renderPhone(); };
+    document.getElementById("openWA").onclick = go;
+    document.getElementById("openWA2").onclick = go;
+    el.querySelectorAll("[data-toast]").forEach(b=> b.onclick = ()=>{
+      b.style.transform="scale(0.92)"; setTimeout(()=>b.style.transform="",120);
+    });
+    return;
+  }
+
+  if(state.phoneScreen === "chatlist"){
+    let rows = "";
+    contactOrder.forEach(id=>{
+      const c = contacts[id];
+      const last = c.messages[c.messages.length-1];
+      rows += `
+        <div class="chat-row" data-id="${id}">
+          <div class="av">${c.avatar}</div>
+          <div class="mid">
+            <div class="nm">${c.name}</div>
+            <div class="last">${c.type==="group" && last.from!=="Daan" ? last.from+": ":""}${last.text.replace(/^🖼️.*/,"📷 media bericht")}</div>
+          </div>
+          <div class="rt"><span class="tm">${last.time}</span></div>
+        </div>`;
+    });
+    el.innerHTML = `
+      <div class="statusbar"><span class="clocknum">${nowStr()}</span><span>📶 🔋</span></div>
+      <div class="wa-screen">
+        <div class="wa-header">
+          <button class="back" id="backHome">‹</button>
+          <div><div class="title">WhatsApp</div><div class="sub">${contactOrder.length} gesprekken</div></div>
+        </div>
+        <div class="chat-list">${rows}</div>
+      </div>
+    `;
+    document.getElementById("backHome").onclick = ()=>{ state.phoneScreen="home"; renderPhone(); };
+    el.querySelectorAll(".chat-row").forEach(r=>{
+      r.onclick = ()=>{ state.activeChatId = r.dataset.id; state.phoneScreen="chat"; renderPhone(); };
+    });
+    return;
+  }
+
+  if(state.phoneScreen === "chat"){
+    const c = contacts[state.activeChatId];
+    let lastDay = null;
+    let msgs = "";
+    c.messages.forEach(m=>{
+      if(m.day !== lastDay){
+        msgs += `<div class="date-div">${m.day}</div>`;
+        lastDay = m.day;
+      }
+      const out = m.from === "Daan";
+      const isMedia = m.text.startsWith("🖼️");
+      const showSender = c.type==="group" && !out;
+      const cleanText = isMedia ? m.text.replace("🖼️ ","") : m.text;
+      let mediaHtml = "";
+      let bubbleExtraClass = "";
+      let isStickerKind = false;
+      if(isMedia){
+        const info = mediaInfo(cleanText);
+        if(info.kind === "link"){
+          bubbleExtraClass = "media";
+          mediaHtml = `<div class="link-card"><svg class="link-icon"><use href="#${info.icon}"/></svg><div class="link-meta"><span class="link-domain">${info.label}</span><span class="link-sub">Onbekende website</span></div></div>`;
+        } else if(info.kind === "photo"){
+          bubbleExtraClass = "media";
+          mediaHtml = `<div class="photo-wrap"><svg><use href="#${info.icon}"/></svg></div>`;
+        } else {
+          isStickerKind = true;
+          bubbleExtraClass = "sticker-bubble";
+          mediaHtml = `<div class="sticker-wrap"><svg><use href="#${info.icon}"/></svg>${info.kind==="gif"?'<span class="gif-badge">GIF</span>':''}</div><span class="sticker-tm">${m.time}${out?" ✓✓":""}</span>`;
+        }
+      }
+      msgs += `
+        <div class="bubble-row ${out?"out":""}">
+          <div class="bubble ${out?"out":"in"} ${bubbleExtraClass}">
+            ${showSender?`<span class="sender" style="color:${senderColor(m.from)}">${m.from}</span>`:""}
+            ${isMedia? mediaHtml : cleanText}
+            ${isStickerKind?"":`<span class="tm">${m.time}${out?" ✓✓":""}</span>`}
+          </div>
+        </div>`;
+    });
+    el.innerHTML = `
+      <div class="statusbar"><span class="clocknum">${nowStr()}</span><span>📶 🔋</span></div>
+      <div class="wa-screen">
+        <div class="wa-header">
+          <button class="back" id="backList">‹</button>
+          <div class="av" style="width:34px;height:34px;font-size:15px;">${c.avatar}</div>
+          <div><div class="title" style="font-size:15px;">${c.name}</div><div class="sub">${c.type==="group"?"groepsgesprek":"online"}</div></div>
+        </div>
+        <div class="wa-thread" id="thread">${msgs}</div>
+        <div class="wa-composer">
+          <div class="fake-input">Typ een bericht</div>
+          <div class="mic">🎤</div>
+        </div>
+      </div>
+    `;
+    document.getElementById("backList").onclick = ()=>{ state.phoneScreen="chatlist"; renderPhone(); };
+    const thread = document.getElementById("thread");
+    thread.scrollTop = 0;
+    return;
+  }
+}
+
+const senderPalette = ["#e17076","#7bc862","#65aadd","#a695e7","#e0a94e","#ee7aae"];
+function senderColor(name){
+  let h=0; for(let i=0;i<name.length;i++) h = (h*31 + name.charCodeAt(i)) >>> 0;
+  return senderPalette[h % senderPalette.length];
+}
+
+function mediaInfo(text){
+  const t = text.toLowerCase();
+  if(t.includes("link:")){
+    const m = text.match(/link:\s*([^\]]+)/);
+    return { kind:"link", icon:"icon-link", label: m ? m[1].trim() : "onbekende link" };
+  }
+  if(t.includes("foto")) return { kind:"photo", icon:"icon-photo", label:"foto" };
+  const isGif = t.includes("gif");
+  if(t.includes("kat")) return { kind:isGif?"gif":"sticker", icon:"icon-cat" };
+  if(t.includes("hond")) return { kind:isGif?"gif":"sticker", icon:"icon-dog" };
+  if(t.includes("explosie")) return { kind:"gif", icon:"icon-explosion" };
+  if(t.includes("uitlach")) return { kind:"sticker", icon:"icon-laugh" };
+  if(t.includes("doelpunt")) return { kind:"gif", icon:"icon-football" };
+  if(t.includes("maan")) return { kind:"sticker", icon:"icon-moon" };
+  if(t.includes("sterretjes")||t.includes("sparkle")) return { kind:isGif?"gif":"sticker", icon:"icon-sparkle" };
+  return { kind:isGif?"gif":"sticker", icon:"icon-sparkle" };
+}
+
+/* ===================== PHONE MODAL (open = page goes inert behind it) ===================== */
+function openPhone(){
+  document.getElementById("phoneModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closePhone(){
+  document.getElementById("phoneModal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+document.getElementById("phoneOpenBtn").onclick = openPhone;
+document.getElementById("phoneClose").onclick = closePhone;
+document.getElementById("phoneModal").addEventListener("click", (e)=>{
+  if(e.target.id === "phoneModal") closePhone();
+});
+
+/* ===================== HINT DELAY (5 minuten per kamer) ===================== */
+const HINT_DELAY_MS = 5 * 60 * 1000;
+state.roomStartTimes = { 1: Date.now() };
+state.hintsUnlocked = {};
+
+function updateHintBox(){
+  const box = document.getElementById("hintBox");
+  if(!box) return;
+  const room = rooms.find(r=>r.id===state.currentRoom);
+  if(!room || state.showDebrief) return;
+  if(!state.roomStartTimes[room.id]) state.roomStartTimes[room.id] = Date.now();
+  const elapsed = Date.now() - state.roomStartTimes[room.id];
+  if(elapsed >= HINT_DELAY_MS){
+    state.hintsUnlocked[room.id] = true;
+    box.innerHTML = `<span class="ic">🔎</span><p>${room.hint}</p>`;
+  } else {
+    const remain = HINT_DELAY_MS - elapsed;
+    const mm = Math.floor(remain/60000);
+    const ss = Math.floor((remain%60000)/1000).toString().padStart(2,"0");
+    box.innerHTML = `<span class="ic">⏳</span><p>Probeer het eerst zelf — over <b>${mm}:${ss}</b> verschijnt hier een hint over welke chats je moet bekijken.</p>`;
+  }
+}
+setInterval(updateHintBox, 1000);
+
+/* ===================== LIVE KLOK ===================== */
+function nowStr(){
+  const d = new Date();
+  return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
+}
+function dayStr(){
+  const days = ["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"];
+  const d = new Date();
+  return days[d.getDay()].charAt(0).toUpperCase()+days[d.getDay()].slice(1) + " " + d.getDate() + " " +
+    ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"][d.getMonth()];
+}
+function updateClocks(){
+  document.querySelectorAll(".statusbar .clocknum").forEach(el=> el.textContent = nowStr());
+  const ht = document.getElementById("homeTime"); if(ht) ht.textContent = nowStr();
+  const hd = document.getElementById("homeDay"); if(hd) hd.textContent = dayStr();
+}
+setInterval(updateClocks, 15000);
+
+/* ===================== INIT ===================== */
+function renderAll(){
+  renderTabs();
+  renderCase();
+  renderPhone();
+}
+renderAll();
+</script>
+</body>
+</html>
