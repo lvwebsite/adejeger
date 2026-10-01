@@ -172,8 +172,25 @@ html, body {
 .cost-chip.bad   { background: var(--red-l);   color: var(--red);   }
 .cost-chip.risk  { background: #EDE9FE;         color: var(--purple);}
 
+/* ── KEUZE + MOTIVATIE ── */
+.choice-card.selected { border-color: var(--blue); background: #F5F9FF; box-shadow: 0 0 0 4px var(--blue-l); }
+.choice-card.selected .choice-letter { background: var(--blue); border-color: var(--blue); color: #FFFFFF; }
+#motive-wrap { margin-top: 20px; }
+.motive-box { background: var(--paper); border-radius: 14px; padding: 18px 20px; border: 2px solid var(--blue); box-shadow: 0 0 0 4px var(--blue-l); }
+.motive-box .mb-label { font-size: 13px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.motive-box .mb-chosen { font-size: 14px; color: var(--slate); margin-bottom: 8px; }
+.motive-box .mb-chosen strong { color: var(--navy); }
+.motive-box .mb-q { font-size: 15px; color: var(--navy); font-weight: 600; margin-bottom: 10px; }
+.motive-box textarea { width: 100%; min-height: 90px; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--ink); resize: vertical; line-height: 1.5; background: var(--cream); }
+.motive-box textarea:focus { outline: none; border-color: var(--blue); }
+.motive-box .mb-hint { font-size: 12px; color: var(--slate); margin-top: 6px; }
+.confirm-btn { display: block; margin: 14px 0 0 auto; background: var(--navy); color: #FFFFFF; border: none; border-radius: 10px; padding: 14px 26px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.confirm-btn:hover:not(:disabled) { background: #1e3a6e; }
+.confirm-btn:disabled { opacity: .4; cursor: not-allowed; }
+
 /* ── NARRATIVE ── */
-#narrative-screen { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px; display: flex; flex-direction: column; gap: 24px; }
+#narrative-screen { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px; flex-direction: column; gap: 24px; }
+#narrative-screen.active { display: flex; }
 .news-card { background: var(--paper); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(15,23,42,.08); }
 .news-header { padding: 10px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: white; }
 .news-body { padding: 18px 20px; }
@@ -329,7 +346,7 @@ html, body {
 <div id="teacher-modal" role="dialog" aria-modal="true">
   <div class="tm-box">
     <div class="tm-header">
-      <h2>Docentenweergave: antwoorden van deze leerling</h2>
+      <h2>Docentenweergave: keuzes en motivaties van deze leerling</h2>
       <button class="tm-close" onclick="closeTeacherView()" aria-label="Sluit">✕</button>
     </div>
     <div class="tm-body" id="tm-body"></div>
@@ -382,6 +399,7 @@ html, body {
       <span class="rtc" id="stage-timer-count"></span>
     </div>
     <div class="choices" id="choices-container"></div>
+    <div id="motive-wrap"></div>
   </div>
 </div>
 
@@ -767,6 +785,7 @@ let state = {
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
 }
 
 function updateMeters() {
@@ -848,6 +867,10 @@ function renderStage() {
   document.getElementById('st-title').textContent   = stage.titleFn();
   document.getElementById('st-context').innerHTML   = stage.contextFn(state.char);
 
+  state.pendingChoice = null;
+  document.getElementById('narrative-screen').innerHTML = '';
+  const mw = document.getElementById('motive-wrap');
+  mw.innerHTML = '';
   const container = document.getElementById('choices-container');
   container.innerHTML = '';
   const letters = ['A','B','C'];
@@ -864,7 +887,7 @@ function renderStage() {
         <div class="choice-desc">${ch.desc}</div>
         <div class="choice-costs">${chips}</div>
       </div>`;
-    card.onclick = () => makeChoice(stage, ch);
+    card.onclick = () => selectChoice(stage, ch, card);
     container.appendChild(card);
     cards.push(card);
   });
@@ -875,7 +898,78 @@ function renderStage() {
   });
 }
 
-function makeChoice(stage, choice) {
+const MOTIVE_QUESTIONS = [
+  'Waarom kies je juist deze reactie op deze groep? Wat win je, en wat geef je op?',
+  'Kies je hier hetzelfde als bij de vorige groep? Leg uit waarom wel of niet, en denk aan wat je al hebt ingeleverd.',
+  'Twijfelaars zijn het moeilijkst te overtuigen. Waarom pakt jouw keuze dit goed aan?',
+  'Waarom kies je dit bij de leerlingenraad? Denk aan wat je tot nu toe hebt ingeleverd en wat eerdere keuzes hebben veroorzaakt.',
+  'Dit is je laatste stap. Waarom kies je dit? Wat betekent je keuze voor je tijd en voor je plan?',
+];
+const MIN_WORDS = 10;
+
+function checkMotivation(text) {
+  const words = (text.toLowerCase().match(/[a-zà-ÿ']+/g) || []);
+  if (words.length < MIN_WORDS) {
+    const n = MIN_WORDS - words.length;
+    return { ok:false, msg:`Schrijf nog minstens ${n} woord${n !== 1 ? 'en' : ''}. Leg uit waarom je dit kiest.` };
+  }
+  const unique = new Set(words);
+  const withVowel = words.filter(w => /[aeiouyà-ÿ]/.test(w)).length;
+  const counts = {}; words.forEach(w => counts[w] = (counts[w] || 0) + 1);
+  const maxRepeat = Math.max(...Object.values(counts));
+  if (unique.size < 7 || withVowel / words.length < 0.8 || maxRepeat > 4) {
+    return { ok:false, msg:'Dit lijkt nog geen echte uitleg. Schrijf in eigen woorden waarom je dit kiest.' };
+  }
+  const norm = words.join(' ');
+  const earlier = (state.reflections || []).some(r => r && r.answer &&
+    (r.answer.toLowerCase().match(/[a-zà-ÿ']+/g) || []).join(' ') === norm);
+  if (earlier) {
+    return { ok:false, msg:'Je gebruikte dit antwoord al bij een eerdere stap. Leg uit wat nu anders is.' };
+  }
+  return { ok:true, msg:'✓ Goed, je kunt je keuze bevestigen.' };
+}
+
+function selectChoice(stage, choice, card) {
+  if (card.classList.contains('locked')) return;
+  document.querySelectorAll('#choices-container .choice-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.pendingChoice = choice;
+
+  const wrap = document.getElementById('motive-wrap');
+  let box = document.getElementById('motive-box');
+  if (!box) {
+    wrap.innerHTML = `
+      <div class="motive-box" id="motive-box">
+        <div class="mb-label">Motiveer je keuze</div>
+        <div class="mb-chosen" id="mb-chosen"></div>
+        <div class="mb-q">${MOTIVE_QUESTIONS[state.stageIdx] || 'Waarom kies je dit?'}</div>
+        <textarea id="motive-ta" rows="4" placeholder="Schrijf hier je uitleg…"></textarea>
+        <div class="mb-hint" id="mb-hint"></div>
+        <button class="confirm-btn" id="confirm-btn" disabled>Bevestig mijn keuze →</button>
+      </div>`;
+    const ta = document.getElementById('motive-ta');
+    const btn = document.getElementById('confirm-btn');
+    const hint = document.getElementById('mb-hint');
+    const refresh = () => {
+      const r = checkMotivation(ta.value);
+      hint.textContent = r.msg;
+      hint.style.color = r.ok ? '#16A34A' : '#475569';
+      btn.disabled = !(r.ok && state.pendingChoice);
+    };
+    ta.addEventListener('input', refresh);
+    btn.onclick = () => {
+      if (btn.disabled || !state.pendingChoice) return;
+      btn.disabled = true;
+      makeChoice(stage, state.pendingChoice, ta.value.trim());
+    };
+    refresh();
+    setTimeout(() => ta.focus(), 50);
+  }
+  document.getElementById('mb-chosen').innerHTML = 'Je koos: <strong>' + choice.label + '</strong>';
+  wrap.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function makeChoice(stage, choice, motivation) {
   // Conditional directeur "direct": outcome depends on current integ
   let effectiveChoice = choice;
   let extraWeeks = 0, extraInteg = 0;
@@ -891,6 +985,13 @@ function makeChoice(stage, choice) {
   state.weeksUsed     += choice.weeksCost + extraWeeks;
   state.integrityLost += (choice.integLoss || 0) + extraInteg;
   if (choice.riskFlag) state.riskFlags.add(choice.riskFlag);
+
+  state.reflections[state.stageIdx] = {
+    question: MOTIVE_QUESTIONS[state.stageIdx] || '',
+    answer:   motivation,
+    choice:   choice.label.split('—')[0].trim(),
+    stage:    stage.titleFn(),
+  };
 
   state.history.push({
     stageTitle:  stage.titleFn(),
@@ -1050,79 +1151,18 @@ function renderNarrative(stage, choice) {
     container.appendChild(comp);
   }
 
-  // ── Reflection input ──
-  const reflectQ = REFLECT_QUESTIONS[state.stageIdx] || 'Wat leerde je van deze keuze?';
-  const MIN_CHARS = 15;
-  const reflectBox = document.createElement('div');
-  reflectBox.className = 'reflect-input-box';
-  reflectBox.innerHTML = `
-    <div class="rib-label">Jouw uitleg</div>
-    <div class="rib-q">${reflectQ}</div>
-    <textarea id="reflect-ta" placeholder="Schrijf hier je antwoord…" rows="3"></textarea>
-    <div class="rib-hint" id="rib-hint">Typ minstens ${MIN_CHARS} tekens om verder te gaan.</div>`;
-  container.appendChild(reflectBox);
-
   const isLast = state.stageIdx === STAGES.length - 1;
-  const captureStageIdx = state.stageIdx; // freeze idx for closure
   const btn = document.createElement('button');
   btn.className = 'narrative-btn';
   btn.id = 'narr-next-btn';
   btn.disabled = true;
   btn.textContent = isLast ? 'Zie het eindresultaat →' : 'Volgende stap →';
-  btn.onclick = () => {
-    // save reflection before navigating away
-    const ta = document.getElementById('reflect-ta');
-    if (ta) {
-      state.reflections[captureStageIdx] = {
-        question: reflectQ,
-        answer:   ta.value.trim(),
-        choice:   choice.label.split('—')[0].trim(),
-        stage:    stage.titleFn(),
-      };
-    }
-    advanceFromStage(stage.id);
-  };
+  btn.onclick = () => advanceFromStage(stage.id);
   container.appendChild(btn);
 
-  // Unlock button: timer (6s) AND min chars typed
-  // Use safeTimeout so these are cancelled if a new game starts
-  let timerDone = false;
-  let textOk    = false;
-  let alive     = true; // guards against stale closure after game reset
-
-  function tryUnlock() {
-    if (!alive) return;
-    if (timerDone && textOk) btn.disabled = false;
-  }
-
-  // 6s read timer (visual only)
+  // Eerst de uitkomst lezen; de volgende stap vraagt daarna weer om keuze + motivatie
   startNarrativeTimer(6, 'narr-next-btn');
-  safeTimeout(() => { timerDone = true; tryUnlock(); }, 6000);
-
-  // watch textarea: tiny delay so DOM is settled
-  safeTimeout(() => {
-    if (!alive) return;
-    const ta   = document.getElementById('reflect-ta');
-    const hint = document.getElementById('rib-hint');
-    if (!ta) return;
-    ta.addEventListener('input', () => {
-      if (!alive) return;
-      const len = ta.value.trim().length;
-      textOk = len >= MIN_CHARS;
-      if (hint) {
-        hint.textContent = textOk
-          ? '✓ Goed zo, je kunt nu verder.'
-          : `Typ nog ${MIN_CHARS - len} teken${MIN_CHARS - len !== 1 ? 's' : ''}.`;
-        hint.style.color = textOk ? 'var(--green)' : 'var(--muted)';
-      }
-      tryUnlock();
-    });
-  }, 100);
-
-  // mark closure dead when a new game starts (clearAllTimers kills the
-  // setTimeout IDs, but the textarea listener closure still has alive flag)
-  const killOnReset = () => { alive = false; };
-  window.addEventListener('gameReset', killOnReset, { once: true });
+  safeTimeout(() => { btn.disabled = false; }, 6000);
 }
 
 // ══ RESULT ══════════════════════════════════════════════════
@@ -1273,12 +1313,12 @@ function showTeacherView() {
   if (state.reflections.length === 0) {
     const none = document.createElement('p');
     none.className = 'tm-empty';
-    none.textContent = 'Nog geen reflecties ingevuld.';
+    none.textContent = 'Nog geen motivaties ingevuld.';
     body.appendChild(none);
   } else {
     const reflDiv = document.createElement('div');
     reflDiv.className = 'tm-reflect';
-    reflDiv.innerHTML = '<div class="tr-head">Ingevulde reflecties</div>';
+    reflDiv.innerHTML = '<div class="tr-head">Motivaties per stap</div>';
     const rows = document.createElement('div');
     rows.className = 'tr-body';
     state.reflections.forEach((r, i) => {
