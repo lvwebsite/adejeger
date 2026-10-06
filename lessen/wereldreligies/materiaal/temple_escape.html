@@ -541,9 +541,7 @@
   <div class="corridor" id="corridor"></div>
 
   <div class="control-bar">
-    <button class="btn-ghost" id="startBtn">⏸ Pauzeer</button>
     <span class="timer-display" id="timerDisplay">00:00</span>
-    <button class="btn-ghost" id="resetBtn">↺ Reset</button>
   </div>
 
   <div class="penalty-toast" id="penaltyToast">+15 sec tijdstraf</div>
@@ -1294,7 +1292,6 @@ function updateTimerDisplay(){
 function startTimer(){
   if (state.timerRunning) return;
   state.timerRunning = true;
-  document.getElementById('startBtn').textContent = '⏸ Pauzeer';
   state.timerInterval = setInterval(() => {
     state.timerSeconds++;
     updateTimerDisplay();
@@ -1304,30 +1301,7 @@ function startTimer(){
 function pauseTimer(){
   state.timerRunning = false;
   clearInterval(state.timerInterval);
-  document.getElementById('startBtn').textContent = '▶ Start de klok';
 }
-
-document.getElementById('startBtn').addEventListener('click', () => {
-  // Tijdens een verhaalbeat (of na afloop) staat de klok bewust stil; niet handmatig hervatten.
-  if (state.storyPending || state.finished) return;
-  if (state.timerRunning) pauseTimer();
-  else startTimer();
-});
-
-document.getElementById('resetBtn').addEventListener('click', () => {
-  if (!confirm('Reset alle voortgang en de klok? (Je beste tijd blijft wel bewaard.)')) return;
-  pauseTimer();
-  document.getElementById('storyOverlay').classList.remove('show');
-  document.getElementById('scoreBlock').classList.remove('show');
-  state = {
-    unlocked:0, roomProgress:{}, timerSeconds:0, timerRunning:false, timerInterval:null,
-    mistakes:0, finished:false, justRevealed:null, storyPending:false, PENALTY_SECONDS:15
-  };
-  updateTimerDisplay();
-  renderCorridor();
-  renderRooms();
-  startTimer();
-});
 
 document.getElementById('storyContinueBtn').addEventListener('click', () => {
   // bepaal welke kamer net is opgelost (= state.unlocked, want die is nog niet opgehoogd)
