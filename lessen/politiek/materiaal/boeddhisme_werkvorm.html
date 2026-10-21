@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Het pad van Siddhartha</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  :root{
+    --ink:#23201a;
+    --shadow:#2a2620;
+    --paper:#F6F1E7;
+    --paper-line:#e7dec9;
+    --saffron:#C8772E;
+    --saffron-dark:#9a5a1c;
+    --jade:#3E6B5A;
+    --jade-dark:#274539;
+    --plum:#6E4A5A;
+    --stone:#6b6052;
+    --err:#A2503C;
+    --err-dark:#7d3524;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(ellipse at 50% -8%, #fbf7ee 0%, #F6F1E7 60%, #efe7d4 100%);
+    color:#23201a;
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding:28px 16px 70px;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+
+  .masthead{text-align:center;margin-bottom:6px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#C8772E;margin:0 0 6px;}
+  h1.title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:clamp(30px,5.5vw,44px);margin:0 0 6px;color:#2a2620;}
+  .subtitle{font-size:14.5px;color:#6b6052;max-width:620px;margin:0 auto 20px;line-height:1.6;}
+
+  .phase-track{display:flex;justify-content:center;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;
+    padding:7px 13px;border-radius:20px;border:1.5px solid #e7dec9;background:#ffffff;color:#6b6052;
+  }
+  .chip.active{border-color:#C8772E;color:#9a5a1c;background:#fff6ea;font-weight:600;}
+  .chip.done{border-color:#3E6B5A;color:#3E6B5A;background:#eef5f1;}
+
+  .panel{
+    background:#ffffff;border:1px solid #e7dec9;border-radius:14px;
+    padding:22px 22px 26px;margin-bottom:22px;
+    box-shadow:0 14px 32px -18px rgba(0,0,0,0.35);
+    animation:fade .4s ease;
+  }
+  @keyframes fade{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .panel-step{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#9a5a1c;font-weight:600;margin:0 0 2px;}
+  .panel-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:700;color:#2a2620;margin:0 0 6px;}
+  .panel-intro{font-size:14.5px;color:#23201a;line-height:1.6;margin:0 0 14px;}
+
+  /* vaste instructiebalk: elke ronde hetzelfde */
+  .howto{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px;padding:0;list-style:none;
+  }
+  .howto li{
+    display:flex;gap:10px;align-items:flex-start;background:#fff6ea;border:1px solid #f0dcbd;
+    border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45;color:#5c4320;
+  }
+  .howto .no{
+    flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#C8772E;color:#ffffff;
+    font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;
+  }
+
+  .pool-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 8px;}
+  .pool-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#6b6052;margin:0;}
+  .pool-count{font-size:12.5px;font-weight:600;color:#9a5a1c;}
+  .card-pool{
+    display:flex;flex-wrap:wrap;gap:10px;min-height:62px;padding:12px;
+    background:#F6F1E7;border-radius:10px;border:1px dashed #d8cdb2;margin-bottom:22px;
+  }
+  .card-pool.empty::after{content:'Alle kaarten liggen in een vak';color:#6b6052;font-size:12.5px;font-style:italic;margin:auto;}
+
+  .card{
+    background:#ffffff;border:1.5px solid #d8cdb2;border-radius:9px;
+    padding:10px 13px;font-size:13.5px;font-weight:500;color:#23201a;
+    cursor:grab;user-select:none;max-width:290px;line-height:1.4;
+    box-shadow:0 3px 8px -4px rgba(0,0,0,0.25);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .2s ease, background .2s ease;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 16px -8px rgba(0,0,0,0.3);}
+  .card:focus-visible{outline:3px solid #C8772E;outline-offset:2px;}
+  .card.dragging{opacity:0.45;cursor:grabbing;}
+  .card.selected{border-color:#C8772E;background:#fff6ea;color:#23201a;box-shadow:0 0 0 3px rgba(200,119,46,0.25);}
+  .card.ok{background:#eef5f1;border-color:#3E6B5A;color:#274539;cursor:default;box-shadow:none;transform:none;}
+  .card.ok::before{content:'\2713  ';color:#3E6B5A;font-weight:700;}
+  .card.nogniet{background:#fbeae5;border-color:#A2503C;color:#7d3524;animation:shake .45s ease;}
+  .card.nogniet::before{content:'\2717  ';color:#A2503C;font-weight:700;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+
+  .boxes{display:grid;gap:14px;margin-bottom:6px;}
+  .boxes.n2{grid-template-columns:repeat(2,1fr);}
+  .boxes.n3{grid-template-columns:repeat(3,1fr);}
+  .boxes.n4{grid-template-columns:repeat(2,1fr);}
+  .box{border:1px solid #e7dec9;border-radius:12px;background:#ffffff;overflow:hidden;display:flex;flex-direction:column;}
+  .box-head{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#ffffff;}
+  .box-no{
+    flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.22);color:#ffffff;
+    font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;
+  }
+  .box-title{flex:1;font-weight:700;font-size:14px;line-height:1.3;color:#ffffff;}
+  .info-btn{
+    flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1.5px solid #ffffff;background:transparent;color:#ffffff;
+    font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:700;font-size:16px;line-height:1;padding:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .info-btn:hover{background:rgba(255,255,255,0.25);}
+  .info-btn[aria-expanded="true"]{background:#ffffff;color:#2a2620;}
+  .info{
+    padding:10px 12px;font-size:12.5px;line-height:1.55;background:#fbf7ee;color:#3d362b;border-bottom:1px solid #e7dec9;
+  }
+  .info[hidden]{display:none;}
+  .zone{
+    flex:1;min-height:90px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:stretch;
+    background:#F6F1E7;border:2px dashed transparent;transition:background .15s ease, border-color .15s ease;
+  }
+  .zone .card{max-width:100%;}
+  .zone.over,.zone.target{border-color:#C8772E;background:#fff6ea;}
+  .zone.target{cursor:pointer;}
+
+  .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:18px;}
+  button{font-family:'Inter',system-ui,sans-serif;}
+  .btn{font-weight:600;font-size:14px;border:none;border-radius:8px;padding:11px 20px;cursor:pointer;transition:transform .12s ease, filter .12s ease;}
+  .btn:hover{filter:brightness(1.06);}
+  .btn:active{transform:scale(0.97);}
+  .btn:disabled{opacity:0.45;cursor:not-allowed;filter:none;transform:none;}
+  .btn-primary{background:#C8772E;color:#ffffff;}
+  .btn-ghost{background:transparent;color:#2a2620;border:1.5px solid #d8cdb2;}
+  .feedback{font-size:14px;font-weight:600;line-height:1.5;flex:1;min-width:220px;}
+  .feedback.err{color:#A2503C;}
+  .feedback.ok{color:#3E6B5A;}
+  .feedback.neutral{color:#6b6052;font-weight:500;}
+
+  .reveal{margin-top:18px;padding:16px 18px;background:#eef5f1;border-radius:10px;border:1px solid #d4e4dc;font-size:14px;line-height:1.65;color:#274539;animation:fade .4s ease;}
+  .reveal[hidden]{display:none;}
+  .reveal h4{margin:0 0 8px;font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;color:#3E6B5A;}
+  .reveal p{margin:0 0 8px;color:#274539;}
+  .reveal p:last-child{margin-bottom:0;}
+  .reveal b{color:#2a2620;}
+
+  .write-strip{
+    display:flex;align-items:center;gap:10px;margin-top:18px;padding:12px 16px;
+    background:#fff6ea;border:1px solid #f0dcbd;border-radius:10px;font-size:14px;color:#7a5b2c;animation:fade .4s ease;
+  }
+  .write-strip[hidden]{display:none;}
+  .write-strip b{color:#9a5a1c;}
+
+  footer.note{text-align:center;font-size:11.5px;color:#7d715c;margin-top:24px;line-height:1.7;}
+
+  @media (max-width:760px){
+    .howto{grid-template-columns:1fr;}
+    .boxes.n3,.boxes.n4,.boxes.n2{grid-template-columns:1fr;}
+    .card{max-width:100%;}
+  }
+  @media (prefers-reduced-motion: reduce){*{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">Boeddhisme &middot; werkvorm bij paragraaf 5</p>
+    <h1 class="title">Het pad van Siddhartha</h1>
+    <p class="subtitle">Vier korte rondes over het verhaal van de Boeddha, zijn leer en de stromingen. Elke ronde werkt hetzelfde: kaarten bij het juiste vak zetten. Heb je de paragraaf gelezen? Dan kun je dit.</p>
+  </div>
+
+  <div class="phase-track" id="track"></div>
+  <div id="stage"></div>
+
+  <footer class="note">
+    Alle kaarten komen uit Paragraaf 5: Boeddhisme (Wereldreligies).<br>
+    Na het controleren zie je per kaart wat goed en fout was. Fout is nog niet goed: probeer het opnieuw.
+  </footer>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD (docent kan hier teksten aanpassen)
+   Elke kaart: [tekst, nummer van het vak waar hij hoort]
+   Alle tekst komt uit Paragraaf 5: Boeddhisme.
+   ========================================================================= */
+const ROUNDS = [
+  {
+    chip: 'Het verhaal',
+    title: 'Het verhaal van Siddhartha',
+    intro: 'Het verhaal van de Boeddha heeft drie delen. Zet elke gebeurtenis bij het juiste deel.',
+    boxes: [
+      { title: 'Het paleis', color: '#C8772E',
+        info: 'Siddhartha wordt geboren als prins in een welvarende familie. Zijn ouders willen hem afschermen van alles wat verdrietig of moeilijk is. Toch ontdekt hij op een dag de realiteit van het leven.' },
+      { title: 'De zoektocht', color: '#6E4A5A',
+        info: 'Siddhartha verlaat zijn luxe leven en gaat op zoek naar antwoorden. Hij bestudeert religies, volgt strenge leefregels en mediteert jarenlang.' },
+      { title: 'De Ontwaakte', color: '#3E6B5A',
+        info: 'Onder een bodhiboom bereikt hij verlichting. Vanaf dat moment is hij de Boeddha, en begint hij zijn inzichten te delen.' }
+    ],
+    cards: [
+      ['Siddhartha wordt geboren als prins in een welvarende familie.', 0],
+      ['Zijn ouders proberen hem af te schermen van alles wat verdrietig of moeilijk is.', 0],
+      ['Hij ontdekt ouderdom, ziekte en dood.', 0],
+      ['Hij verlaat zijn luxe leven en gaat op zoek naar antwoorden.', 1],
+      ['Hij volgt strenge ascetische leefregels.', 1],
+      ['Hij mediteert jarenlang.', 1],
+      ['Onder een bodhiboom bereikt hij verlichting.', 2],
+      ['Hij wordt de Boeddha, "de Ontwaakte".', 2],
+      ['Hij begint zijn inzichten met anderen te delen.', 2]
+    ],
+    reveal: '<p><b>Dit staat in de paragraaf.</b> Siddhartha stelt een diepe vraag: <i>"Hoe kan een mens vrij worden van lijden?"</i> Daarom verlaat hij het paleis. Na jaren zoeken vindt hij het antwoord onder de bodhiboom. Boeddha betekent "de Ontwaakte".</p>'
+  },
+  {
+    chip: 'Vier Edele Waarheden',
+    title: 'De Vier Edele Waarheden',
+    intro: 'Dit is het antwoord van de Boeddha op zijn vraag. Er zijn vier waarheden. Zet bij elke waarheid de twee kaarten die erbij horen.',
+    boxes: [
+      { title: 'Waarheid 1: lijden', color: '#C8772E',
+        info: 'Er is lijden, in ieders leven.' },
+      { title: 'Waarheid 2: de oorzaak', color: '#6E4A5A',
+        info: 'Lijden heeft een oorzaak: verlangen en gehechtheid.' },
+      { title: 'Waarheid 3: het einde van lijden', color: '#3E6B5A',
+        info: 'Er is een einde aan lijden mogelijk, door verlangens los te laten.' },
+      { title: 'Waarheid 4: de weg', color: '#7a6a3a',
+        info: 'De weg naar het einde van lijden is het Achtvoudige Pad (juist begrip, juist handelen, juist mediteren, enzovoort).' }
+    ],
+    cards: [
+      ['In ieders leven is er lijden.', 0],
+      ['Ouderdom, ziekte en dood overkomen iedereen.', 0],
+      ['Verlangen en gehechtheid zijn de oorzaak van lijden.', 1],
+      ['Je voelt je rot omdat je per se die nieuwe telefoon wilt hebben.', 1],
+      ['Door verlangens los te laten kan het lijden stoppen.', 2],
+      ['Je wordt rustiger nadat je stopt met steeds meer willen.', 2],
+      ['De weg is het Achtvoudige Pad.', 3],
+      ['Juist begrip, juist handelen en juist mediteren horen bij die weg.', 3]
+    ],
+    reveal: '<p><b>Dit staat in de paragraaf.</b> De vier waarheden lopen van probleem naar oplossing: eerst lijden, dan de oorzaak (verlangen en gehechtheid), dan het goede nieuws (het kan stoppen) en tot slot de weg daarheen. Het boeddhisme draait om wijsheid, moreel gedrag en innerlijke rust.</p>'
+  },
+  {
+    chip: 'Zonder scheppergod',
+    title: 'Wat gelooft een boeddhist?',
+    intro: 'Kijk goed naar de kop "Zonder scheppergod" in de paragraaf. Past de uitspraak bij het boeddhisme, of juist niet?',
+    boxes: [
+      { title: 'Past bij het boeddhisme', color: '#3E6B5A',
+        info: 'Het boeddhisme richt zich niet op een god die alles bestuurt, maar op het pad dat jij zelf kunt lopen. Boeddhisten geloven in wedergeboorte, maar niet in een onveranderlijke ziel. Alles is veranderlijk (anicca) en er bestaat geen blijvend zelf (anatta).' },
+      { title: 'Past niet bij het boeddhisme', color: '#A2503C',
+        info: 'Alles wat de paragraaf tegenspreekt: een scheppergod die het lot van mensen bepaalt, een onveranderlijke ziel, of dat alles altijd hetzelfde blijft.' }
+    ],
+    cards: [
+      ['Jij loopt zelf het pad naar verlichting.', 0],
+      ['Er is geen scheppergod die het lot van mensen bepaalt.', 0],
+      ['Alles is veranderlijk (anicca).', 0],
+      ['Er bestaat geen blijvend zelf (anatta).', 0],
+      ['Mensen worden opnieuw geboren (wedergeboorte).', 0],
+      ['Het draait om wijsheid, moreel gedrag en innerlijke rust.', 0],
+      ['Een god bepaalt wat er met jou gebeurt.', 1],
+      ['Ieder mens heeft een onveranderlijke ziel.', 1],
+      ['Niets verandert ooit: alles blijft altijd hetzelfde.', 1],
+      ['Het doel is bidden tot een god die je problemen oplost.', 1]
+    ],
+    reveal: '<p><b>Dit staat in de paragraaf.</b> Het boeddhisme kent geen scheppergod. Jij loopt zelf het pad. Twee woorden om te onthouden: <b>anicca</b> (alles is veranderlijk) en <b>anatta</b> (er is geen blijvend zelf). Samen met <b>dukkha</b> (lijden) vormen ze de kern van het inzicht van de Boeddha.</p>'
+  },
+  {
+    chip: 'Stromingen',
+    title: 'De drie stromingen',
+    intro: 'Het boeddhisme verspreidde zich door heel Azië. Zo ontstonden drie stromingen. Welke kaart hoort bij welke stroming?',
+    boxes: [
+      { title: 'Theravada', color: '#C8772E',
+        info: 'Vooral in Sri Lanka en Zuidoost-Azië. Legt de nadruk op het voorbeeld van de Boeddha en op individuele verlichting door meditatie en discipline.' },
+      { title: 'Mahayana', color: '#6E4A5A',
+        info: 'Dominant in China, Korea en Japan. Benadrukt compassie en het helpen van anderen, via het bodhisattva-ideaal.' },
+      { title: 'Vajrayana (Tibetaans)', color: '#3E6B5A',
+        info: 'Bekend uit Tibet. Combineert meditatie met rituelen, mantra\'s en symbolen.' }
+    ],
+    cards: [
+      ['Legt de nadruk op het voorbeeld van de Boeddha.', 0],
+      ['Vooral te vinden in Sri Lanka en Zuidoost-Azië.', 0],
+      ['Individuele verlichting door meditatie en discipline.', 0],
+      ['Aandacht voor bodhisattva\'s: verlichte wezens die anderen helpen.', 1],
+      ['Dominant in China, Korea en Japan.', 1],
+      ['Benadrukt compassie en het helpen van anderen.', 1],
+      ['Rituelen en mantra\'s als hulpmiddel bij meditatie.', 2],
+      ['Bekend uit Tibet.', 2],
+      ['Combineert meditatie met symbolen.', 2]
+    ],
+    reveal: '<p><b>Dit staat in de paragraaf.</b> Theravada kijkt naar het voorbeeld van de Boeddha, Mahayana naar de bodhisattva die anderen helpt, en Vajrayana gebruikt rituelen, mantra\'s en meditatie als hulpmiddel.</p><p><b>Geschriften:</b> de Tripitaka ("drie manden") bevat regels voor monniken, leerredes van de Boeddha en filosofische verhandelingen.</p>'
+  }
+];
+
+/* =========================================================================
+   LOGICA
+   ========================================================================= */
+const stage = document.getElementById('stage');
+const track = document.getElementById('track');
+let round = 0;
+let selected = null;
+let busy = false;
+const finished = new Set();
+
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function renderTrack(){
+  track.innerHTML = '';
+  ROUNDS.forEach((R,i)=>{
+    const s = document.createElement('span');
+    s.className = 'chip' + (finished.has(i) ? ' done' : (i===round ? ' active' : ''));
+    s.textContent = (i+1) + ' · ' + R.chip;
+    track.appendChild(s);
+  });
+}
+
+function makeCard(text, box, idx){
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.draggable = true;
+  el.tabIndex = 0;
+  el.setAttribute('role','button');
+  el.dataset.box = box;
+  el.dataset.id = 'c' + idx;
+  el.textContent = text;
+  el.addEventListener('dragstart', e => {
+    if (busy || el.classList.contains('ok')) { e.preventDefault(); return; }
+    el.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', el.dataset.id);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    if (busy) return;
+    // is er al een andere kaart gekozen? Dan telt een klik op deze kaart als klik op zijn vak
+    if (selected && selected !== el) { moveTo(selected, el.parentElement); return; }
+    if (el.classList.contains('ok')) return;
+    select(selected === el ? null : el);
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  });
+  return el;
+}
+
+function select(el){
+  document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+  selected = el;
+  if (el) el.classList.add('selected');
+  document.querySelectorAll('.zone, .card-pool').forEach(z => z.classList.toggle('target', !!el));
+}
+
+function moveTo(card, container){
+  if (!card || busy) return;
+  container.appendChild(card);
+  card.classList.remove('nogniet');
+  select(null);
+  updateStatus();
+}
+
+function wireDrop(el){
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave', () => el.classList.remove('over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('over');
+    const id = e.dataTransfer.getData('text/plain');
+    const card = stage.querySelector('.card[data-id="' + id + '"]');
+    if (card && !card.classList.contains('ok')) moveTo(card, el);
+  });
+  el.addEventListener('click', () => { if (selected) moveTo(selected, el); });
+}
+
+function renderRound(){
+  const R = ROUNDS[round];
+  selected = null; busy = false;
+  renderTrack();
+  const n = R.boxes.length;
+  stage.innerHTML = `
+    <div class="panel" id="panel">
+      <p class="panel-step">Ronde ${round+1} van ${ROUNDS.length}</p>
+      <h2 class="panel-title">${R.title}</h2>
+      <p class="panel-intro">${R.intro}</p>
+
+      <ol class="howto">
+        <li><span class="no">1</span><span>Klik op een kaart, of sleep hem.</span></li>
+        <li><span class="no">2</span><span>Klik op het vak waar hij bij hoort. Twijfel je? Klik op de <b>i</b> bij een vak voor uitleg.</span></li>
+        <li><span class="no">3</span><span>Liggen alle kaarten in een vak? Klik op <b>Controleer</b>.</span></li>
+      </ol>
+
+      <div class="pool-head">
+        <p class="pool-label">Kaarten</p>
+        <span class="pool-count" id="poolCount"></span>
+      </div>
+      <div class="card-pool" id="pool"></div>
+
+      <div class="boxes n${n}" id="boxes"></div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="checkBtn">Controleer</button>
+        <span class="feedback neutral" id="fb"></span>
+      </div>
+
+      <div class="reveal" id="reveal" hidden>${R.reveal}</div>
+      <div class="write-strip" id="writeStrip" hidden>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21l3.5-1 11-11-2.5-2.5-11 11L3 21z" stroke="#C8772E" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 6l2.5 2.5" stroke="#C8772E" stroke-width="1.7"/></svg>
+        <span><b>Pak je schrift.</b> Sluit je laptop. De schrijfopdracht staat op het bord.</span>
+      </div>
+
+      <div class="controls" id="navControls" style="margin-top:14px;">
+        <button class="btn btn-primary" id="nextBtn" hidden></button>
+        <button class="btn btn-ghost" id="restartBtn" hidden>Helemaal opnieuw</button>
+      </div>
+    </div>`;
+
+  const pool = document.getElementById('pool');
+  const boxes = document.getElementById('boxes');
+
+  R.boxes.forEach((b, i) => {
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.innerHTML = `
+      <div class="box-head" style="background:${b.color};">
+        <span class="box-no">${i+1}</span>
+        <span class="box-title"></span>
+        <button class="info-btn" type="button" aria-expanded="false" aria-label="Uitleg bij dit vak">i</button>
+      </div>
+      <div class="info" hidden></div>
+      <div class="zone" data-box="${i}"></div>`;
+    box.querySelector('.box-title').textContent = b.title;
+    box.querySelector('.info').textContent = b.info;
+    const btn = box.querySelector('.info-btn');
+    const info = box.querySelector('.info');
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = info.hidden;
+      info.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    wireDrop(box.querySelector('.zone'));
+    boxes.appendChild(box);
+  });
+
+  shuffle(R.cards.map((c, i) => [c[0], c[1], i])).forEach(c => pool.appendChild(makeCard(c[0], c[1], c[2])));
+  wireDrop(pool);
+
+  document.getElementById('checkBtn').addEventListener('click', check);
+  document.getElementById('restartBtn').addEventListener('click', () => { finished.clear(); round = 0; renderRound(); window.scrollTo({top:0,behavior:'smooth'}); });
+  updateStatus();
+}
+
+function updateStatus(){
+  const pool = document.getElementById('pool');
+  if (!pool) return;
+  const left = pool.querySelectorAll('.card').length;
+  pool.classList.toggle('empty', left === 0);
+  document.getElementById('poolCount').textContent = left === 0 ? '' : 'Nog ' + left + (left === 1 ? ' kaart' : ' kaarten') + ' te plaatsen';
+  const btn = document.getElementById('checkBtn');
+  const fb = document.getElementById('fb');
+  const checkable = stage.querySelectorAll('.zone .card:not(.ok)').length;
+  btn.disabled = busy || left > 0 || checkable === 0;
+  if (left > 0 && !fb.dataset.keep) {
+    fb.textContent = 'Plaats eerst alle kaarten in een vak.';
+    fb.className = 'feedback neutral';
+  } else if (left === 0 && checkable > 0 && !fb.dataset.keep) {
+    fb.textContent = 'Klaar? Klik op Controleer.';
+    fb.className = 'feedback neutral';
+  }
+  delete fb.dataset.keep;
+}
+
+function setFb(text, cls){
+  const fb = document.getElementById('fb');
+  fb.textContent = text; fb.className = 'feedback ' + cls; fb.dataset.keep = '1';
+}
+
+function check(){
+  if (busy) return;
+  const cards = [...stage.querySelectorAll('.zone .card:not(.ok)')];
+  if (!cards.length) return;
+  let wrong = 0, right = 0;
+  const pool = document.getElementById('pool');
+  const wrongCards = [];
+  cards.forEach(c => {
+    const z = c.closest('.zone');
+    if (parseInt(z.dataset.box,10) === parseInt(c.dataset.box,10)) {
+      c.classList.add('ok'); c.draggable = false; c.removeAttribute('tabindex'); c.removeAttribute('role'); right++;
+    } else {
+      c.classList.add('nogniet'); wrongCards.push(c); wrong++;
+    }
+  });
+  const total = stage.querySelectorAll('.card').length;
+  const okCount = stage.querySelectorAll('.card.ok').length;
+
+  if (wrong === 0 && okCount === total) {
+    setFb('Alles staat goed. Goed doorgezet!', 'ok');
+    document.getElementById('checkBtn').disabled = true;
+    completeRound();
+    return;
+  }
+  busy = true;
+  document.getElementById('checkBtn').disabled = true;
+  setFb('Nog niet alles goed: ' + wrong + (wrong === 1 ? ' kaart' : ' kaarten') + ' (rood) ' + (wrong === 1 ? 'ligt' : 'liggen') + ' in het verkeerde vak. ' +
+        (wrong === 1 ? 'Hij gaat' : 'Ze gaan') + ' terug naar de kaarten. Lees de uitleg bij de i en probeer opnieuw.', 'err');
+  setTimeout(() => {
+    wrongCards.forEach(c => { c.classList.remove('nogniet'); pool.appendChild(c); });
+    busy = false;
+    const fb = document.getElementById('fb'); fb.dataset.keep = '1';
+    updateStatus();
+  }, 1800);
+}
+
+function completeRound(){
+  finished.add(round);
+  renderTrack();
+  document.getElementById('reveal').hidden = false;
+  const next = document.getElementById('nextBtn');
+  if (round < ROUNDS.length - 1) {
+    next.textContent = 'Naar ronde ' + (round + 2);
+    next.hidden = false;
+    next.onclick = () => { round++; renderRound(); window.scrollTo({top:0,behavior:'smooth'}); };
+  } else {
+    document.getElementById('writeStrip').hidden = false;
+    document.getElementById('restartBtn').hidden = false;
+  }
+}
+
+renderRound();
+</script>
+</body>
+</html>
