@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wereldreligies Memory</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: één kolom op telefoon; op breed scherm bord links, notitieblok rechts. Kleur hoort bij de religie, niet bij het thema. */
+:root{
+  --bg:#EDEFF4; --card:#FFFFFF; --ink:#161C2C; --muted:#586078; --line:#CDD2DF;
+  --back:#1B2440; --back-line:#2D3963; --focus:#1B5FE0; --on-c:#FFFFFF;
+  --c-christendom:#3556C9; --c-jodendom:#7A44C2; --c-islam:#0B7A53; --c-hindoeisme:#B85410; --c-boeddhisme:#B3304F; --c-winti:#946800; --c-ubuntu:#00778B; --c-chinees:#70584A;
+  --c-mix:#161C2C;
+  --font-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --font-body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141F; --card:#1A2133; --ink:#E9ECF5; --muted:#A0A9C0; --line:#2C3550;
+    --back:#2A3558; --back-line:#3C4A7C; --focus:#8FB0FF; --on-c:#10141F;
+    --c-christendom:#8AA3F7; --c-jodendom:#BC96F2; --c-islam:#4CC896; --c-hindoeisme:#F29B57; --c-boeddhisme:#F27A98; --c-winti:#E3B341; --c-ubuntu:#4CC3D9; --c-chinees:#D2B9A6;
+    --c-mix:#E9ECF5; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141F; --card:#1A2133; --ink:#E9ECF5; --muted:#A0A9C0; --line:#2C3550;
+  --back:#2A3558; --back-line:#3C4A7C; --focus:#8FB0FF; --on-c:#10141F;
+  --c-christendom:#8AA3F7; --c-jodendom:#BC96F2; --c-islam:#4CC896; --c-hindoeisme:#F29B57; --c-boeddhisme:#F27A98; --c-winti:#E3B341; --c-ubuntu:#4CC3D9; --c-chinees:#D2B9A6;
+  --c-mix:#E9ECF5; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+h1,h2,h3{font-family:var(--font-display);line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lead{max-width:62ch;color:var(--ink);font-size:1.05rem}
+.muted{color:var(--muted)}
+
+.r-christendom{--rc:var(--c-christendom)} .r-jodendom{--rc:var(--c-jodendom)} .r-islam{--rc:var(--c-islam)}
+.r-hindoeisme{--rc:var(--c-hindoeisme)} .r-religie{--rc:var(--c-christendom)} .r-boeddhisme{--rc:var(--c-boeddhisme)} .r-winti{--rc:var(--c-winti)} .r-ubuntu{--rc:var(--c-ubuntu)} .r-chinees{--rc:var(--c-chinees)} .r-mix{--rc:var(--c-mix)}
+
+/* buttons */
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:8px;padding:10px 16px;font-weight:600;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.88}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* home */
+.hero{display:grid;gap:14px;margin-bottom:28px}
+.steps{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));list-style:none;padding:0;margin:8px 0 0;counter-reset:s}
+.steps li{counter-increment:s;border-top:2px solid var(--ink);padding-top:8px;font-size:.95rem}
+.steps li::before{content:counter(s) ". ";font-family:var(--font-display);font-weight:800}
+.steps b{font-family:var(--font-display)}
+.namebox{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:22px 0 14px}
+.namebox label{font-weight:600}
+.namebox input{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 12px;font:inherit;min-width:0;width:min(100%,280px)}
+.tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.tile{background:var(--rc);color:var(--on-c);border:0;border-radius:6px;text-align:left;padding:16px 16px 14px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.tile:hover{transform:translateY(-2px)}
+.tile .name{font-family:var(--font-display);font-weight:800;font-size:1.35rem;line-height:1.05}
+.tile .sub{font-size:.85rem;opacity:.92}
+.tile .state{font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.tile.mix{background:transparent;color:var(--ink);border:2px dashed var(--ink)}
+.progress{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+
+/* game */
+.topbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.topbar .title{display:flex;align-items:center;gap:10px}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--rc);flex:none}
+.hud{display:flex;gap:18px;font-variant-numeric:tabular-nums;font-weight:600}
+.hud span span{font-family:var(--font-display);font-size:1.2rem}
+.play{display:grid;gap:22px;grid-template-columns:minmax(0,1fr);align-items:start}
+@media (min-width:900px){.play{grid-template-columns:minmax(0,1fr) 300px}}
+.board{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (min-width:560px){.board{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:900px){.board{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.card{all:unset;box-sizing:border-box;display:block;perspective:800px;aspect-ratio:4/5;cursor:pointer;border-radius:10px}
+.card:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.inner{display:block;position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .45s}
+.card.open .inner,.card.done .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.back{background:var(--back);background-image:repeating-radial-gradient(circle at 50% 50%,transparent 0 9px,var(--back-line) 9px 10px);border:2px solid var(--back)}
+.back::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--back-line);border:2px solid var(--bg)}
+.front{transform:rotateY(180deg);background:var(--card);border:2px solid var(--ink);padding:8px;display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center}
+.front .kind{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.front .term{font-family:var(--font-display);font-weight:800;font-size:1rem;line-height:1.1;overflow-wrap:break-word;hyphens:auto}
+.front .def{font-size:.82rem;line-height:1.3;overflow-wrap:anywhere}
+.front .tag{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.card.done .front{background:var(--card);background:color-mix(in srgb,var(--rc) 15%,var(--card));border-color:var(--rc)}
+.card.done .front .tag{color:var(--rc)}
+.card.miss .front{border-color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}.tile:hover{transform:none}}
+
+.notes{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px}
+.notes ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.notes li{border-left:4px solid var(--rc);padding-left:10px;font-size:.92rem}
+.notes li b{font-family:var(--font-display);font-size:1rem}
+.notes .empty{color:var(--muted);font-size:.92rem}
+.finish{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:16px}
+
+/* write */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 0;padding:0;list-style:none}
+.chip{border:2px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.9rem;font-weight:500;background:var(--card)}
+.chip.used{border-color:var(--rc);background:var(--rc);color:var(--on-c);font-weight:600}
+.writebox{display:grid;gap:12px}
+.writebox textarea{width:100%;min-height:210px;resize:vertical;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:1.02rem;line-height:1.55;padding:14px}
+.meter{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.meter .ok{color:var(--rc);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+#status{min-height:1.4em;font-size:.9rem;font-weight:600}
+#fallback{margin-top:16px;display:grid;gap:8px}
+#fallback textarea{width:100%;min-height:150px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;padding:10px}
+
+.sec{display:grid;gap:10px;padding:16px 0 22px;border-top:2px solid var(--rc)}
+.sec h3{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800}
+.sec textarea{width:100%;min-height:120px;resize:vertical;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:1.02rem;line-height:1.55;padding:12px}
+.notes h4{font-family:var(--font-display);font-size:.95rem;margin:6px 0 0;display:flex;align-items:center;gap:8px}
+.status{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:20px}
+.pill{border-left:6px solid var(--rc);background:var(--card);padding:8px 12px;border-radius:4px;font-size:.9rem}
+.pill b{display:block;font-family:var(--font-display)}
+.startrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px}
+.btn.big{font-size:1.1rem;padding:14px 22px}
+.toplink{display:inline-block;color:var(--ink);font-weight:600;text-decoration:none;font-size:.9rem;border-bottom:1.5px solid var(--ink)}
+.front,.notes,.finish,.pill,.chip,.progress{color:var(--ink)}
+</style>
+</head>
+<body>
+<nav class="wrap" style="padding-block:20px 0"><a class="toplink" href="../reader_en_memory.html">← Terug naar de les</a></nav>
+<main class="wrap" id="app" style="padding-top:12px"></main>
+<script>
+const RELIGIONS = [
+  { id:'religie', name:'Wat is religie?', q:'Welke benaderingen van religie ken je? Leg ze kort uit en vertel waarom religie moeilijk te definiëren is.', items:[
+    {t:'Durkheim', d:'Functionele benadering: religie verbindt mensen in één morele gemeenschap'},
+    {t:'Stackhouse', d:'Filosofische benadering: religie is een allesomvattende levensvisie'},
+    {t:'Tillich', d:'Religie is je ultieme zorg: wat voor jou het allerbelangrijkste is'},
+    {t:'Het heilige', d:'Wat apart is gezet en verboden is, volgens Durkheim het hart van religie', k:['heilige']},
+    {t:'Atheïst', d:'Iemand die niet in God gelooft', k:['atheist','atheisme']},
+    {t:'Agnost', d:'Iemand die niet zeker weet of God bestaat', k:['agnost']},
+    {t:'Levensvragen', d:'Wie ben ik? Waarom leef ik? Wat is goed of kwaad? Religies geven antwoorden', k:['levensvra']} ]},
+  { id:'ubuntu', name:'Ubuntu', q:'Wat betekent ubuntu en welke rol speelde het tijdens en na de apartheid?', items:[
+    {t:'Ubuntu', d:'“Ik ben omdat wij zijn”: je wordt mens door anderen'},
+    {t:'Ke motho', d:'Sotho-uitdrukking: “Hij of zij is een mens”, iemand die menselijk handelt', k:['ke motho']},
+    {t:'Desmond Tutu', d:'Bisschop en activist die ubuntu zag als kracht van vergeving en hoop', k:['tutu']},
+    {t:'Nelson Mandela', d:'Zat 27 jaar in de gevangenis en werd later president van Zuid-Afrika', k:['mandela']},
+    {t:'Apartheid', d:'Systeem van rassenscheiding in Zuid-Afrika van 1948 tot 1994'},
+    {t:'Waarheids- en Verzoeningscommissie', d:'Daders en slachtoffers vertelden hun verhaal; doel was herstel, geen straf', k:['waarheids- en verzoening','waarheids en verzoening','waarheidscommissie','verzoeningscommissie']}, ]},
+  { id:'chinees', name:'Chinese filosofie', q:'Wat zijn de Chinese visies op het leven (taoïsme, confucianisme, legalisme) en hoe verschillen ze?', items:[
+    {t:'Tao', d:'“De Weg”: oerkracht die door alles stroomt', k:['tao','dao']},
+    {t:'Wu wei', d:'Doen zonder te forceren, zoals water dat steen uitholt', k:['wu wei']},
+    {t:'Yin en yang', d:'Tegenpolen die samen een geheel vormen', k:['yin','yang']},
+    {t:'Confucius', d:'Wijze leraar die vroeg hoe mensen goed kunnen samenleven', k:['confucius','kong fuzi']},
+    {t:'Confucianisme', d:'Goed gedrag, plicht en respect leiden tot een rechtvaardige samenleving', k:['confucianisme','confucianist']},
+    {t:'Kinderlijke eerbied', d:'Respect voor je ouders en voorouderlijke tradities', k:['kinderlijke eerbied','eerbied']},
+    {t:'Legalisme', d:'Mensen zijn egoïstisch: strenge wetten en straffen zorgen voor orde', k:['legalis']}, ]},
+  { id:'hindoeisme', name:'Hindoeïsme', q:'Wat geloven hindoes en hoe laten ze dat zien in hun leven?', items:[
+    {t:'Samsara', d:'De eeuwige cyclus van geboorte, dood en wedergeboorte'},
+    {t:'Karma', d:'De optelsom van je daden, woorden en gedachten bepaalt je volgende leven'},
+    {t:'Moksha', d:'Bevrijding uit samsara: de ziel wordt één met Brahman'},
+    {t:'Brahman', d:'De hoogste werkelijkheid waarvan alle goden gedaanten zijn'},
+    {t:'Puja', d:'Dagelijks ritueel met offers en gebeden thuis of in de tempel'},
+    {t:'Diwali', d:'Lichtjesfeest: het goede wint van het kwade'},
+    {t:'Veda’s', d:'De oudste heilige teksten van het hindoeïsme', k:['veda']},
+    {t:'Holi', d:'Kleurrijk lentefeest met gekleurd poeder en water'} ]},
+  { id:'boeddhisme', name:'Boeddhisme', q:'Wat is het boeddhisme en wat is het doel van een boeddhist?', items:[
+    {t:'Boeddha', d:'“De Ontwaakte”: titel van wie verlichting bereikt onder de bodhiboom', k:['boeddha']},
+    {t:'Vier Edele Waarheden', d:'Lijden, de oorzaak, het einde ervan en de weg daarheen', k:['edele waarheid','edele waarheden']},
+    {t:'Achtvoudig Pad', d:'Praktische weg naar het einde van lijden', k:['achtvoudig pad','achtvoudige pad']},
+    {t:'Nirwana', d:'Doel van de boeddhist: het einde van lijden', k:['nirwana','nirvana']},
+    {t:'Anatta', d:'Er bestaat geen blijvend zelf'},
+    {t:'Anicca', d:'Alles is veranderlijk'},
+    {t:'Siddhartha', d:'De originele naam van de Boeddha, geboren als prins', k:['siddhartha','gautama']},
+    {t:'Meditatie', d:'Oefening voor wijsheid en innerlijke rust', k:['meditatie','mediteer','mediter']} ]},
+  { id:'winti', name:'Winti', q:'Wat is winti en waarom is het belangrijk voor de gemeenschap?', items:[
+    {t:'Winti', d:'Afro-Surinaamse religie én de geesten daarin, ontstaan in de slavernij'},
+    {t:'De 4 winti’s', d:'Aarde-, water-, bos- en lucht-winti’s', k:['4 winti','vier winti','aarde-winti','water-winti','bos-winti','lucht-winti','hoofdgroep']},
+    {t:'Voorouderverering', d:'Overleden familieleden helpen, beschermen of waarschuwen', k:['voorouder']},
+    {t:'Bonuman', d:'Geestelijk leider en genezer die bemiddelt met de geesten', k:['bonuman','duman']},
+    {t:'Mengreligie', d:'Afrikaanse wortels vermengd met inheemse en Europese invloeden', k:['mengreligie']},
+    {t:'Slavernij', d:'Tot slaaf gemaakte Afrikanen hielden hun geloof levend ondanks het verbod', k:['slavernij','slaaf','slaven']},
+    {t:'Keti Koti', d:'“De ketens zijn verbroken”: herdenking en feest op 1 juli van het einde van de slavernij', k:['keti koti','ketikoti']},
+    {t:'Culturele identiteit', d:'Winti geeft gemeenschapszin en verbinding met de voorouders', k:['identiteit']} ]},
+];
+
+const PER = 4;
+const BY = Object.fromEntries(RELIGIONS.map(r=>[r.id,r]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+let G = null, view = 'home';
+function render(){ (view==='home' ? renderHome : renderGame)(); window.scrollTo(0,0); }
+
+function renderHome(){
+  $('#app').innerHTML = `
+    <section class="hero">
+      <p class="eyebrow">Levensbeschouwing · Wereldreligies</p>
+      <h1>Wereldreligies Memory</h1>
+      <p class="lead">Eén memory met alle zes de paragrafen van het thema wereldreligies door elkaar. Zoek bij elk begrip de juiste uitleg.</p>
+      <ol class="steps">
+        <li><b>Speel.</b> Draai twee kaarten om: een begrip en de uitleg die erbij hoort.</li>
+        <li><b>Lees.</b> Elk paar dat je vindt komt in je notitieblok, per onderwerp.</li>
+      </ol>
+    </section>
+    <div class="startrow"><button class="btn big" data-act="play">Start het memory</button>
+      <span class="muted">${PER*RELIGIONS.length} paren · ${PER} per onderwerp</span></div>`;
+}
+
+function startGame(){
+  const pairs = RELIGIONS.flatMap(r => shuffle(r.items).slice(0,PER).map(i=>({...i,r:r.id})));
+  const cards = [];
+  pairs.forEach((p,i)=>{ cards.push({pid:i,kind:'term'}); cards.push({pid:i,kind:'def'}); });
+  G = { pairs, cards: shuffle(cards), sel:[], lock:false, moves:0, found:[] };
+  view = 'game'; render();
+}
+function renderGame(){
+  $('#app').innerHTML = `
+    <div class="topbar">
+      <div class="title"><button class="btn ghost" data-act="home">← Start</button><h2>Wereldreligies</h2></div>
+      <div class="hud"><span>Zetten <span id="moves">0</span></span><span>Paren <span id="found">0</span>/${G.pairs.length}</span>
+      <button class="btn ghost" data-act="again">Opnieuw</button></div>
+    </div>
+    <div class="play">
+      <div>
+        <div class="board" id="board">${G.cards.map((c,i)=>cardHTML(c,i)).join('')}</div>
+        <div class="finish" id="finish" hidden>
+          <p id="finishmsg"></p>
+          <button class="btn" data-act="again">Speel opnieuw →</button>
+        </div>
+      </div>
+      <aside class="notes" aria-label="Notitieblok"><h3>Mijn notities</h3><div id="notes"></div></aside>
+    </div>`;
+  renderNotes(); hud();
+}
+function cardHTML(c,i){
+  const p = G.pairs[c.pid];
+  const face = c.kind==='term'
+    ? `<span class="kind">Begrip</span><span class="term">${esc(p.t)}</span>`
+    : `<span class="kind">Uitleg</span><span class="def">${esc(p.d)}</span>`;
+  return `<button class="card" data-act="flip" data-i="${i}" aria-label="Kaart ${i+1}, dicht">
+    <span class="inner"><span class="face back"></span>
+    <span class="face front">${face}<span class="tag" hidden></span></span></span></button>`;
+}
+function paint(i){
+  const c = G.cards[i], el = document.querySelector(`.card[data-i="${i}"]`);
+  if (!el) return;
+  const p = G.pairs[c.pid];
+  el.classList.toggle('open', !!c.open);
+  el.classList.toggle('done', !!c.done);
+  if (c.done) el.classList.add('r-'+p.r);
+  const label = c.kind==='term' ? 'Begrip: '+p.t : 'Uitleg: '+p.d;
+  el.setAttribute('aria-label', (c.open||c.done) ? `Kaart ${i+1}, ${label}` : `Kaart ${i+1}, dicht`);
+  if (c.done) { const tag = el.querySelector('.tag'); tag.hidden=false; tag.textContent = BY[p.r].name; }
+}
+function hud(){ const m=$('#moves'), f=$('#found'); if (m) m.textContent=G.moves; if (f) f.textContent=G.found.length; }
+function renderNotes(){
+  const n = $('#notes'); if (!n) return;
+  const out = RELIGIONS.map(r=>{
+    const ps = G.found.map(id=>G.pairs[id]).filter(p=>p.r===r.id);
+    if (!ps.length) return '';
+    return `<div class="r-${r.id}"><h4><span class="dot"></span>${esc(r.name)}</h4><ul>${ps.map(p=>`<li><b>${esc(p.t)}</b><br>${esc(p.d)}</li>`).join('')}</ul></div>`;
+  }).join('');
+  n.innerHTML = out || '<p class="empty">Wat je vindt, verschijnt hier.</p>';
+}
+function flip(i){
+  if (!G || G.lock) return;
+  const c = G.cards[i];
+  if (c.open || c.done) return;
+  c.open = true; paint(i); G.sel.push(i);
+  if (G.sel.length < 2) return;
+  G.moves++;
+  const [a,b] = G.sel, A = G.cards[a], B = G.cards[b];
+  if (A.pid === B.pid){
+    A.done = B.done = true; A.open = B.open = false;
+    G.found.push(A.pid); G.sel = [];
+    paint(a); paint(b); renderNotes();
+    if (G.found.length === G.pairs.length) finishGame();
+  } else {
+    G.lock = true;
+    setTimeout(()=>{ A.open = B.open = false; paint(a); paint(b); G.sel = []; G.lock = false; }, 1100);
+  }
+  hud();
+}
+function finishGame(){
+  const f = $('#finish');
+  $('#finishmsg').textContent = `Alle ${G.pairs.length} paren gevonden in ${G.moves} zetten. Bij een nieuw spel krijg je andere begrippen.`;
+  f.hidden = false; f.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act;
+  if (act==='play' || act==='again') startGame();
+  else if (act==='flip') flip(+b.dataset.i);
+  else if (act==='home'){ view='home'; render(); }
+});
+render();
+</script>
+
+</body>
+</html>
